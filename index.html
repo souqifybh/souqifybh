@@ -501,6 +501,18 @@
   .bn-item.active{color:var(--blush-ink);}
   .bn-item .bn-logo svg,.bn-item .bn-logo img{width:22px;height:24px;display:block;}
   .bn-item .bn-icon{font-size:19px;line-height:1;}
+  /* ---- floating round "Deals %" button, sits centered above the nav bar ---- */
+  .bn-item.deals-fab{
+    flex:0 0 auto;width:64px;position:relative;top:-22px;color:var(--paper);
+  }
+  .deals-fab .deals-fab-circle{
+    width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 32% 28%,var(--blush) 0%,var(--blush-deep) 78%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(70,80,27,0.38);
+    border:3px solid #fff;gap:1px;
+  }
+  .deals-fab .deals-fab-circle .bn-logo{width:22px;height:24px;filter:brightness(0) invert(1);}
+  .deals-fab .deals-fab-circle span.deals-fab-label{font-size:10.5px;font-weight:800;color:#fff;line-height:1;margin-top:1px;}
+  .deals-fab .deals-fab-caption{display:block;margin-top:4px;font-size:9.5px;font-weight:700;color:var(--ink-soft);text-align:center;}
   @media (max-width:760px){
     .bottom-nav{display:flex;}
     body{padding-bottom:60px;}
@@ -666,16 +678,27 @@
   .pdp-thumb img{width:100%;height:100%;object-fit:cover;}
   .pdp-thumb.active{border-color:var(--blush-deep);}
   .pdp-info .cat{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--blush-ink);}
-  .pdp-info h1{font-size:clamp(24px,3vw,34px);margin:8px 0 12px;font-weight:800;}
+  .pdp-info h1{font-size:clamp(24px,3vw,34px);margin:8px 0 0;font-weight:800;}
   .pdp-badges{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
-  .pdp-stars{color:var(--blush-deep);font-size:14px;margin-bottom:16px;}
+  .pdp-stars{color:#E0A800;font-size:14px;margin:2px 0 10px;}
   .pdp-stars span{color:var(--ink-soft);font-size:12.5px;margin-left:6px;}
+  .pdp-short-desc{color:var(--ink-soft);font-size:13.5px;line-height:1.55;margin:0 0 14px;}
   .pdp-price{font-family:'Sora';font-weight:800;font-size:30px;margin-bottom:6px;}
   .pdp-price small{font-size:14px;font-weight:600;color:var(--ink-soft);}
   .pdp-stock{font-size:13px;font-weight:700;margin-bottom:22px;}
   .pdp-stock.in{color:#1E7A44;}
   .pdp-stock.low{color:#B23B2E;}
-  .pdp-desc{color:var(--ink-soft);font-size:14.5px;line-height:1.7;margin-bottom:26px;white-space:pre-line;}
+  /* ---- PDP accordion: description / features / more details ---- */
+  .pdp-accordion{margin:8px 0 26px;border-top:1px solid var(--line);}
+  .pdp-acc-item{border-bottom:1px solid var(--line);}
+  .pdp-acc-head{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:16px 2px;font-size:15px;font-weight:700;color:var(--ink);cursor:pointer;text-align:left;}
+  .pdp-acc-head .chev{font-size:13px;color:var(--blush-deep);transition:transform .2s ease;}
+  .pdp-acc-item.open .pdp-acc-head .chev{transform:rotate(180deg);}
+  .pdp-acc-body{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .pdp-acc-item.open .pdp-acc-body{max-height:600px;}
+  .pdp-acc-body-inner{padding:0 2px 18px;color:var(--ink-soft);font-size:14px;line-height:1.7;white-space:pre-line;}
+  .pdp-acc-body-inner ul{margin:0;padding-left:18px;}
+  .pdp-acc-body-inner li{margin-bottom:6px;}
   .pdp-qty-row{display:flex;align-items:center;gap:16px;margin-bottom:18px;}
   .qty-selector{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;}
   .qty-selector button{width:38px;height:42px;background:var(--paper-soft);border:none;font-size:17px;font-weight:700;cursor:pointer;}
@@ -708,7 +731,7 @@
 
   .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
   .testi{background:var(--paper-soft);border-radius:var(--radius);padding:26px;}
-  .testi .stars{color:var(--blush-deep);letter-spacing:2px;margin-bottom:12px;font-size:14px;}
+  .testi .stars{color:#E0A800;letter-spacing:2px;margin-bottom:12px;font-size:14px;}
   .testi p{font-size:14px;color:var(--ink);line-height:1.6;margin:0 0 16px;}
   .testi .who{font-size:13px;font-weight:700;color:var(--ink-soft);}
   .testi-skel{background:var(--paper-soft);border-radius:var(--radius);padding:26px;}
@@ -736,6 +759,13 @@
   .foot-grid a{display:block;font-size:13px;color:#b8b3b3;margin-bottom:9px;}
   .foot-grid a:hover{color:var(--blush);}
   .foot-bottom{max-width:1180px;margin:20px auto 0;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:#8f8b8b;}
+  .foot-social{max-width:1180px;margin:0 auto 28px;display:flex;gap:12px;align-items:center;}
+  .foot-social a{
+    width:38px;height:38px;border-radius:50%;background:var(--blush);display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:background .18s ease,transform .18s ease;
+  }
+  .foot-social a:hover{background:var(--blush-deep);transform:translateY(-2px);}
+  .foot-social a svg{width:18px;height:18px;fill:#fff;display:block;}
 
   .overlay{position:fixed;inset:0;background:rgba(28,28,30,0.45);z-index:490;display:none;}
   .overlay.show{display:block;}
@@ -1022,7 +1052,7 @@
     <div class="toolbar-inner reveal">
       <div id="categoryChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
       <span id="dealsFilterChip" class="chip active" style="display:none;align-items:center;gap:6px;" onclick="clearDealsFilter()">
-        <span data-i18n="dealsChipLabel">Under 4.900 BHD</span> ✕
+        <span data-i18n="dealsChipLabel">Deals 45%+ off</span> ✕
       </span>
     </div>
     <div class="grid reveal-stagger" id="productGrid"></div>
@@ -1069,6 +1099,23 @@
     <div><h4 data-i18n="footerShop">Shop</h4><a href="#shop" data-i18n="footerAllProducts">All products</a><a href="#categories" data-i18n="navCategories">Categories</a><a href="#reviews" data-i18n="navReviews">Reviews</a><a href="about-us.html" data-i18n="footerAboutUs">About us</a></div>
     <div><h4 data-i18n="footerSupport">Support</h4><a id="waFooterLink" href="#" target="_blank" data-i18n="footerWhatsapp">WhatsApp us</a><a href="delivery-policy.html" data-i18n="footerDeliveryPolicy">Delivery policy</a><a href="return-refund-policy.html" data-i18n="footerReturns">Returns &amp; refunds</a></div>
     <div><h4 data-i18n="footerPayments">Payments</h4><a href="#" data-i18n="footerBenefitpay">BenefitPay QR</a><a href="#" data-i18n="footerCod">Cash on delivery</a></div>
+  </div>
+  <div class="foot-social">
+    <a href="https://www.facebook.com/Souqifybh/" target="_blank" rel="noopener" aria-label="Facebook">
+      <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/souqifybh" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24"><path d="M12 2c-2.72 0-3.06.01-4.12.06-1.06.05-1.79.22-2.43.47-.66.26-1.22.6-1.77 1.16-.56.55-.9 1.11-1.16 1.77-.25.64-.42 1.37-.47 2.43C2.01 8.94 2 9.28 2 12s.01 3.06.06 4.12c.05 1.06.22 1.79.47 2.43.26.66.6 1.22 1.16 1.77.55.56 1.11.9 1.77 1.16.64.25 1.37.42 2.43.47C8.94 21.99 9.28 22 12 22s3.06-.01 4.12-.06c1.06-.05 1.79-.22 2.43-.47.66-.26 1.22-.6 1.77-1.16.56-.55.9-1.11 1.16-1.77.25-.64.42-1.37.47-2.43.05-1.06.06-1.4.06-4.12s-.01-3.06-.06-4.12c-.05-1.06-.22-1.79-.47-2.43-.26-.66-.6-1.22-1.16-1.77-.55-.56-1.11-.9-1.77-1.16-.64-.25-1.37-.42-2.43-.47C15.06 2.01 14.72 2 12 2zm0 1.8c2.67 0 2.99.01 4.04.06.98.04 1.51.21 1.86.34.47.18.8.4 1.15.75.35.35.57.68.75 1.15.13.35.3.88.34 1.86.05 1.05.06 1.37.06 4.04s-.01 2.99-.06 4.04c-.04.98-.21 1.51-.34 1.86-.18.47-.4.8-.75 1.15-.35.35-.68.57-1.15.75-.35.13-.88.3-1.86.34-1.05.05-1.37.06-4.04.06s-2.99-.01-4.04-.06c-.98-.04-1.51-.21-1.86-.34-.47-.18-.8-.4-1.15-.75-.35-.35-.57-.68-.75-1.15-.13-.35-.3-.88-.34-1.86C3.81 14.99 3.8 14.67 3.8 12s.01-2.99.06-4.04c.04-.98.21-1.51.34-1.86.18-.47.4-.8.75-1.15.35-.35.68-.57 1.15-.75.35-.13.88-.3 1.86-.34C9.01 3.81 9.33 3.8 12 3.8zm0 3.06A5.14 5.14 0 1 0 12 17.14 5.14 5.14 0 0 0 12 6.86zm0 8.48a3.34 3.34 0 1 1 0-6.68 3.34 3.34 0 0 1 0 6.68zm5.34-8.68a1.2 1.2 0 1 1-2.4 0 1.2 1.2 0 0 1 2.4 0z"/></svg>
+    </a>
+    <a href="https://wa.me/97335184023" target="_blank" rel="noopener" aria-label="WhatsApp">
+      <svg viewBox="0 0 24 24"><path d="M17.47 14.38c-.29-.15-1.73-.85-2-.95-.27-.1-.46-.15-.66.15-.2.29-.76.95-.93 1.14-.17.2-.34.22-.63.07-.29-.15-1.23-.45-2.35-1.44-.87-.77-1.45-1.73-1.63-2.02-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.07-.15-.66-1.58-.9-2.16-.24-.58-.48-.5-.66-.5-.17-.01-.37-.01-.56-.01-.2 0-.51.07-.78.37-.27.29-1.02 1-1.02 2.43 0 1.43 1.04 2.82 1.19 3.01.15.2 2.05 3.13 4.97 4.39.69.3 1.24.48 1.66.61.7.22 1.34.19 1.84.12.56-.08 1.73-.71 1.98-1.39.24-.68.24-1.27.17-1.39-.07-.12-.27-.2-.56-.35zM12.04 22a9.9 9.9 0 0 1-5.05-1.38l-.36-.22-3.75.98 1-3.66-.24-.38A9.93 9.93 0 1 1 22 12.04 9.94 9.94 0 0 1 12.04 22zm8.4-18.35A11.7 11.7 0 0 0 12.04.3 11.75 11.75 0 0 0 .3 12.04c0 2.07.54 4.09 1.57 5.87L.2 23.7l5.94-1.56a11.74 11.74 0 0 0 5.9 1.59h.01a11.75 11.75 0 0 0 11.75-11.7 11.68 11.68 0 0 0-3.36-8.38z"/></svg>
+    </a>
+    <a href="https://www.threads.com/@souqifybh?igshid=NTc4MTIwNjQ2YQ==" target="_blank" rel="noopener" aria-label="Threads">
+      <svg viewBox="0 0 24 24"><path d="M17.7 11.3c-.1-.06-.2-.11-.3-.16-.18-3.32-2.02-5.22-5.1-5.24-1.8-.01-3.32.72-4.24 2.13l1.5.98c.65-.94 1.53-1.34 2.71-1.34h.03c1.31.01 2.3.55 2.85 1.55.4.73.55 1.62.55 2.63a3.4 3.4 0 0 0-.75-.4c-.87-.34-1.98-.5-3.2-.35-2.62.31-4.3 1.94-4.16 4 .12 1.87 1.8 3.24 4.13 3.24.24 0 .48-.02.73-.05 1.65-.24 2.88-1.08 3.65-2.42.44-.77.7-1.68.79-2.71.85.51 1.48 1.19 1.83 2.02.62 1.48.66 3.9-1.29 5.84-1.72 1.71-3.79 2.45-6.9 2.47-3.45-.03-6.06-1.13-7.75-3.27C2.68 18.09 1.86 15.35 1.83 12c.03-3.35.85-6.09 2.42-8.15C5.94 1.7 8.55.6 12 .57c3.47.03 6.13 1.14 7.9 3.29 1.11 1.35 1.83 3.09 2.15 5.16l-1.79.28c-.27-1.72-.86-3.13-1.75-4.2C17.06 3.4 14.94 2.54 12 2.51c-2.9.03-4.99.9-6.4 2.65C4.29 6.83 3.6 9.14 3.58 12c.02 2.86.71 5.17 2.02 6.84 1.41 1.75 3.5 2.62 6.4 2.65 2.75-.02 4.5-.65 5.94-2.08 1.42-1.4 1.4-3.12 1.03-4.02-.22-.53-.63-.97-1.19-1.34-.13.88-.4 1.62-.79 2.24zm-5.86 2.14c-1.31 0-2.03-.6-2.09-1.62-.06-.99.7-1.75 2.35-1.94.19-.02.38-.03.56-.03.63 0 1.19.09 1.66.25.28.1.52.22.72.36-.15 2-1.19 2.86-3.2 2.98z"/></svg>
+    </a>
+    <a href="mailto:customercaresouqify@gmail.com" target="_blank" rel="noopener" aria-label="Email">
+      <svg viewBox="0 0 24 24"><path d="M2 5.5A1.5 1.5 0 0 1 3.5 4h17A1.5 1.5 0 0 1 22 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-17A1.5 1.5 0 0 1 2 18.5v-13zm2 .55v.24l8 5.6 8-5.6v-.24H4zm16 2.5-7.43 5.2a1 1 0 0 1-1.14 0L4 8.55V18h16V8.55z"/></svg>
+    </a>
   </div>
   <div class="foot-bottom">
     <span>© 2026 Souqify-bh</span>
@@ -1365,10 +1412,10 @@
         <h1 id="pdpName"></h1>
         <div class="pdp-badges" id="pdpBadges"></div>
         <div class="pdp-stars" id="pdpStars"></div>
+        <p class="pdp-short-desc" id="pdpShortDesc"></p>
         <div class="pdp-price" id="pdpPrice"></div>
         <div class="pdp-free-delivery" id="pdpFreeDelivery"><span class="van">🚚</span> <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span></div>
         <div class="pdp-stock" id="pdpStock"></div>
-        <p class="pdp-desc" id="pdpDesc"></p>
         <div class="pdp-colors" id="pdpColors" style="display:none;">
           <div class="colors-label" data-i18n="pdpColorLabel">Color</div>
           <div class="color-pills" id="colorPills"></div>
@@ -1388,6 +1435,20 @@
           <div data-i18n="pdpTrustCod">✅ Cash on delivery available</div>
           <div data-i18n="pdpTrustBenefitpay">📲 BenefitPay via WhatsApp confirmation</div>
           <div data-i18n="pdpTrustDelivery">🚚 Delivered across Bahrain</div>
+        </div>
+        <div class="pdp-accordion" id="pdpAccordion">
+          <div class="pdp-acc-item open" data-acc="desc">
+            <button class="pdp-acc-head" onclick="togglePdpAcc(this)"><span data-i18n="pdpAccDescription">Description</span><span class="chev">▾</span></button>
+            <div class="pdp-acc-body"><div class="pdp-acc-body-inner" id="pdpDesc"></div></div>
+          </div>
+          <div class="pdp-acc-item" data-acc="features">
+            <button class="pdp-acc-head" onclick="togglePdpAcc(this)"><span data-i18n="pdpAccFeatures">Features</span><span class="chev">▾</span></button>
+            <div class="pdp-acc-body"><div class="pdp-acc-body-inner" id="pdpFeatures"></div></div>
+          </div>
+          <div class="pdp-acc-item" data-acc="details">
+            <button class="pdp-acc-head" onclick="togglePdpAcc(this)"><span data-i18n="pdpAccMoreDetails">More details</span><span class="chev">▾</span></button>
+            <div class="pdp-acc-body"><div class="pdp-acc-body-inner" id="pdpMoreDetails"></div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1447,9 +1508,12 @@
     <span class="bn-logo brand-cart-icon" role="img" aria-label="Souqify-bh"></span>
     <span data-i18n="bnHome">Home</span>
   </button>
-  <button class="bn-item" id="bnDealsBtn" onclick="bottomNavDeals()">
-    <span class="bn-icon">🏷️</span>
-    <span data-i18n="bnDeals">Under 4.900</span>
+  <button class="bn-item deals-fab" id="bnDealsBtn" onclick="bottomNavDeals()">
+    <span class="deals-fab-circle">
+      <span class="bn-logo brand-cart-icon" role="img" aria-label="Souqify-bh"></span>
+      <span class="deals-fab-label" data-i18n="bnDealsPercent">Deals%</span>
+    </span>
+    <span class="deals-fab-caption" data-i18n="bnDeals">45%+ off</span>
   </button>
   <button class="bn-item" id="bnProfileBtn" onclick="onAcctBtnClick()">
     <span class="bn-icon">👤</span>
@@ -1521,6 +1585,7 @@ function canReviewProduct(productId){
 if(CUSTOMER) loadCustomerOrdersForReviews();
 let activeCategory = 'All';
 let maxPriceFilter = null;
+let minDiscountFilter = null;
 let pendingAfterAuth = null; // 'checkout' | null
 let GUEST_MODE = false;
 let PENDING_RESET = { token:null, email:null };
@@ -2115,7 +2180,10 @@ const I18N = {
     maintCodBtn:'Proceed with Cash on Delivery',
     preparingBenefitpay:'Preparing BenefitPay QR', placingOrder:'Placing order',
     noProductsLoaded:"We couldn't load products right now — please refresh the page in a moment.",
-    bnHome:'Home', bnDeals:'Under 4.900', bnProfile:'Profile', dealsChipLabel:'Under 4.900 BHD'
+    bnHome:'Home', bnDeals:'45%+ off', bnDealsPercent:'Deals%', bnProfile:'Profile', dealsChipLabel:'Deals 45%+ off',
+    pdpAccDescription:'Description', pdpAccFeatures:'Features', pdpAccMoreDetails:'More details',
+    pdpDetailCategory:'Category', pdpDetailDelivery:'Delivery', pdpDetailPayment:'Payment', pdpDetailReturns:'Returns',
+    pdpTrustDelivery2:'one day delivery'
   },
   ar: {
     navShop:'المتجر', navCategories:'الفئات', navReviews:'التقييمات', navAbout:'من نحن', navLogin:'تسجيل الدخول', navCart:'السلة',
@@ -2181,7 +2249,10 @@ const I18N = {
     maintCodBtn:'المتابعة بالدفع عند الاستلام',
     preparingBenefitpay:'جارِ تجهيز BenefitPay QR', placingOrder:'جارِ تأكيد الطلب',
     noProductsLoaded:'تعذر تحميل المنتجات الآن — يرجى تحديث الصفحة بعد قليل.',
-    bnHome:'الرئيسية', bnDeals:'أقل من 4.900', bnProfile:'حسابي', dealsChipLabel:'أقل من 4.900 د.ب'
+    bnHome:'الرئيسية', bnDeals:'خصم 45%+', bnDealsPercent:'خصومات%', bnProfile:'حسابي', dealsChipLabel:'خصومات 45%+',
+    pdpAccDescription:'الوصف', pdpAccFeatures:'الميزات', pdpAccMoreDetails:'تفاصيل إضافية',
+    pdpDetailCategory:'الفئة', pdpDetailDelivery:'التوصيل', pdpDetailPayment:'الدفع', pdpDetailReturns:'الإرجاع',
+    pdpTrustDelivery2:'توصيل خلال يوم واحد'
   }
 };
 function T(key){
@@ -2195,6 +2266,16 @@ function pName(p){
 function pDesc(p){
   if(currentLang !== 'ar') return p.description;
   return translationCache.ar[p.description] || p.description;
+}
+function pFeatures(p){
+  if(!p.features) return '';
+  if(currentLang !== 'ar') return p.features;
+  return translationCache.ar[p.features] || p.features;
+}
+function pMoreDetails(p){
+  if(!p.moreDetails) return '';
+  if(currentLang !== 'ar') return p.moreDetails;
+  return translationCache.ar[p.moreDetails] || p.moreDetails;
 }
 function catLabel(c){ return (currentLang === 'ar' && CATEGORY_LABELS_AR[c]) ? CATEGORY_LABELS_AR[c] : (c || T('catGeneral')); }
 
@@ -2225,6 +2306,8 @@ async function translateProductsIfNeeded(products){
   products.forEach(p => {
     if(p.name && !translationCache.ar[p.name]) toTranslate.push(p.name);
     if(p.description && !translationCache.ar[p.description]) toTranslate.push(p.description);
+    if(p.features && !translationCache.ar[p.features]) toTranslate.push(p.features);
+    if(p.moreDetails && !translationCache.ar[p.moreDetails]) toTranslate.push(p.moreDetails);
   });
   if(!toTranslate.length) return;
   await Promise.all(toTranslate.map(t => translateToArabic(t)));
@@ -2520,10 +2603,11 @@ function renderProducts(){
   const filtered = PRODUCTS.filter(p =>
     (activeCategory === 'All' || p.category === activeCategory) &&
     (maxPriceFilter === null || p.price <= maxPriceFilter) &&
+    (minDiscountFilter === null || discountPct(p) >= minDiscountFilter) &&
     (p.name || '').toLowerCase().includes(q)
   );
   const dealsChip = document.getElementById('dealsFilterChip');
-  if(dealsChip) dealsChip.style.display = (maxPriceFilter !== null) ? 'inline-flex' : 'none';
+  if(dealsChip) dealsChip.style.display = (maxPriceFilter !== null || minDiscountFilter !== null) ? 'inline-flex' : 'none';
   document.getElementById('resultCount').textContent = T(filtered.length === 1 ? 'productAvailable' : 'productsAvailable').replace('{n}', filtered.length);
   const grid = document.getElementById('productGrid');
   if(!filtered.length){
@@ -2538,10 +2622,12 @@ function renderProducts(){
 }
 function clearDealsFilter(){
   maxPriceFilter = null;
+  minDiscountFilter = null;
   renderProducts();
 }
 function bottomNavHome(){
   maxPriceFilter = null;
+  minDiscountFilter = null;
   if(document.getElementById('pdpOverlay').classList.contains('show')) closeProduct();
   if(document.getElementById('drawer').classList.contains('show')) closeCart();
   if(document.getElementById('checkoutOverlay').classList.contains('show')) closeCheckout();
@@ -2553,7 +2639,8 @@ function bottomNavHome(){
   setBottomNavActive('bnHomeBtn');
 }
 function bottomNavDeals(){
-  maxPriceFilter = 4.900;
+  maxPriceFilter = null;
+  minDiscountFilter = 45;
   activeCategory = 'All';
   document.getElementById('searchInput').value = '';
   buildCategoryChips();
@@ -2715,6 +2802,12 @@ function renderStars(rating, cls){
   return `<span class="stars ${cls||''}">${full}${empty}</span>`;
 }
 
+function togglePdpAcc(btn){
+  const item = btn.closest('.pdp-acc-item');
+  const wasOpen = item.classList.contains('open');
+  item.parentElement.querySelectorAll('.pdp-acc-item').forEach(i => i.classList.remove('open'));
+  if(!wasOpen) item.classList.add('open');
+}
 function openProduct(id){
   const p = PRODUCTS.find(p => p.id === id);
   if(!p) return;
@@ -2726,7 +2819,39 @@ function openProduct(id){
   document.getElementById('pdpCat').textContent = catLabel(p.category);
   document.getElementById('pdpName').textContent = pName(p);
   document.getElementById('pdpPrice').innerHTML = priceHtml(p, 'pdp');
-  document.getElementById('pdpDesc').textContent = pDesc(p) || T('defaultProductDesc');
+  const fullDesc = pDesc(p) || T('defaultProductDesc');
+  document.getElementById('pdpDesc').textContent = fullDesc;
+  const shortDescEl = document.getElementById('pdpShortDesc');
+  const firstLine = fullDesc.split(/\n|\.(?=\s|$)/).map(s => s.trim()).find(s => s.length);
+  shortDescEl.textContent = firstLine ? (firstLine.length > 130 ? firstLine.slice(0,130).trim() + '…' : firstLine + (fullDesc.length > firstLine.length ? '.' : '')) : '';
+  shortDescEl.style.display = shortDescEl.textContent ? 'block' : 'none';
+
+  const descLines = fullDesc.split('\n').map(s => s.trim()).filter(Boolean);
+  const featuresEl = document.getElementById('pdpFeatures');
+  const featuresText = pFeatures(p);
+  if(featuresText){
+    const lines = featuresText.split('\n').map(s => s.trim()).filter(Boolean);
+    featuresEl.innerHTML = `<ul>${lines.map(l => `<li>${escapeHtmlClient(l.replace(/^[-•]\s*/,''))}</li>`).join('')}</ul>`;
+  } else {
+    featuresEl.innerHTML = descLines.length > 1
+      ? `<ul>${descLines.map(l => `<li>${escapeHtmlClient(l.replace(/^[-•]\s*/,''))}</li>`).join('')}</ul>`
+      : `<p style="margin:0;">${escapeHtmlClient(fullDesc)}</p>`;
+  }
+
+  const moreDetailsEl = document.getElementById('pdpMoreDetails');
+  const moreDetailsText = pMoreDetails(p);
+  const defaultDetailsHtml = `<ul>
+      <li><b data-i18n="pdpDetailCategory">Category</b>: ${escapeHtmlClient(catLabel(p.category))}</li>
+      <li><b data-i18n="pdpDetailDelivery">Delivery</b>: <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span> — <span data-i18n="pdpTrustDelivery2">one day delivery</span></li>
+      <li><b data-i18n="pdpDetailPayment">Payment</b>: <span data-i18n="pdpTrustCod">Cash on delivery available</span>, <span data-i18n="pdpTrustBenefitpay">BenefitPay via WhatsApp confirmation</span></li>
+      <li><b data-i18n="pdpDetailReturns">Returns</b>: <a href="return-refund-policy.html" style="color:var(--blush-ink);font-weight:700;" data-i18n="footerReturns">Returns &amp; refunds</a></li>
+    </ul>`;
+  if(moreDetailsText){
+    const lines = moreDetailsText.split('\n').map(s => s.trim()).filter(Boolean);
+    moreDetailsEl.innerHTML = `<ul>${lines.map(l => `<li>${escapeHtmlClient(l.replace(/^[-•]\s*/,''))}</li>`).join('')}</ul>` + `<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);">${defaultDetailsHtml}</div>`;
+  } else {
+    moreDetailsEl.innerHTML = defaultDetailsHtml;
+  }
 
   const avg = Number(p.avgRating) || 0;
   const count = Number(p.reviewCount) || 0;

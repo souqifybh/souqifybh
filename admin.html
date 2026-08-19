@@ -291,6 +291,8 @@
           <div class="field"><label>Stock</label><input id="pStock" type="number" value="10"></div>
         </div>
         <div class="field full"><label>Description</label><textarea id="pDesc" placeholder="Short, honest description customers will see on the product page."></textarea></div>
+        <div class="field full"><label>Features <span class="opt">— optional, one per line. Shown as a bullet list in the product page's Features tab</span></label><textarea id="pFeatures" placeholder="e.g.&#10;40-hour battery life&#10;Bluetooth 5.3&#10;IPX5 sweat &amp; splash resistant"></textarea></div>
+        <div class="field full"><label>More details <span class="opt">— optional, one per line. Shown in the product page's More details tab (materials, dimensions, what's in the box, warranty, etc.)</span></label><textarea id="pMoreDetails" placeholder="e.g.&#10;Material: Aluminum &amp; silicone&#10;Dimensions: 5.4 x 2.1 x 2.1 cm&#10;In the box: Earbuds, case, USB-C cable"></textarea></div>
         <div class="field full"><label>Color variants <span class="opt">— optional, comma separated (e.g. Black, White, Blue)</span></label><input id="pColors" placeholder="e.g. Black, White, Blue"></div>
 
         <div class="field full">
@@ -850,6 +852,8 @@ function editProduct(id){
   document.getElementById('pCategory').value = p.category||'';
   document.getElementById('pStock').value = p.stock;
   document.getElementById('pDesc').value = p.description||'';
+  document.getElementById('pFeatures').value = p.features||'';
+  document.getElementById('pMoreDetails').value = p.moreDetails||'';
   document.getElementById('pColors').value = p.colors || '';
   const imgs = p.images || [];
   for(let i=0;i<5;i++){
@@ -867,7 +871,7 @@ function editProduct(id){
 }
 function resetForm(){
   document.getElementById('formTitle').textContent = 'Add a product';
-  ['pId','pName','pPrice','pCompareAt','pCategory','pStock','pDesc','pColors'].forEach(id => document.getElementById(id).value='');
+  ['pId','pName','pPrice','pCompareAt','pCategory','pStock','pDesc','pFeatures','pMoreDetails','pColors'].forEach(id => document.getElementById(id).value='');
   for(let i=1;i<=5;i++){ document.getElementById('pImg'+i).value=''; document.getElementById('imgPrev'+i).src='https://placehold.co/200x200/F7F5F5/8A3B3B?text=%20'; }
   document.getElementById('pActive').checked = true;
   document.getElementById('pFeatured').checked = false;
@@ -893,6 +897,8 @@ async function saveProduct(){
     category: document.getElementById('pCategory').value.trim(),
     stock: Number(document.getElementById('pStock').value || 0),
     description: document.getElementById('pDesc').value.trim(),
+    features: document.getElementById('pFeatures').value.trim(),
+    moreDetails: document.getElementById('pMoreDetails').value.trim(),
     colors: document.getElementById('pColors').value.trim(),
     images,
     active: document.getElementById('pActive').checked,
