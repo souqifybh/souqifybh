@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny-ps" viewBox="0 0 512 512" width="512" height="512">
+  <title>Souqify-bh</title>
+
+  <!-- Solid square background, rounded corners, brand olive -->
+  <rect x="0" y="0" width="512" height="512" rx="115" ry="115" fill="#46501B"/>
+
+  <!-- Location pin, dark ink -->
+  <path d="M256,86
+           C190,86 138,140 138,206
+           C138,268 256,420 256,420
+           C256,420 374,268 374,206
+           C374,140 322,86 256,86 Z"
+        fill="#181B09"/>
+
+  <!-- Shopping cart glyph inside the pin, light olive -->
+  <g fill="none" stroke="#A5BA4A" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M178,178 L200,178 L222,268 L328,268 L346,196 L206,196"/>
+    <circle cx="230" cy="296" r="12" fill="#A5BA4A" stroke="none"/>
+    <circle cx="298" cy="296" r="12" fill="#A5BA4A" stroke="none"/>
+  </g>
+</svg>
