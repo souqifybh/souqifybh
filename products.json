@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "id": "P-1787169123648",
+    "name": "Period Massager Belt - Women",
+    "description": "Turn uncomfortable period days into moments of comfort and relaxation 💕 The Period Massager Belt combines soothing warmth 🔥 with calming massage technology 💆‍♀️ to help ease menstrual cramps, relax tense muscles, and keep you comfortable throughout your day.\nSay goodbye to letting period discomfort slow you down and hello to a little more comfort, wherever your day takes you. 💕",
+    "price": 3.9,
+    "compareAtPrice": 5.9,
+    "image1": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785307430/Screenshot_2026-07-29_093924_mxbhsu.jpg",
+    "image2": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/5b370144-d531-4934-b9f6-69d6c2a7199e_map6ld.avif",
+    "image3": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/9bd2c3f9-12d9-4e34-848e-e2742becce20_iv1ewp.avif",
+    "image4": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/42a3920f-1a4b-4e05-a1e3-ad86ed9af8a0_ecwidc.avif",
+    "image5": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/2652557f-5c91-4e37-b7dc-c02c9fc38322_fpaqkj.avif",
+    "category": "Wellness",
+    "stock": 3,
+    "active": true,
+    "featured": false,
+    "bestseller": true,
+    "colors": "Pink",
+    "features": "🔥 Soothing Heat Therapy – Provides gentle warmth to help comfort abdominal muscles.\n💆‍♀️ Calming Massage – Massage vibrations help ease tension and promote relaxation.\n🎯 Targeted Comfort – Designed to focus on the lower abdomen and waist area.\n🔋 Cordless & Convenient – Enjoy freedom of movement without being tied to a power outlet.\n👗 Slim & Discreet Design – Comfortable to wear under clothing while going about your routine.\n📏 Adjustable Fit – Easily adjust the belt for a personalized and comfortable fit.\n🌿 Relax Anytime, Anywhere – Great for relaxing at home, working, traveling, or resting.\n💖 Period-Day Essential – Your discreet companion for extra comfort during menstrual days.\n🌷 Warmth + Massage = Everyday Period Comfort 🌷",
+    "moreDetails": "",
+    "images": [
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785307430/Screenshot_2026-07-29_093924_mxbhsu.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/5b370144-d531-4934-b9f6-69d6c2a7199e_map6ld.avif",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/9bd2c3f9-12d9-4e34-848e-e2742becce20_iv1ewp.avif",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/42a3920f-1a4b-4e05-a1e3-ad86ed9af8a0_ecwidc.avif",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/2652557f-5c91-4e37-b7dc-c02c9fc38322_fpaqkj.avif"
+    ],
+    "colorsList": [
+      "Pink"
+    ],
+    "avgRating": 4.833333333333333,
+    "reviewCount": 6
+  }
+]
