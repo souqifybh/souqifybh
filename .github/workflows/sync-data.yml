@@ -17,7 +17,7 @@ jobs:
 
       - name: Fetch Latest Products from Google Sheets API
         run: |
-          curl -L "https://script.google.com/macros/s/AKfycbxBOkF0IhCcZEDTcEN2XkQ89wTaw3S72QpakJgpCyxsRR9Bew6syulKKY4XVhZubUNp5g/exec" -o products.json.tmp
+          curl -L "https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0nP0mfTHx3AGvMOrsqwsBvTZm-9RL4iJ947YJEVViOgx-YFUJNc9zo1/exec" -o products.json.tmp
           node -e '
             const fs = require("fs");
             const data = JSON.parse(fs.readFileSync("products.json.tmp"));
