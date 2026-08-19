@@ -1,0 +1,55 @@
+name: Auto Sync Site Data
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fetch Latest Products from Google Sheets API
+        run: |
+          curl -L "https://script.google.com/macros/s/AKfycbxBOkF0IhCcZEDTcEN2XkQ89wTaw3S72QpakJgpCyxsRR9Bew6syulKKY4XVhZubUNp5g/exec" -o products.json.tmp
+          node -e '
+            const fs = require("fs");
+            const data = JSON.parse(fs.readFileSync("products.json.tmp"));
+            if (data.ok && Array.isArray(data.products)) {
+              fs.writeFileSync("products.json", JSON.stringify(data.products, null, 2));
+              console.log("products.json updated successfully.");
+            } else {
+              console.error("Invalid response format");
+              process.exit(1);
+            }
+          '
+          rm products.json.tmp
+
+      - name: Fetch Latest Homepage Settings from Google Sheets API
+        run: |
+          curl -L "https://script.google.com/macros/s/AKfycbxBOkF0IhCcZEDTcEN2XkQ89wTaw3S72QpakJgpCyxsRR9Bew6syulKKY4XVhZubUNp5g/exec?action=getSettings" -o settings.json.tmp
+          node -e '
+            const fs = require("fs");
+            const data = JSON.parse(fs.readFileSync("settings.json.tmp"));
+            if (data.ok && data.settings) {
+              fs.writeFileSync("settings.json", JSON.stringify(data, null, 2));
+              console.log("settings.json updated successfully.");
+            } else {
+              console.error("Invalid response format");
+              process.exit(1);
+            }
+          '
+          rm settings.json.tmp
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add products.json settings.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update products.json and settings.json from Google Sheets" && git push)
