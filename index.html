@@ -497,8 +497,7 @@
   .deals-home-banner:hover .dhb-cta{transform:translateX(4px);}
   html[dir="rtl"] .deals-home-banner:hover .dhb-cta{transform:translateX(-4px);}
   @media (max-width:640px){
-    .deals-home-banner{margin:20px 16px;padding:18px 20px;border-radius:16px;}
-    .dhb-cta{padding:10px 18px;font-size:13px;}
+    .deals-home-banner{display:none;}
   }
 
   /* ---------- Announcement bar (site-wide, admin editable) ---------- */
@@ -1048,15 +1047,6 @@
   </div>
 </div>
 
-<a class="deals-home-banner reveal" href="deals.html">
-  <div class="dhb-text">
-    <span class="dhb-eyebrow">🔥 <span data-i18n="dealsBannerEyebrow">Hot deals</span></span>
-    <h3 data-i18n="dealsBannerTitle">Save big on select gadgets</h3>
-    <p data-i18n="dealsBannerSub">Check out today's best discounted picks</p>
-  </div>
-  <span class="dhb-cta" data-i18n="dealsBannerCta">Shop deals →</span>
-</a>
-
 <section class="section section-tight" id="featuredSection" style="display:none;">
   <div class="wrap">
     <div class="section-head reveal" style="margin-bottom:26px;">
@@ -1100,12 +1090,21 @@
     <div class="toolbar-inner reveal">
       <div id="categoryChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
       <span id="dealsFilterChip" class="chip active" style="display:none;align-items:center;gap:6px;" onclick="clearDealsFilter()">
-        <span data-i18n="dealsChipLabel">Deals 45%+ off</span> ✕
+        <span data-i18n="dealsChipLabel">Deals</span> ✕
       </span>
     </div>
     <div class="grid reveal-stagger" id="productGrid"></div>
   </div>
 </section>
+
+<a class="deals-home-banner reveal" href="deals.html">
+  <div class="dhb-text">
+    <span class="dhb-eyebrow">🔥 <span data-i18n="dealsBannerEyebrow">Hot deals</span></span>
+    <h3 data-i18n="dealsBannerTitle">Save big on select gadgets</h3>
+    <p data-i18n="dealsBannerSub">Check out today's best discounted picks</p>
+  </div>
+  <span class="dhb-cta" data-i18n="dealsBannerCta">Shop deals →</span>
+</a>
 
 <section class="section" id="reviews">
   <div class="wrap">
@@ -2248,7 +2247,7 @@ const I18N = {
     maintCodBtn:'Proceed with Cash on Delivery',
     preparingBenefitpay:'Preparing BenefitPay QR', placingOrder:'Placing order',
     noProductsLoaded:"We couldn't load products right now — please refresh the page in a moment.",
-    bnHome:'Home', bnDeals:'45%+ off', bnDealsPercent:'Deals%', bnProfile:'Profile', dealsChipLabel:'Deals 45%+ off',
+    bnHome:'Home', bnDeals:'Deals', bnDealsPercent:'Deals%', bnProfile:'Profile', dealsChipLabel:'Deals',
     pdpAccDescription:'Description', pdpAccFeatures:'Features', pdpAccMoreDetails:'More details',
     pdpDetailCategory:'Category', pdpDetailDelivery:'Delivery', pdpDetailPayment:'Payment', pdpDetailReturns:'Returns',
     pdpTrustDelivery2:'one day delivery'
@@ -2318,7 +2317,7 @@ const I18N = {
     maintCodBtn:'المتابعة بالدفع عند الاستلام',
     preparingBenefitpay:'جارِ تجهيز BenefitPay QR', placingOrder:'جارِ تأكيد الطلب',
     noProductsLoaded:'تعذر تحميل المنتجات الآن — يرجى تحديث الصفحة بعد قليل.',
-    bnHome:'الرئيسية', bnDeals:'خصم 45%+', bnDealsPercent:'خصومات%', bnProfile:'حسابي', dealsChipLabel:'خصومات 45%+',
+    bnHome:'الرئيسية', bnDeals:'العروض', bnDealsPercent:'خصومات%', bnProfile:'حسابي', dealsChipLabel:'العروض',
     pdpAccDescription:'الوصف', pdpAccFeatures:'الميزات', pdpAccMoreDetails:'تفاصيل إضافية',
     pdpDetailCategory:'الفئة', pdpDetailDelivery:'التوصيل', pdpDetailPayment:'الدفع', pdpDetailReturns:'الإرجاع',
     pdpTrustDelivery2:'توصيل خلال يوم واحد'
