@@ -31,7 +31,7 @@
   #loginScreen{position:fixed;inset:0;background:linear-gradient(150deg,#1C1C1E,#3a2626);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;}
   .login-card{background:#fff;border-radius:20px;padding:40px 34px;width:100%;max-width:380px;box-shadow:0 30px 70px rgba(0,0,0,0.35);}
   .login-card .lg{display:flex;align-items:center;gap:10px;margin-bottom:26px;}
-  .login-card .lg .dot{width:34px;height:34px;border-radius:10px;background:var(--ink);display:flex;align-items:center;justify-content:center;color:var(--blush);font-family:'Sora';font-weight:800;font-size:15px;}
+  .login-card .lg .dot{width:40px;height:40px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blush);font-family:'Sora';font-weight:800;font-size:15px;}
   .login-card .lg .t{font-family:'Sora';font-weight:800;font-size:17px;}
   .login-card .lg .t small{display:block;font-weight:500;font-size:11px;color:var(--ink-soft);}
   .login-card h2{font-size:20px;margin-bottom:6px;}
@@ -49,7 +49,7 @@
     display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
   }
   .sb-logo{display:flex;align-items:center;gap:10px;padding:0 6px 22px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:18px;}
-  .sb-logo .dot{width:30px;height:30px;border-radius:9px;background:var(--blush);display:flex;align-items:center;justify-content:center;color:var(--ink);font-family:'Sora';font-weight:800;font-size:13px;flex-shrink:0;}
+  .sb-logo .dot{width:32px;height:32px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--ink);font-family:'Sora';font-weight:800;font-size:13px;flex-shrink:0;}
   .sb-logo .t{font-family:'Sora';font-weight:800;font-size:14.5px;line-height:1.2;}
   .sb-logo .t small{display:block;font-weight:500;font-size:10px;color:var(--sidebar-soft);}
   .sb-nav{display:flex;flex-direction:column;gap:3px;}
@@ -201,7 +201,7 @@
 
 <div id="loginScreen">
   <div class="login-card">
-    <div class="lg"><div class="dot brand-cart-icon" role="img" aria-label="Souqify-bh"></div><div class="t">Souqify-bh<small>Admin console</small></div></div>
+    <div class="lg"><img src="https://souqify-bh.com/android-chrome-192x192.png" alt="Souqify-bh" style="width:40px;height:40px;border-radius:10px;object-fit:contain;background:#fff;"><div class="t">Souqify-bh<small>Admin console</small></div></div>
     <h2>Welcome back</h2>
     <p class="sub">Sign in with your admin password to manage products and orders.</p>
     <input type="password" id="pwInput" placeholder="Admin password" onkeydown="if(event.key==='Enter')login()">
@@ -212,13 +212,14 @@
 
 <div id="shell">
   <div class="sidebar">
-    <div class="sb-logo"><div class="dot brand-cart-icon" role="img" aria-label="Souqify-bh"></div><div class="t">Souqify-bh<small>Admin console</small></div></div>
+    <div class="sb-logo"><img src="https://souqify-bh.com/android-chrome-192x192.png" alt="Souqify-bh" style="width:32px;height:32px;border-radius:9px;object-fit:contain;background:#fff;flex-shrink:0;"><div class="t">Souqify-bh<small>Admin console</small></div></div>
     <div class="sb-nav">
       <div class="sb-link active" data-tab="dashboard" onclick="switchTab('dashboard')"><span class="ic">📊</span> Dashboard</div>
       <div class="sb-link" data-tab="products" onclick="switchTab('products')"><span class="ic">🛍️</span> Products</div>
       <div class="sb-link" data-tab="inventory" onclick="switchTab('inventory')"><span class="ic">📋</span> Inventory</div>
       <div class="sb-link" data-tab="promocodes" onclick="switchTab('promocodes')"><span class="ic">🎟️</span> Promo Codes</div>
       <div class="sb-link" data-tab="homepage" onclick="switchTab('homepage')"><span class="ic">🏠</span> Homepage</div>
+      <div class="sb-link" data-tab="media" onclick="switchTab('media')"><span class="ic">🎬</span> Media Library</div>
       <div class="sb-link" data-tab="orders" onclick="switchTab('orders')"><span class="ic">📦</span> Orders</div>
       <div class="sb-link" data-tab="returns" onclick="switchTab('returns')"><span class="ic">↩️</span> Returns</div>
       <div class="sb-link" data-tab="customers" onclick="switchTab('customers')"><span class="ic">👤</span> Customers</div>
@@ -290,7 +291,8 @@
           <div class="field"><label>Category</label><input id="pCategory" placeholder="e.g. Audio, Charging"></div>
           <div class="field"><label>Stock</label><input id="pStock" type="number" value="10"></div>
         </div>
-        <div class="field full"><label>Description</label><textarea id="pDesc" placeholder="Short, honest description customers will see on the product page."></textarea></div>
+        <div class="field full"><label>Short description <span class="opt">— optional, one or two lines shown right under the product name, on the product card and product page</span></label><input id="pShortDesc" maxlength="160" placeholder="e.g. Crystal-clear calls, 40-hour battery, splash-proof"></div>
+        <div class="field full"><label>Description <span class="opt">— the full description, shown in the product page's Description tab</span></label><textarea id="pDesc" placeholder="Full, honest description customers will see on the product page."></textarea></div>
         <div class="field full"><label>Features <span class="opt">— optional, one per line. Shown as a bullet list in the product page's Features tab</span></label><textarea id="pFeatures" placeholder="e.g.&#10;40-hour battery life&#10;Bluetooth 5.3&#10;IPX5 sweat &amp; splash resistant"></textarea></div>
         <div class="field full"><label>More details <span class="opt">— optional, one per line. Shown in the product page's More details tab (materials, dimensions, what's in the box, warranty, etc.)</span></label><textarea id="pMoreDetails" placeholder="e.g.&#10;Material: Aluminum &amp; silicone&#10;Dimensions: 5.4 x 2.1 x 2.1 cm&#10;In the box: Earbuds, case, USB-C cable"></textarea></div>
         <div class="field full"><label>Color variants <span class="opt">— optional, comma separated (e.g. Black, White, Blue)</span></label><input id="pColors" placeholder="e.g. Black, White, Blue"></div>
@@ -494,6 +496,66 @@
       </div>
     </div>
 
+    <!-- ================= MEDIA LIBRARY ================= -->
+    <div class="panel" id="panel-media">
+      <div class="topbar">
+        <div><h1>Media Library</h1><p>Upload Cloudinary video links for the homepage video showcase, below Reviews. Most clips are vertical (9:16).</p></div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h2 id="mediaFormTitle">Add a video</h2>
+          <div class="field full">
+            <label>Cloudinary video link <span class="opt">— direct .mp4 URL from your Cloudinary media library</span></label>
+            <input id="mediaUrl" placeholder="https://res.cloudinary.com/your-cloud/video/upload/…mp4">
+          </div>
+          <div class="row">
+            <div class="field"><label>Title <span class="opt">(optional, shown as a caption)</span></label><input id="mediaTitle" placeholder="e.g. Unboxing the earbuds"></div>
+            <div class="field">
+              <label>Aspect ratio</label>
+              <select id="mediaRatio">
+                <option value="9:16">9:16 (vertical — reels/shorts style)</option>
+                <option value="1:1">1:1 (square)</option>
+                <option value="16:9">16:9 (widescreen)</option>
+              </select>
+            </div>
+          </div>
+          <div class="toggle-row">
+            <label class="toggle-pill on" id="mediaActivePill"><input type="checkbox" id="mediaActive" checked onchange="syncPill('mediaActive','mediaActivePill')"><span class="ic">✅</span> Live on site (shown to customers)</label>
+          </div>
+          <div class="field full" id="mediaPreviewWrap" style="display:none;">
+            <label>Preview</label>
+            <video id="mediaPreview" controls muted style="width:160px;max-height:280px;border-radius:14px;border:3px solid #46501B;background:#111;"></video>
+          </div>
+          <input type="hidden" id="mediaId">
+          <button class="primary" onclick="saveMedia()">Save video</button>
+          <button class="ghost" id="mediaCancelEditBtn" onclick="resetMediaForm()" style="display:none;">Cancel edit</button>
+          <span class="muted" id="mediaSaveMsg" style="margin-left:12px;"></span>
+        </div>
+        <div class="card">
+          <h2>Display layout</h2>
+          <p class="muted" style="margin-bottom:12px;">Choose how the Media Library section looks on the homepage.</p>
+          <div class="toggle-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+            <label class="toggle-pill" id="mediaLayoutCarouselPill" style="justify-content:flex-start;">
+              <input type="radio" name="mediaLayout" id="mediaLayoutCarousel" value="carousel" onchange="saveMediaLayout()"><span class="ic">👉</span> Swipe carousel <span class="opt" style="margin-left:6px;">— one row, swipe left/right</span>
+            </label>
+            <label class="toggle-pill" id="mediaLayoutGridPill" style="justify-content:flex-start;">
+              <input type="radio" name="mediaLayout" id="mediaLayoutGrid" value="grid" onchange="saveMediaLayout()"><span class="ic">▦</span> Grid <span class="opt" style="margin-left:6px;">— wraps into rows, still swipeable on mobile</span>
+            </label>
+          </div>
+          <span class="muted" id="mediaLayoutSaveMsg"></span>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:20px;">
+        <h2>Videos <span class="muted" id="mediaCount"></span></h2>
+        <table>
+          <thead><tr><th>Preview</th><th>Title</th><th>Ratio</th><th>Order</th><th>Live</th><th></th></tr></thead>
+          <tbody id="mediaRows"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- ================= ORDERS ================= -->
     <div class="panel" id="panel-orders">
       <div class="topbar">
@@ -661,7 +723,7 @@ function switchTab(tab){
 }
 
 async function loadAll(){
-  await Promise.all([loadProducts(), loadOrders(), loadCustomers(), loadHeroSettings(), loadSubscribers(), loadCampaigns(), loadPromoCodes()]);
+  await Promise.all([loadProducts(), loadOrders(), loadCustomers(), loadHeroSettings(), loadSubscribers(), loadCampaigns(), loadPromoCodes(), loadMedia(), loadMediaLayout()]);
   await loadReturns();
   renderDashboard();
   renderPromoCodes(); // re-render now that ORDERS has definitely finished loading, for accurate redemption counts
@@ -851,6 +913,7 @@ function editProduct(id){
   document.getElementById('pCompareAt').value = p.compareAtPrice || '';
   document.getElementById('pCategory').value = p.category||'';
   document.getElementById('pStock').value = p.stock;
+  document.getElementById('pShortDesc').value = p.shortDescription||'';
   document.getElementById('pDesc').value = p.description||'';
   document.getElementById('pFeatures').value = p.features||'';
   document.getElementById('pMoreDetails').value = p.moreDetails||'';
@@ -871,7 +934,7 @@ function editProduct(id){
 }
 function resetForm(){
   document.getElementById('formTitle').textContent = 'Add a product';
-  ['pId','pName','pPrice','pCompareAt','pCategory','pStock','pDesc','pFeatures','pMoreDetails','pColors'].forEach(id => document.getElementById(id).value='');
+  ['pId','pName','pPrice','pCompareAt','pCategory','pStock','pShortDesc','pDesc','pFeatures','pMoreDetails','pColors'].forEach(id => document.getElementById(id).value='');
   for(let i=1;i<=5;i++){ document.getElementById('pImg'+i).value=''; document.getElementById('imgPrev'+i).src='https://placehold.co/200x200/F7F5F5/8A3B3B?text=%20'; }
   document.getElementById('pActive').checked = true;
   document.getElementById('pFeatured').checked = false;
@@ -897,6 +960,7 @@ async function saveProduct(){
     category: document.getElementById('pCategory').value.trim(),
     stock: Number(document.getElementById('pStock').value || 0),
     description: document.getElementById('pDesc').value.trim(),
+    shortDescription: document.getElementById('pShortDesc').value.trim(),
     features: document.getElementById('pFeatures').value.trim(),
     moreDetails: document.getElementById('pMoreDetails').value.trim(),
     colors: document.getElementById('pColors').value.trim(),
@@ -1431,6 +1495,118 @@ async function saveReferEarnSettings(){
   await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
   msg.textContent = settings.referEarnActive ? '✓ Saved — refer & earn is live on the site now.' : '✓ Saved — refer & earn is now hidden on the site.';
   setTimeout(() => msg.textContent = '', 3500);
+}
+
+/* ---------------- media library ---------------- */
+let MEDIA = [];
+document.getElementById('mediaUrl').addEventListener('input', updateMediaPreview);
+function updateMediaPreview(){
+  const url = document.getElementById('mediaUrl').value.trim();
+  const wrap = document.getElementById('mediaPreviewWrap');
+  const vid = document.getElementById('mediaPreview');
+  const ratio = document.getElementById('mediaRatio').value;
+  vid.style.aspectRatio = ratio.replace(':', '/');
+  if(url){ wrap.style.display='block'; vid.src = url; } else { wrap.style.display='none'; vid.removeAttribute('src'); }
+}
+document.getElementById('mediaRatio').addEventListener('change', updateMediaPreview);
+async function loadMedia(){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listMediaAdmin', password: ADMIN_PASSWORD }) });
+  const data = await res.json();
+  MEDIA = data.media || [];
+  renderMediaRows();
+}
+function renderMediaRows(){
+  document.getElementById('mediaCount').textContent = MEDIA.length ? `(${MEDIA.length})` : '';
+  document.getElementById('mediaRows').innerHTML = MEDIA.length ? MEDIA.map(m => `
+    <tr>
+      <td><video src="${m.videoUrl}" muted style="width:52px;height:92px;object-fit:cover;border-radius:8px;border:2px solid #46501B;background:#111;"></video></td>
+      <td>${m.title || '<span class="muted">—</span>'}</td>
+      <td>${m.ratio || '9:16'}</td>
+      <td>${m.sortOrder ?? ''}</td>
+      <td><label class="toggle-pill ${isYes(m.active)?'on':''}" style="padding:4px 10px;"><input type="checkbox" ${isYes(m.active)?'checked':''} onchange="toggleMediaActive('${m.id}', this.checked)"><span class="ic">${isYes(m.active)?'✅':'⬜'}</span></label></td>
+      <td style="white-space:nowrap;">
+        <button class="ghost small" onclick='editMedia("${m.id}")'>Edit</button>
+        <button class="ghost small danger" onclick="deleteMedia('${m.id}')">Delete</button>
+      </td>
+    </tr>`).join('') : `<tr class="empty-row"><td colspan="6">No videos yet — paste a Cloudinary link above to add your first one.</td></tr>`;
+}
+function editMedia(id){
+  const m = MEDIA.find(x => x.id === id);
+  if(!m) return;
+  document.getElementById('mediaFormTitle').textContent = 'Edit video';
+  document.getElementById('mediaId').value = m.id;
+  document.getElementById('mediaUrl').value = m.videoUrl || '';
+  document.getElementById('mediaTitle').value = m.title || '';
+  document.getElementById('mediaRatio').value = m.ratio || '9:16';
+  document.getElementById('mediaActive').checked = isYes(m.active);
+  syncPill('mediaActive','mediaActivePill');
+  updateMediaPreview();
+  document.getElementById('mediaCancelEditBtn').style.display = 'inline-block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetMediaForm(){
+  document.getElementById('mediaFormTitle').textContent = 'Add a video';
+  document.getElementById('mediaId').value = '';
+  document.getElementById('mediaUrl').value = '';
+  document.getElementById('mediaTitle').value = '';
+  document.getElementById('mediaRatio').value = '9:16';
+  document.getElementById('mediaActive').checked = true;
+  syncPill('mediaActive','mediaActivePill');
+  updateMediaPreview();
+  document.getElementById('mediaCancelEditBtn').style.display = 'none';
+}
+async function saveMedia(){
+  const videoUrl = document.getElementById('mediaUrl').value.trim();
+  if(!videoUrl){ alert('Please paste a Cloudinary video link.'); return; }
+  const id = document.getElementById('mediaId').value;
+  const payload = {
+    action: id ? 'updateMedia' : 'addMedia',
+    password: ADMIN_PASSWORD,
+    id: id || undefined,
+    videoUrl,
+    title: document.getElementById('mediaTitle').value.trim(),
+    ratio: document.getElementById('mediaRatio').value,
+    active: document.getElementById('mediaActive').checked
+  };
+  const msg = document.getElementById('mediaSaveMsg');
+  msg.textContent = 'Saving…';
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
+  const data = await res.json();
+  msg.textContent = data.ok ? '✓ Saved — live on the site now.' : '⚠ ' + (data.error || 'Could not save.');
+  resetMediaForm();
+  await loadMedia();
+  setTimeout(() => msg.textContent = '', 4000);
+}
+async function toggleMediaActive(id, active){
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateMedia', password: ADMIN_PASSWORD, id, active }) });
+  await loadMedia();
+}
+async function deleteMedia(id){
+  if(!confirm('Delete this video? This cannot be undone.')) return;
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'deleteMedia', password: ADMIN_PASSWORD, id }) });
+  await loadMedia();
+}
+async function loadMediaLayout(){
+  try{
+    const r = await fetch(`${CONFIG.API_URL}?action=getSettings`);
+    const data = await r.json();
+    const s = data.settings || {};
+    const layout = s.mediaLayout === 'grid' ? 'grid' : 'carousel';
+    document.getElementById('mediaLayoutCarousel').checked = layout === 'carousel';
+    document.getElementById('mediaLayoutGrid').checked = layout === 'grid';
+    syncPill('mediaLayoutCarousel','mediaLayoutCarouselPill');
+    syncPill('mediaLayoutGrid','mediaLayoutGridPill');
+  }catch(err){ /* defaults are fine */ }
+}
+async function saveMediaLayout(){
+  const layout = document.getElementById('mediaLayoutGrid').checked ? 'grid' : 'carousel';
+  syncPill('mediaLayoutCarousel','mediaLayoutCarouselPill');
+  syncPill('mediaLayoutGrid','mediaLayoutGridPill');
+  const msg = document.getElementById('mediaLayoutSaveMsg');
+  msg.textContent = ' Saving…';
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings: { mediaLayout: layout } }) });
+  msg.textContent = ' ✓ Saved — live on the site now.';
+  setTimeout(() => msg.textContent = '', 3000);
 }
 
 /* ---------------- customers ---------------- */

@@ -158,6 +158,25 @@
   .color-pill{border:1.5px solid var(--line);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;background:#fff;transition:border-color .15s ease, background .15s ease;}
   .color-pill.selected{border-color:var(--ink);background:var(--ink);color:#fff;}
 
+  /* ---- media library (video showcase) ---- */
+  .media-carousel{position:relative;display:flex;align-items:center;gap:10px;}
+  .media-track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x proximity;scroll-behavior:smooth;padding:6px 2px 14px;-webkit-overflow-scrolling:touch;flex:1;}
+  .media-track::-webkit-scrollbar{height:6px;}
+  .media-track::-webkit-scrollbar-thumb{background:var(--blush-deep);border-radius:10px;}
+  .media-track.grid-layout{flex-wrap:wrap;overflow-x:visible;scroll-snap-type:none;justify-content:flex-start;}
+  .media-card{flex:0 0 auto;scroll-snap-align:start;width:200px;border-radius:20px;padding:6px;background:linear-gradient(160deg,var(--blush) 0%, var(--blush-deep) 100%);box-shadow:0 6px 20px rgba(70,80,27,0.18);}
+  .media-card .media-inner{position:relative;border-radius:15px;overflow:hidden;background:#111;width:100%;aspect-ratio:9/16;}
+  .media-card.ratio-1-1 .media-inner{aspect-ratio:1/1;}
+  .media-card.ratio-16-9 .media-inner{aspect-ratio:16/9;}
+  .media-card video{width:100%;height:100%;object-fit:cover;display:block;background:#111;}
+  .media-card .media-title{font-size:12px;font-weight:700;color:#fff;padding:8px 6px 4px;text-align:center;letter-spacing:.01em;}
+  .media-nav{flex:0 0 auto;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:20px;font-weight:800;color:var(--blush-ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);}
+  .media-nav:hover{border-color:var(--blush-deep);}
+  @media (max-width:720px){
+    .media-nav{display:none;}
+    .media-card{width:150px;}
+  }
+
   /* ---- reviews ---- */
   .reviews-section{max-width:900px;margin:56px auto 0;padding:0 24px;}
   .reviews-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
@@ -599,6 +618,7 @@
   .card .body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:6px;flex:1;}
   .card .cat{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--blush-ink);font-weight:700;}
   .card .name{font-weight:700;font-size:15px;line-height:1.3;}
+  .card-short-desc{font-size:12px;color:var(--ink-soft);line-height:1.4;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .card .price-row{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding-top:10px;}
   .price-tag{font-family:'Sora';font-weight:700;color:var(--ink);font-size:17px;}
   .price-tag small{font-size:11px;font-weight:600;color:var(--ink-soft);}
@@ -1116,6 +1136,20 @@
       <div class="testi-skel"><div class="sk-line sk-stars"></div><div class="sk-line sk-text1"></div><div class="sk-line sk-text2"></div><div class="sk-line sk-who"></div></div>
       <div class="testi-skel"><div class="sk-line sk-stars"></div><div class="sk-line sk-text1"></div><div class="sk-line sk-text2"></div><div class="sk-line sk-who"></div></div>
       <div class="testi-skel"><div class="sk-line sk-stars"></div><div class="sk-line sk-text1"></div><div class="sk-line sk-text2"></div><div class="sk-line sk-who"></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="mediaLibrary" style="display:none;">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowMediaLibrary">See it in action</span></span>
+      <h2 data-i18n="headMediaLibrary">From our community</h2>
+    </div>
+    <div class="media-carousel" id="mediaCarousel">
+      <button class="media-nav prev" id="mediaPrevBtn" onclick="mediaScrollBy(-1)" aria-label="Previous">‹</button>
+      <div class="media-track" id="mediaTrack"></div>
+      <button class="media-nav next" id="mediaNextBtn" onclick="mediaScrollBy(1)" aria-label="Next">›</button>
     </div>
   </div>
 </section>
@@ -2194,6 +2228,7 @@ const I18N = {
     notifHeading:'Offers & updates', notifLoading:'Loading…', notifEmpty:'No active offers right now — check back soon!',
     eyebrowCatalogue:'Full catalogue', headAllProducts:'All products', loadingProducts:'Loading products…', searchPlaceholder:'Search products…',
     eyebrowLovedLocally:'Loved locally', headReviews:'What Bahrain is saying',
+    eyebrowMediaLibrary:'See it in action', headMediaLibrary:'From our community',
     newsletterHead:'Get early access to new drops', newsletterSub:'One short email a week — new gadgets, restocks, and Bahrain-only offers.', newsletterBtn:'Subscribe',
     footerTagline:'Shop More. Pay Less.', footerShop:'Shop', footerAllProducts:'All products', footerDeals:'Deals', footerAboutUs:'About us',
     footerSupport:'Support', footerWhatsapp:'WhatsApp us', footerDeliveryPolicy:'Delivery policy', footerReturns:'Returns & refunds',
@@ -2264,6 +2299,7 @@ const I18N = {
     notifHeading:'العروض والتحديثات', notifLoading:'جارِ التحميل…', notifEmpty:'لا توجد عروض نشطة حاليًا — تحقق لاحقًا!',
     eyebrowCatalogue:'الكتالوج الكامل', headAllProducts:'جميع المنتجات', loadingProducts:'جارِ تحميل المنتجات…', searchPlaceholder:'ابحث عن المنتجات…',
     eyebrowLovedLocally:'محبوب محليًا', headReviews:'ماذا يقول أهل البحرين',
+    eyebrowMediaLibrary:'شاهدها بنفسك', headMediaLibrary:'من مجتمعنا',
     newsletterHead:'احصل على وصول مبكر للمنتجات الجديدة', newsletterSub:'رسالة قصيرة أسبوعيًا — منتجات جديدة، إعادة تخزين، وعروض حصرية للبحرين.', newsletterBtn:'اشترك',
     footerTagline:'الحل الكامل للأجهزة والإلكترونيات.', footerShop:'المتجر', footerAllProducts:'جميع المنتجات', footerDeals:'العروض', footerAboutUs:'من نحن',
     footerSupport:'الدعم', footerWhatsapp:'راسلنا عبر واتساب', footerDeliveryPolicy:'سياسة التوصيل', footerReturns:'الإرجاع والاسترداد',
@@ -2335,6 +2371,11 @@ function pDesc(p){
   if(currentLang !== 'ar') return p.description;
   return translationCache.ar[p.description] || p.description;
 }
+function pShortDesc(p){
+  if(!p.shortDescription) return '';
+  if(currentLang !== 'ar') return p.shortDescription;
+  return translationCache.ar[p.shortDescription] || p.shortDescription;
+}
 function pFeatures(p){
   if(!p.features) return '';
   if(currentLang !== 'ar') return p.features;
@@ -2374,6 +2415,7 @@ async function translateProductsIfNeeded(products){
   products.forEach(p => {
     if(p.name && !translationCache.ar[p.name]) toTranslate.push(p.name);
     if(p.description && !translationCache.ar[p.description]) toTranslate.push(p.description);
+    if(p.shortDescription && !translationCache.ar[p.shortDescription]) toTranslate.push(p.shortDescription);
     if(p.features && !translationCache.ar[p.features]) toTranslate.push(p.features);
     if(p.moreDetails && !translationCache.ar[p.moreDetails]) toTranslate.push(p.moreDetails);
   });
@@ -2733,6 +2775,7 @@ function productCardHtml(p){
       <div class="body">
         <div class="cat">${catLabel(p.category)}</div>
         <div class="name">${pName(p)}</div>
+        ${pShortDesc(p) ? `<div class="card-short-desc">${escapeHtmlClient(pShortDesc(p))}</div>` : ''}
         ${Number(p.reviewCount) > 0 ? `<div class="rating-row">${renderStars(p.avgRating, 'small')}<span>(${p.reviewCount})</span></div>` : ''}
         ${lowStock ? `<div class="stock-inline-row"><span class="card-badge low blink-stock" style="position:static;">${T('onlyLeft').replace('{n}', stock)}</span></div>` : ''}
         <div class="price-row">
@@ -2883,8 +2926,13 @@ function openProduct(id){
   const fullDesc = pDesc(p) || T('defaultProductDesc');
   document.getElementById('pdpDesc').textContent = fullDesc;
   const shortDescEl = document.getElementById('pdpShortDesc');
-  const firstLine = fullDesc.split(/\n|\.(?=\s|$)/).map(s => s.trim()).find(s => s.length);
-  shortDescEl.textContent = firstLine ? (firstLine.length > 130 ? firstLine.slice(0,130).trim() + '…' : firstLine + (fullDesc.length > firstLine.length ? '.' : '')) : '';
+  const shortDescValue = pShortDesc(p);
+  if(shortDescValue){
+    shortDescEl.textContent = shortDescValue;
+  } else {
+    const firstLine = fullDesc.split(/\n|\.(?=\s|$)/).map(s => s.trim()).find(s => s.length);
+    shortDescEl.textContent = firstLine ? (firstLine.length > 130 ? firstLine.slice(0,130).trim() + '…' : firstLine + (fullDesc.length > firstLine.length ? '.' : '')) : '';
+  }
   shortDescEl.style.display = shortDescEl.textContent ? 'block' : 'none';
 
   const descLines = fullDesc.split('\n').map(s => s.trim()).filter(Boolean);
@@ -4098,6 +4146,52 @@ function applyReferEarnSettings(settings){
   updateGuestPerksBannerVisibility();
 }
 
+/* ---------- media library (homepage video showcase) ---------- */
+let MEDIA_LAYOUT = 'carousel';
+function applyMediaLayoutSetting(settings){
+  MEDIA_LAYOUT = (settings && settings.mediaLayout === 'grid') ? 'grid' : 'carousel';
+  const track = document.getElementById('mediaTrack');
+  if(track) track.classList.toggle('grid-layout', MEDIA_LAYOUT === 'grid');
+  const nav = document.querySelectorAll('.media-nav');
+  nav.forEach(b => b.style.display = MEDIA_LAYOUT === 'grid' ? 'none' : '');
+}
+function ratioClass(ratio){
+  if(ratio === '1:1') return 'ratio-1-1';
+  if(ratio === '16:9') return 'ratio-16-9';
+  return '';
+}
+function renderMediaLibrary(list){
+  const section = document.getElementById('mediaLibrary');
+  const track = document.getElementById('mediaTrack');
+  if(!section || !track) return;
+  if(!list || !list.length){ section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  track.innerHTML = list.map(m => `
+    <div class="media-card ${ratioClass(m.ratio)}">
+      <div class="media-inner">
+        <video src="${m.videoUrl}" playsinline muted loop controls preload="metadata"></video>
+      </div>
+      ${m.title ? `<div class="media-title">${escapeHtmlClient(m.title)}</div>` : ''}
+    </div>
+  `).join('');
+  track.classList.toggle('grid-layout', MEDIA_LAYOUT === 'grid');
+  requestAnimationFrame(() => observeReveal());
+}
+function mediaScrollBy(dir){
+  const track = document.getElementById('mediaTrack');
+  if(!track) return;
+  const card = track.querySelector('.media-card');
+  const step = card ? (card.getBoundingClientRect().width + 16) : 220;
+  track.scrollBy({ left: dir * step * 2, behavior: 'smooth' });
+}
+async function loadMediaLibrary(){
+  try{
+    const res = await fetch(`${CONFIG.API_URL}?action=listMedia&_=${Date.now()}`);
+    const data = await res.json();
+    if(data.ok) renderMediaLibrary(data.media || []);
+  }catch(err){ /* homepage still works fine without the video section */ }
+}
+
 /* ---------- hero banner slideshow (1-3 images, autoplay + dots + arrows) ---------- */
 let hsIndex = 0;
 let hsCount = 1;
@@ -4151,6 +4245,7 @@ async function loadSettings(){
     applyHeroSettings(cached);
     applyAnnouncementSettings(cached);
     applyReferEarnSettings(cached);
+    applyMediaLayoutSetting(cached);
   }
 
   // Instant path #2 (first-ever visit, nothing cached yet): the static
@@ -4166,6 +4261,7 @@ async function loadSettings(){
           applyHeroSettings(data2.settings);
           applyAnnouncementSettings(data2.settings);
           applyReferEarnSettings(data2.settings);
+          applyMediaLayoutSetting(data2.settings);
           writeSettingsCache(data2.settings);
         }
       }
@@ -4182,6 +4278,7 @@ async function loadSettings(){
       applyHeroSettings(data.settings);
       applyAnnouncementSettings(data.settings);
       applyReferEarnSettings(data.settings);
+      applyMediaLayoutSetting(data.settings);
       writeSettingsCache(data.settings);
     }
   }catch(err){ /* static file or cache is already showing — fine to skip this round */ }
@@ -4192,6 +4289,7 @@ renderCart();
 loadProducts().then(loadHomeTestimonials);
 loadNotifPanel(); // prefetch so the bell badge count is correct even before the panel is opened
 loadSettings();
+loadMediaLibrary();
 startPdpPromoRotation();
 observeReveal();
 </script>
