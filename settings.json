@@ -11,6 +11,8 @@
     "heroProductId": "",
     "heroProductId2": "",
     "heroProductId3": "",
-    "referEarnActive": false
+    "referEarnActive": false,
+    "announcementActive": true,
+    "announcementText": "💵 CASH ON DELIVERY! 📦 RECEIVE YOUR PRODUCT FIRST, THEN PAY CONFIDENTLY! 🤝"
   }
 }
