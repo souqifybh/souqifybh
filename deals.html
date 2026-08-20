@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deals 45%+ Off — Souqify-bh</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#46501B">
+<meta name="description" content="Souqify-bh deals — every product with 45% off or more, all in one place.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Jost:wght@300;400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#A5BA4A; --blush-deep:#46501B; --blush-ink:#181B09;
+    --ink:#1C1C1E; --ink-soft:#6B6B70; --paper:#FFFFFF; --paper-soft:#FDF7F7;
+    --line:#EFE4E4; --radius:16px; --shadow-sm:0 2px 10px rgba(28,28,30,0.06);
+    --shadow-md:0 14px 40px rgba(28,28,30,0.10); --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.display{font-family:'Sora',sans-serif;letter-spacing:-0.01em;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+  header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;max-width:1180px;margin:0 auto;}
+  .logo{display:flex;align-items:center;gap:9px;text-decoration:none;}
+  .logo .mark{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;}
+  .logo .word{font-family:'Jost',sans-serif;font-weight:400;font-size:19px;letter-spacing:0.04em;color:var(--ink);}
+  .nav-links{display:flex;gap:24px;font-size:14px;font-weight:600;color:var(--ink-soft);}
+  .nav-links a{text-decoration:none;}
+  .nav-links a:hover{color:var(--ink);}
+  @media (max-width:600px){ .nav-links{display:none;} }
+  .back-link{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:var(--ink-soft);text-decoration:none;}
+  .back-link:hover{color:var(--ink);}
+
+  .deals-banner{
+    background:linear-gradient(135deg, var(--blush), var(--blush-deep));
+    border-radius:0 0 28px 28px; padding:34px 24px 40px; text-align:center; color:#fff; position:relative; overflow:hidden;
+  }
+  .deals-banner .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;background:rgba(255,255,255,0.18);padding:7px 16px;border-radius:20px;margin-bottom:14px;}
+  .deals-banner h1{font-size:clamp(26px,4vw,38px);margin:0 0 8px;font-weight:800;}
+  .deals-banner p{margin:0;font-size:14.5px;color:rgba(255,255,255,0.92);}
+  .deals-banner .tag-circle{
+    position:absolute; top:-30px; right:-30px; width:140px; height:140px; border-radius:50%;
+    background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center;
+  }
+
+  .deals-section{padding:40px 24px 80px;}
+  .deals-section h2{font-size:18px;margin:0 0 20px;font-weight:800;}
+  .empty-state{text-align:center;color:var(--ink-soft);padding:60px 20px;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:22px;}
+  .card{
+    background:#fff; border-radius:var(--radius); overflow:hidden; border:none; box-shadow:0 1px 4px rgba(28,28,30,0.07);
+    display:flex;flex-direction:column; transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+    position:relative;cursor:pointer;text-decoration:none;color:inherit;
+  }
+  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
+  .card .imgwrap{position:relative;aspect-ratio:1/1;background:var(--paper-soft);overflow:hidden;}
+  .card .imgwrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease);}
+  .card:hover .imgwrap img{transform:scale(1.06);}
+  .card-badge{position:absolute;top:10px;left:10px;z-index:2;font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.03em;padding:4px 9px;border-radius:20px;box-shadow:var(--shadow-sm);background:var(--blush-deep);color:#fff;}
+  .card .body{padding:16px 16px 18px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .card .cat{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--blush-ink);font-weight:700;}
+  .card .name{font-weight:700;font-size:15px;line-height:1.3;}
+  .card .price-row{margin-top:auto;display:flex;align-items:baseline;gap:8px;padding-top:10px;}
+  .price-tag{font-family:'Sora';font-weight:700;color:var(--ink);font-size:17px;}
+  .price-tag .was{color:var(--ink-soft);text-decoration:line-through;font-size:12px;font-weight:600;margin-right:6px;}
+  .price-tag small{font-size:11px;font-weight:600;color:var(--ink-soft);}
+
+  footer{background:var(--ink);color:#d9d5d5;padding:36px 24px 22px;margin-top:20px;}
+  .foot-bottom{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;color:#8f8b8b;}
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <a class="logo" href="index.html">
+      <div class="mark">🏡</div>
+      <span class="word">SOUQIFYbh</span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="index.html#shop">Shop</a>
+      <a href="deals.html">Deals</a>
+      <a href="about-us.html">About us</a>
+    </div>
+    <a class="back-link" href="index.html">← Back to shop</a>
+  </nav>
+</header>
+
+<section class="deals-banner">
+  <div class="tag-circle">🏷️</div>
+  <div class="wrap">
+    <span class="eyebrow">🔥 45%+ Off</span>
+    <h1>This week's deals</h1>
+    <p>Every product currently at 45% off or more — all in one place.</p>
+  </div>
+</section>
+
+<section class="deals-section">
+  <div class="wrap">
+    <h2 id="dealsCount">Loading deals…</h2>
+    <div class="grid" id="dealsGrid"></div>
+    <div class="empty-state" id="dealsEmpty" style="display:none;">No deals of 45% or more right now — check back soon!</div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-bottom">
+    <span>© 2026 Souqify-bh — a Bahrain community storefront.</span>
+    <span>Prices shown in BHD.</span>
+  </div>
+</footer>
+
+<script>
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0nP0mfTHx3AGvMOrsqwsBvTZm-9RL4iJ947YJEVViOgx-YFUJNc9zo1/exec'
+};
+
+function getImages(p){
+  if(Array.isArray(p.images) && p.images.filter(Boolean).length) return p.images.filter(Boolean);
+  const legacy = ['image1','image2','image3','image4','image5']
+    .map(k => p[k]).filter(Boolean);
+  if(legacy.length) return legacy;
+  if(p.image) return [p.image];
+  return ['https://placehold.co/700x700/FDF7F7/8A3B3B?text=Souqify-bh'];
+}
+
+function discountPct(p){
+  const price = Number(p.price);
+  const wasPrice = Number(p.compareAtPrice);
+  if(!wasPrice || wasPrice <= price) return 0;
+  return Math.round((1 - price / wasPrice) * 100);
+}
+
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function cardHtml(p){
+  const pct = discountPct(p);
+  const img = getImages(p)[0];
+  const name = escapeHtml(p.name || 'Product');
+  const cat = escapeHtml(p.category || 'General');
+  return `
+    <a class="card" href="index.html#/product/${encodeURIComponent(p.id)}">
+      <span class="card-badge">🏷️ ${pct}% OFF</span>
+      <div class="imgwrap"><img src="${img}" alt="${name}" loading="lazy"></div>
+      <div class="body">
+        <div class="cat">${cat}</div>
+        <div class="name">${name}</div>
+        <div class="price-row">
+          <div class="price-tag"><span class="was">${Number(p.compareAtPrice).toFixed(3)} BHD</span>${Number(p.price).toFixed(3)} <small>BHD</small></div>
+        </div>
+      </div>
+    </a>
+  `;
+}
+
+function renderDeals(products){
+  const deals = products.filter(p => discountPct(p) >= 45 && (p.active !== false) && Number(p.stock) !== 0);
+  const grid = document.getElementById('dealsGrid');
+  const empty = document.getElementById('dealsEmpty');
+  const count = document.getElementById('dealsCount');
+  if(!deals.length){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    count.textContent = 'No deals right now';
+    return;
+  }
+  empty.style.display = 'none';
+  count.textContent = `${deals.length} deal${deals.length === 1 ? '' : 's'} at 45%+ off`;
+  grid.innerHTML = deals
+    .sort((a, b) => discountPct(b) - discountPct(a))
+    .map(cardHtml)
+    .join('');
+}
+
+async function loadDeals(){
+  let list = [];
+  try{
+    const res = await fetch(`products.json?v=${Math.floor(Date.now() / 3600000)}`);
+    if(res.ok){
+      const data = await res.json();
+      list = Array.isArray(data) ? data : (data.products || []);
+    }
+  }catch(err){ /* fall through */ }
+
+  if(!list.length){
+    try{
+      const res2 = await fetch(`${CONFIG.API_URL}?action=listProducts`);
+      const data2 = await res2.json();
+      list = data2.products || [];
+    }catch(err2){ /* nothing available */ }
+  }
+
+  renderDeals(list);
+}
+
+loadDeals();
+</script>
+</body>
+</html>
