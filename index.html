@@ -471,6 +471,36 @@
     .hb-float-tag{font-size:10px;padding:7px 10px;}
   }
 
+  /* ---------- Deals banner (links to deals.html) ---------- */
+  .deals-home-banner{
+    display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
+    max-width:1180px; margin:28px auto; padding:22px 28px;
+    background:linear-gradient(135deg, var(--blush), var(--blush-deep));
+    border-radius:20px; color:#fff; text-decoration:none; position:relative; overflow:hidden;
+    box-shadow:var(--shadow-md); transition:transform .25s var(--ease), box-shadow .25s var(--ease);
+  }
+  .deals-home-banner:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(28,28,30,0.16);}
+  .deals-home-banner::after{
+    content:"🏷️"; position:absolute; top:-22px; right:-14px; font-size:120px; opacity:0.12; line-height:1; transform:rotate(-12deg);
+  }
+  .dhb-eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:11.5px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase;
+    background:rgba(255,255,255,0.18); padding:6px 14px; border-radius:20px; margin-bottom:10px;
+  }
+  .dhb-text h3{margin:0 0 4px;font-size:clamp(19px,2.6vw,25px);font-weight:800;position:relative;z-index:1;}
+  .dhb-text p{margin:0;font-size:13.5px;color:rgba(255,255,255,0.9);position:relative;z-index:1;}
+  .dhb-cta{
+    background:#fff; color:var(--blush-ink); font-weight:800; font-size:14px; padding:12px 22px; border-radius:12px;
+    white-space:nowrap; box-shadow:0 4px 14px rgba(0,0,0,0.12); position:relative; z-index:1; transition:transform .2s var(--ease);
+    flex-shrink:0;
+  }
+  .deals-home-banner:hover .dhb-cta{transform:translateX(4px);}
+  html[dir="rtl"] .deals-home-banner:hover .dhb-cta{transform:translateX(-4px);}
+  @media (max-width:640px){
+    .deals-home-banner{margin:20px 16px;padding:18px 20px;border-radius:16px;}
+    .dhb-cta{padding:10px 18px;font-size:13px;}
+  }
+
   /* ---------- Announcement bar (site-wide, admin editable) ---------- */
   .announce-bar{display:none;background:var(--ink);color:#fff;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:0.01em;padding:9px 16px;}
   .announce-bar.show{display:block;}
@@ -1018,6 +1048,15 @@
   </div>
 </div>
 
+<a class="deals-home-banner reveal" href="deals.html">
+  <div class="dhb-text">
+    <span class="dhb-eyebrow">🔥 <span data-i18n="dealsBannerEyebrow">Hot deals</span></span>
+    <h3 data-i18n="dealsBannerTitle">Save big on select gadgets</h3>
+    <p data-i18n="dealsBannerSub">Check out today's best discounted picks</p>
+  </div>
+  <span class="dhb-cta" data-i18n="dealsBannerCta">Shop deals →</span>
+</a>
+
 <section class="section section-tight" id="featuredSection" style="display:none;">
   <div class="wrap">
     <div class="section-head reveal" style="margin-bottom:26px;">
@@ -1105,7 +1144,7 @@
       </div>
       <p style="font-size:13px;color:#b8b3b3;line-height:1.6;max-width:260px;" data-i18n="footerTagline">Shop More. Pay Less.</p>
     </div>
-    <div><h4 data-i18n="footerShop">Shop</h4><a href="#shop" data-i18n="footerAllProducts">All products</a><a href="deals.html">Deals 45%+ off</a><a href="#categories" data-i18n="navCategories">Categories</a><a href="#reviews" data-i18n="navReviews">Reviews</a><a href="about-us.html" data-i18n="footerAboutUs">About us</a></div>
+    <div><h4 data-i18n="footerShop">Shop</h4><a href="#shop" data-i18n="footerAllProducts">All products</a><a href="deals.html" data-i18n="footerDeals">Deals</a><a href="#categories" data-i18n="navCategories">Categories</a><a href="#reviews" data-i18n="navReviews">Reviews</a><a href="about-us.html" data-i18n="footerAboutUs">About us</a></div>
     <div><h4 data-i18n="footerSupport">Support</h4><a id="waFooterLink" href="#" target="_blank" data-i18n="footerWhatsapp">WhatsApp us</a><a href="delivery-policy.html" data-i18n="footerDeliveryPolicy">Delivery policy</a><a href="return-refund-policy.html" data-i18n="footerReturns">Returns &amp; refunds</a></div>
     <div><h4 data-i18n="footerPayments">Payments</h4><a href="#" data-i18n="footerBenefitpay">BenefitPay QR</a><a href="#" data-i18n="footerCod">Cash on delivery</a></div>
   </div>
@@ -2151,12 +2190,13 @@ const I18N = {
     acctReferEarn:'Refer & earn', acctReferEarnSub:'Earn 0.200 BHD per successful registration',
     eyebrowHandpicked:'Handpicked', headFeatured:'Featured this week', subFeatured:'A short list we personally rate — swipe through.',
     eyebrowCrowd:'Crowd favorites', headBestsellers:'Best sellers', subBestsellers:'What Bahrain keeps adding to cart.',
+    dealsBannerEyebrow:'Hot deals', dealsBannerTitle:'Save big on select gadgets', dealsBannerSub:'Check out today\'s best discounted picks', dealsBannerCta:'Shop deals →',
     eyebrowShopByCat:'Shop by category', headFindGadget:'Find your next favorite gadget', subFindGadget:'Browse what people in Bahrain are buying right now.',
     notifHeading:'Offers & updates', notifLoading:'Loading…', notifEmpty:'No active offers right now — check back soon!',
     eyebrowCatalogue:'Full catalogue', headAllProducts:'All products', loadingProducts:'Loading products…', searchPlaceholder:'Search products…',
     eyebrowLovedLocally:'Loved locally', headReviews:'What Bahrain is saying',
     newsletterHead:'Get early access to new drops', newsletterSub:'One short email a week — new gadgets, restocks, and Bahrain-only offers.', newsletterBtn:'Subscribe',
-    footerTagline:'Shop More. Pay Less.', footerShop:'Shop', footerAllProducts:'All products', footerAboutUs:'About us',
+    footerTagline:'Shop More. Pay Less.', footerShop:'Shop', footerAllProducts:'All products', footerDeals:'Deals', footerAboutUs:'About us',
     footerSupport:'Support', footerWhatsapp:'WhatsApp us', footerDeliveryPolicy:'Delivery policy', footerReturns:'Returns & refunds',
     footerPayments:'Payments', footerBenefitpay:'BenefitPay QR', footerCod:'Cash on delivery', footerPricesBhd:'Prices shown in BHD.',
     cartTitle:'Your cart', cartTotal:'Total', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
@@ -2220,12 +2260,13 @@ const I18N = {
     acctReferEarn:'ادعُ واربح', acctReferEarnSub:'اربح 0.200 دينار عن كل تسجيل ناجح',
     eyebrowHandpicked:'مختارات خاصة', headFeatured:'مميزات هذا الأسبوع', subFeatured:'قائمة قصيرة نرشحها لكم بأنفسنا.',
     eyebrowCrowd:'الأكثر طلبًا', headBestsellers:'الأكثر مبيعًا', subBestsellers:'ما يضيفه أهل البحرين إلى سلتهم باستمرار.',
+    dealsBannerEyebrow:'عروض ساخنة', dealsBannerTitle:'وفّر كثيرًا على مختارات مميزة', dealsBannerSub:'اطّلع على أفضل التخفيضات اليوم', dealsBannerCta:'تسوق العروض ←',
     eyebrowShopByCat:'تسوق حسب الفئة', headFindGadget:'اعثر على أداتك المفضلة القادمة', subFindGadget:'تصفح ما يشتريه الناس في البحرين الآن.',
     notifHeading:'العروض والتحديثات', notifLoading:'جارِ التحميل…', notifEmpty:'لا توجد عروض نشطة حاليًا — تحقق لاحقًا!',
     eyebrowCatalogue:'الكتالوج الكامل', headAllProducts:'جميع المنتجات', loadingProducts:'جارِ تحميل المنتجات…', searchPlaceholder:'ابحث عن المنتجات…',
     eyebrowLovedLocally:'محبوب محليًا', headReviews:'ماذا يقول أهل البحرين',
     newsletterHead:'احصل على وصول مبكر للمنتجات الجديدة', newsletterSub:'رسالة قصيرة أسبوعيًا — منتجات جديدة، إعادة تخزين، وعروض حصرية للبحرين.', newsletterBtn:'اشترك',
-    footerTagline:'الحل الكامل للأجهزة والإلكترونيات.', footerShop:'المتجر', footerAllProducts:'جميع المنتجات', footerAboutUs:'من نحن',
+    footerTagline:'الحل الكامل للأجهزة والإلكترونيات.', footerShop:'المتجر', footerAllProducts:'جميع المنتجات', footerDeals:'العروض', footerAboutUs:'من نحن',
     footerSupport:'الدعم', footerWhatsapp:'راسلنا عبر واتساب', footerDeliveryPolicy:'سياسة التوصيل', footerReturns:'الإرجاع والاسترداد',
     footerPayments:'طرق الدفع', footerBenefitpay:'رمز BenefitPay', footerCod:'الدفع عند الاستلام', footerPricesBhd:'الأسعار موضحة بالدينار البحريني.',
     cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
