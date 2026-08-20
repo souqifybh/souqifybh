@@ -60,6 +60,100 @@
     "colorsList": [
       "Black"
     ],
+    "avgRating": 5,
+    "reviewCount": 1
+  },
+  {
+    "id": "P-1787213432541",
+    "name": "Refillable Perfume Spray Bottles (5pcs)",
+    "description": "Carry your favorite fragrance anywhere with this sleek, compact, and refillable perfume spray bottle. Its leak-resistant aluminum design and fine mist spray make it perfect for everyday use, travel, work, and special occasions.",
+    "price": 2.9,
+    "compareAtPrice": 5.9,
+    "image1": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600047/IMG_8792_k8ezpt.jpg",
+    "image2": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600048/IMG_8790_b2c8ns.jpg",
+    "image3": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600048/IMG_8791_fakm7t.jpg",
+    "image4": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600047/IMG_8789_toqxqd.jpg",
+    "image5": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600191/IMG_8793_htta0i.jpg",
+    "category": "Lifestyle",
+    "stock": 3,
+    "active": true,
+    "featured": false,
+    "bestseller": false,
+    "colors": "Random #5",
+    "features": "✨ Portable & Compact – Easy to carry wherever you go\n💨 Fine Mist Spray – Provides smooth and even fragrance application\n🔄 Easy Bottom Refill – Refill quickly without spills or mess\n🛡️ Leak-Resistant Design – Helps prevent unwanted leakage\n🪶 Lightweight Aluminum Body – Durable and travel-friendly\n♻️ Reusable & Eco-Friendly – Refill and reuse your favorite fragrance\n👜 Travel-Friendly – Fits easily in pockets, handbags, and travel bags\n🌸 Multi-Purpose – Suitable for perfume, cologne, and body mist\n💼 Perfect for Everyday Use – Ideal for work, travel, dates, parties, and special occasions",
+    "moreDetails": "Product Type: Refillable Perfume Spray Bottle / Portable Atomizer\nMaterial: Aluminum\nCapacity: Compact travel size\nSpray Type: Fine Mist\nRefill Method: Easy Bottom-Fill System\nDesign: Lightweight & Portable\nUsage: Perfume, Cologne & Body Mist\nReusable: Yes\nLeak-Resistant: Yes\nSuitable For: Men & Women\nIdeal For: Travel, Office, Daily Use, Parties, Dates, Gym & Special Occasions\nPackage Includes: 5 × Refillable Perfume Spray Bottle",
+    "images": [
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600047/IMG_8792_k8ezpt.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600048/IMG_8790_b2c8ns.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600048/IMG_8791_fakm7t.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600047/IMG_8789_toqxqd.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600191/IMG_8793_htta0i.jpg"
+    ],
+    "colorsList": [
+      "Random #5"
+    ],
+    "avgRating": 4.5,
+    "reviewCount": 2
+  },
+  {
+    "id": "P-1787213575410",
+    "name": "Humidifying Fan with Cooling Spray",
+    "description": "Stay cool and refreshed anywhere with this Portable Humidifying Fan with Cooling Mist. Featuring 3 fan speeds and a 5-hole mist outlet, it delivers refreshing airflow with a fine water mist for added comfort.",
+    "price": 3.9,
+    "compareAtPrice": 7.5,
+    "image1": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8976_zjs3an.jpg",
+    "image2": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8977_juifih.jpg",
+    "image3": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8975_booglh.jpg",
+    "image4": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8981_fptp2m.jpg",
+    "image5": "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362985/IMG_8974_ufrusa.jpg",
+    "category": "Lifestyle",
+    "stock": 5,
+    "active": true,
+    "featured": false,
+    "bestseller": false,
+    "colors": "White",
+    "features": "💨 3 Adjustable Fan Speeds – Low, medium, and high settings\n💦 5-Hole Mist Outlet – Produces a fine cooling water mist\n❄️ Cooling & Refreshing – Combines airflow with mist for added comfort\n🌬️ Adjustable Airflow – Select your preferred fan speed\n💧 Humidifying Function – Adds moisture to the surrounding air\n🏠 Portable Design – Convenient for desks, bedrooms, offices, and study areas\n🔌 Easy Operation – Simple and user-friendly controls\n🪶 Compact & Convenient – Easy to place and move around",
+    "moreDetails": "Product Type: Humidifying Fan with Cooling Spray\nMist Outlet: 5 Holes\nFan Speeds: 3 Levels\nFunction: Fan + Cooling Mist + Humidification\nDesign: Compact & Portable\nSuitable For: Home, Office & Indoor Use\nOperation: Easy Controls\nIdeal For: Personal cooling and refreshing airflow",
+    "images": [
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8976_zjs3an.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8977_juifih.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8975_booglh.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8981_fptp2m.jpg",
+      "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362985/IMG_8974_ufrusa.jpg"
+    ],
+    "colorsList": [
+      "White"
+    ],
+    "avgRating": 5,
+    "reviewCount": 2
+  },
+  {
+    "id": "P-1787215465494",
+    "name": "Power Socket Q115",
+    "description": "Power your devices safely and conveniently with the Q115 Multi-Function Power Socket. Featuring 4 universal sockets, individual switches, overload protection, child safety shutters, and a durable flame-resistant body, it is ideal for home, office, and workspace use.",
+    "price": 3.9,
+    "compareAtPrice": 8.9,
+    "image1": "https://res.cloudinary.com/bib9sqiz/image/upload/v1787214418/IMG_9173.png",
+    "image2": "https://res.cloudinary.com/bib9sqiz/image/upload/v1787215140/Gemini_Generated_Image_o3qedmo3qedmo3qe.jpg",
+    "image3": "https://res.cloudinary.com/bib9sqiz/image/upload/v1787215119/Gemini_Generated_Image_uml5d5uml5d5uml5.jpg",
+    "image4": "",
+    "image5": "",
+    "category": "Lifestyle",
+    "stock": 5,
+    "active": true,
+    "featured": false,
+    "bestseller": false,
+    "colors": "White",
+    "features": "🔌 5 Universal Power Sockets – Connect multiple devices conveniently\n🎛️ Individual Power Switches – Control each socket separately\n💡 Power Indicators – Easily identify active sockets\n⚡ Wide Voltage Range – Supports 110V–240V, 50/60Hz\n🔋 Maximum Current: 10A\n⚙️ Maximum Power: 2000W\n🛡️ Overload Protection – Built-in safety breaker\n👶 Child Safety Shutters – Helps prevent accidental insertion\n🔥 Flame-Resistant Material – Rated up to 750°C\n💪 Heavy-Duty Power Cable – Insulated cable for reliable everyday use\n🇬🇧 UK 3-Pin Plug – Type G plug design\n🎨 Color-Coded Sockets – Grey,Blue, yellow, orange, and green accents",
+    "moreDetails": "Product Name: POWER SOCKET\nModel: Q115\nVoltage: 110V–240V\nFrequency: 50/60Hz\nMaximum Current: 10A\nMaximum Power: 2000W\nPlug Type: UK 3-Pin (Type G)\nNumber of Sockets: 5 Universal Outlets\nSwitches: 5 Individual Switches\nSafety Protection: Overload/Surge Breaker + Safety Shutters\nMaterial: Flame-Resistant Material\nFlame Resistance: Up to 750°C\nCable: Heavy-Duty Insulated Power Cord\nColor: White with Multi-Colored Socket Accents",
+    "images": [
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1787214418/IMG_9173.png",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1787215140/Gemini_Generated_Image_o3qedmo3qedmo3qe.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1787215119/Gemini_Generated_Image_uml5d5uml5d5uml5.jpg"
+    ],
+    "colorsList": [
+      "White"
+    ],
     "avgRating": 0,
     "reviewCount": 0
   }
