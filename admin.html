@@ -493,6 +493,16 @@
           <button class="primary" onclick="saveReferEarnSettings()">Save refer &amp; earn setting</button>
           <span class="muted" id="referEarnSaveMsg" style="margin-left:12px;"></span>
         </div>
+        <div class="card">
+          <h2>Payment methods</h2>
+          <p class="muted" style="margin-bottom:12px;">Cash on Delivery is always available. Turn on Card or BenefitPay only once you're ready to accept them — until then, customers won't see that option at checkout at all.</p>
+          <div class="toggle-row" style="flex-direction:column;align-items:stretch;gap:8px;">
+            <label class="toggle-pill" id="paymentCardActivePill" style="justify-content:flex-start;"><input type="checkbox" id="paymentCardActive" onchange="syncPill('paymentCardActive','paymentCardActivePill')"><span class="ic">💳</span> Enable Credit/Debit Card at checkout</label>
+            <label class="toggle-pill" id="paymentBenefitpayActivePill" style="justify-content:flex-start;"><input type="checkbox" id="paymentBenefitpayActive" onchange="syncPill('paymentBenefitpayActive','paymentBenefitpayActivePill')"><span class="ic">📲</span> Enable BenefitPay QR at checkout</label>
+          </div>
+          <button class="primary" onclick="savePaymentSettings()">Save payment settings</button>
+          <span class="muted" id="paymentSaveMsg" style="margin-left:12px;"></span>
+        </div>
       </div>
     </div>
 
@@ -1441,6 +1451,10 @@ async function loadHeroSettings(){
     updateAnnouncementPreview();
     document.getElementById('referEarnActive').checked = !(s.referEarnActive === false || s.referEarnActive === 'FALSE');
     syncPill('referEarnActive','referEarnActivePill');
+    document.getElementById('paymentCardActive').checked = s.paymentCardEnabled === true || s.paymentCardEnabled === 'TRUE';
+    syncPill('paymentCardActive','paymentCardActivePill');
+    document.getElementById('paymentBenefitpayActive').checked = s.paymentBenefitpayEnabled === true || s.paymentBenefitpayEnabled === 'TRUE';
+    syncPill('paymentBenefitpayActive','paymentBenefitpayActivePill');
   }catch(err){ /* settings sheet may not exist yet — defaults are fine */ }
 }
 function updateHeroPreview(){
@@ -1494,6 +1508,18 @@ async function saveReferEarnSettings(){
   msg.textContent = 'Saving…';
   await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
   msg.textContent = settings.referEarnActive ? '✓ Saved — refer & earn is live on the site now.' : '✓ Saved — refer & earn is now hidden on the site.';
+  setTimeout(() => msg.textContent = '', 3500);
+}
+
+async function savePaymentSettings(){
+  const settings = {
+    paymentCardEnabled: document.getElementById('paymentCardActive').checked,
+    paymentBenefitpayEnabled: document.getElementById('paymentBenefitpayActive').checked
+  };
+  const msg = document.getElementById('paymentSaveMsg');
+  msg.textContent = 'Saving…';
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
+  msg.textContent = '✓ Saved — live on the site now.';
   setTimeout(() => msg.textContent = '', 3500);
 }
 

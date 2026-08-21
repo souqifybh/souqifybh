@@ -142,6 +142,12 @@
   .signup-perks-banner .spb-sub{font-size:11px;font-weight:600;color:rgba(255,255,255,0.92);}
   .guest-link{display:block;text-align:center;font-size:13px;font-weight:700;color:var(--ink-soft);margin-top:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
   .guest-link:hover{color:var(--ink);}
+  .reg-subscribe-check{display:flex;align-items:flex-start;gap:9px;margin:2px 0 14px;padding:11px 12px;background:var(--paper-soft);border:1px solid var(--line);border-radius:11px;}
+  .reg-subscribe-check input{margin-top:2px;flex-shrink:0;width:16px;height:16px;accent-color:var(--blush-deep);cursor:pointer;}
+  .reg-subscribe-check label{font-size:12.5px;line-height:1.5;color:var(--ink);cursor:pointer;font-weight:600;}
+  .promo-register-notice{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.5;color:var(--ink-soft);background:var(--paper-soft);border:1px dashed var(--blush-deep);border-radius:11px;padding:11px 13px;margin:-4px 0 16px;cursor:pointer;}
+  .promo-register-notice b{color:var(--blush-ink);}
+  .promo-register-notice:hover{background:#fff;}
 
   /* ---- star ratings ---- */
   .stars{color:#E0A800;letter-spacing:1px;font-size:14px;white-space:nowrap;}
@@ -383,6 +389,19 @@
   .lp-option:hover{border-color:var(--blush-deep);background:#fff;}
   .lp-option .lp-native{font-size:15px;}
   .lp-option .lp-en{font-size:12px;color:var(--ink-soft);font-weight:600;}
+
+  /* ---------- COD confidence popup ---------- */
+  .cod-popup-overlay{position:fixed;inset:0;background:rgba(28,28,30,0.6);z-index:905;display:none;align-items:center;justify-content:center;padding:20px;}
+  .cod-popup-overlay.show{display:flex;}
+  .cod-popup{position:relative;background:#fff;border-radius:22px;padding:34px 28px 28px;max-width:380px;width:100%;text-align:center;box-shadow:var(--shadow-md);border:1.5px solid var(--blush);}
+  .cod-popup-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;border:none;background:var(--paper-soft);color:var(--ink-soft);font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .cod-popup-close:hover{background:var(--line);color:var(--ink);}
+  html[dir="rtl"] .cod-popup-close{right:auto;left:14px;}
+  .cod-popup-emoji{font-size:38px;margin-bottom:10px;line-height:1;}
+  .cod-popup h3{font-family:'Sora';font-weight:800;font-size:19px;margin:0 0 10px;color:var(--ink);}
+  .cod-popup p{color:var(--ink-soft);font-size:13.5px;line-height:1.7;margin:0 0 22px;}
+  .cod-popup-okay{width:100%;background:var(--blush-deep);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:14.5px;cursor:pointer;font-family:inherit;}
+  .cod-popup-okay:hover{opacity:0.92;}
 
   /* ---------- RTL (Arabic) ---------- */
   html[dir="rtl"] body{direction:rtl;text-align:right;font-family:'Tajawal','Sora','Inter',sans-serif;}
@@ -956,6 +975,16 @@
     </div>
   </div>
 </div>
+
+<div class="cod-popup-overlay" id="codPopupOverlay">
+  <div class="cod-popup">
+    <button class="cod-popup-close" onclick="closeCodPopup()" aria-label="Close">✕</button>
+    <div class="cod-popup-emoji">💚🛍️💵</div>
+    <h3 data-i18n="codPopupTitle">Shop with zero risk!</h3>
+    <p data-i18n="codPopupText">No advance payment needed — ever! 🚫💳 Order anything you like today, and pay 100% Cash on Delivery 💵 only when it's in your hands 📦✅. Simple, safe, and completely risk-free shopping with Souqify-bh! 🛍️💚</p>
+    <button class="cod-popup-okay" onclick="closeCodPopup()" data-i18n="codPopupOkay">Okay, got it! 👍</button>
+  </div>
+</div>
 <div class="announce-bar" id="announceBar"><span id="announceBarText"></span></div>
 <header id="siteHeader">
   <nav>
@@ -1144,7 +1173,7 @@
   <div class="wrap">
     <div class="section-head reveal">
       <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowMediaLibrary">See it in action</span></span>
-      <h2 data-i18n="headMediaLibrary">Some Random Video Reviews</h2>
+      <h2 data-i18n="headMediaLibrary">From our community</h2>
     </div>
     <div class="media-carousel" id="mediaCarousel">
       <button class="media-nav prev" id="mediaPrevBtn" onclick="mediaScrollBy(-1)" aria-label="Previous">‹</button>
@@ -1268,6 +1297,9 @@
           <button type="button" onclick="applyBestPromoQuick()" style="background:none;border:1px solid #2C6B2F;color:#2C6B2F;font-weight:700;font-size:11.5px;padding:3px 12px;border-radius:14px;cursor:pointer;white-space:nowrap;" data-i18n="applyBtn">Apply</button>
         </div>
       </div>
+      <div class="promo-register-notice" id="promoRegisterNotice" style="display:none;" onclick="switchToLogin()">
+        <span>🔒</span><span data-i18n-html="promoRegisterNotice">Promo codes &amp; member offers are for <b>registered customers</b> — create a free account to unlock discounts on this order.</span>
+      </div>
       <div class="field" id="walletUseWrap" style="display:none;background:#FFF8F5;border:1px solid var(--line);border-radius:10px;padding:12px 14px;">
         <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;cursor:pointer;margin:0;">
           <input type="checkbox" id="useWalletCheckbox" onchange="updateCheckoutTotalDisplay()" style="width:18px;height:18px;flex:0 0 18px;padding:0;">
@@ -1388,6 +1420,10 @@
       <p style="color:var(--ink-soft);font-size:13px;margin:-8px 0 16px;" data-i18n="registerSub">Takes 20 seconds — just enough to fill your order in one tap next time.</p>
       <div class="field"><label data-i18n="fieldFullName">Full name</label><input type="text" id="regName" data-i18n-placeholder="phFullName" placeholder="Your name"></div>
       <div class="field"><label data-i18n="fieldEmail">Email</label><input type="email" id="regEmail" placeholder="you@email.com"></div>
+      <div class="reg-subscribe-check">
+        <input type="checkbox" id="regSubscribeNewsletter" checked>
+        <label for="regSubscribeNewsletter" data-i18n="regSubscribeLabel">📩 Yes, keep me first in line for offers, promo codes &amp; restock alerts</label>
+      </div>
       <div class="field"><label data-i18n="fieldMobileOptional">Mobile number <span style="font-weight:500;color:var(--ink-soft);">(optional)</span></label><input type="text" id="regPhone" placeholder="+973 3xxx xxxx"></div>
       <div class="field"><label data-i18n="fieldPasswordMin">Password <span style="font-weight:500;color:var(--ink-soft);">(min 6 characters)</span></label><input type="password" id="regPassword" placeholder="••••••••"></div>
       <div class="field"><label data-i18n="fieldReferralOptional">Referral code <span style="font-weight:500;color:var(--ink-soft);">(optional)</span></label><input type="text" id="regReferralCode" data-i18n-placeholder="phReferralCode" placeholder="e.g. FATIF3K9" style="text-transform:uppercase;"></div>
@@ -2158,6 +2194,9 @@ async function doRegister(){
     const data = await res.json();
     if(!data.ok){ errEl.textContent = data.error || 'Could not create your account.'; return; }
     localStorage.removeItem('gm_pending_referral');
+    if(document.getElementById('regSubscribeNewsletter').checked){
+      fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'subscribeNewsletter', email }) }).catch(() => {});
+    }
     onAuthSuccess(data.customer);
     if(data.referralMessage) setTimeout(() => alert(data.referralMessage), 300);
   }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }
@@ -2254,6 +2293,11 @@ const I18N = {
     registerTitle:'Create your account', registerSub:'Takes 20 seconds — just enough to fill your order in one tap next time.',
     fieldMobileOptional:'Mobile number (optional)', fieldPasswordMin:'Password (min 6 characters)', createAccountBtn:'Create account', alreadyHaveAccount:'Already have an account?',
     fieldReferralOptional:'Referral code (optional)', phReferralCode:'e.g. FATIF3K9',
+    regSubscribeLabel:'📩 Yes, keep me first in line for offers, promo codes & restock alerts',
+    promoRegisterNotice:'Promo codes & member offers are for <b>registered customers</b> — create a free account to unlock discounts on this order.',
+    codPopupTitle:'Shop with zero risk!',
+    codPopupText:"No advance payment needed — ever! 🚫💳 Order anything you like today, and pay 100% Cash on Delivery 💵 only when it's in your hands 📦✅. Simple, safe, and completely risk-free shopping with Souqify-bh! 🛍️💚",
+    codPopupOkay:'Okay, got it! 👍',
     myAccount:'My account', tabOrders:'Orders', tabAddresses:'Addresses', tabProfile:'Profile', loadingOrders:'Loading your orders…', addAddress:'+ Add a new address',
     tabReferrals:'Wallet', walletBalanceLabel:'Souqify-bh wallet balance', walletUseAtCheckout:'Use it to pay for part of any order at checkout.',
     referralShareTitle:'Invite friends, earn BHD', referralShareSub:'Share your code — when a friend registers with it, you both get 0.200 BHD in your wallet.',
@@ -2325,6 +2369,11 @@ const I18N = {
     registerTitle:'إنشاء حسابك', registerSub:'تستغرق 20 ثانية فقط — لملء طلبك بضغطة واحدة في المرة القادمة.',
     fieldMobileOptional:'رقم الجوال (اختياري)', fieldPasswordMin:'كلمة المرور (6 أحرف على الأقل)', createAccountBtn:'إنشاء الحساب', alreadyHaveAccount:'لديك حساب بالفعل؟',
     fieldReferralOptional:'رمز الإحالة (اختياري)', phReferralCode:'مثال: FATIF3K9',
+    regSubscribeLabel:'📩 نعم، أبقوني على اطلاع بالعروض ورموز الخصم وتنبيهات إعادة التوفر',
+    promoRegisterNotice:'رموز الخصم وعروض الأعضاء متاحة <b>للعملاء المسجلين</b> فقط — أنشئ حسابًا مجانيًا للحصول على الخصومات على هذا الطلب.',
+    codPopupTitle:'تسوّق بدون أي مخاطرة!',
+    codPopupText:'لا حاجة لأي دفع مسبق أبدًا! 🚫💳 اطلب ما تريد اليوم وادفع 100% نقدًا عند الاستلام 💵 فقط عندما يصل طلبك إلى يدك 📦✅. تسوّق بسيط وآمن وخالٍ من المخاطر تمامًا مع Souqify-bh! 🛍️💚',
+    codPopupOkay:'حسنًا، فهمت! 👍',
     myAccount:'حسابي', tabOrders:'الطلبات', tabAddresses:'العناوين', tabProfile:'الملف الشخصي', loadingOrders:'جارِ تحميل طلباتك…', addAddress:'+ إضافة عنوان جديد',
     tabReferrals:'المحفظة', walletBalanceLabel:'رصيد محفظة Souqify-bh', walletUseAtCheckout:'استخدمه لدفع جزء من أي طلب عند الدفع.',
     referralShareTitle:'ادعُ أصدقاءك واربح دنانير', referralShareSub:'شارك رمزك — عندما يسجّل صديق باستخدامه، يحصل كلاكما على 0.200 دينار في محفظتكما.',
@@ -2431,9 +2480,11 @@ async function translateProductsIfNeeded(products){
 function setLanguage(lang){
   localStorage.setItem('gm_lang', lang);
   const langPopup = document.getElementById('langPopupOverlay');
-  if(langPopup.classList.contains('show')){ langPopup.classList.remove('show'); unlockBodyScroll(); }
+  const wasLangPopupShowing = langPopup.classList.contains('show');
+  if(wasLangPopupShowing){ langPopup.classList.remove('show'); unlockBodyScroll(); }
   document.getElementById('langMenu').classList.remove('show');
   applyLanguage(lang);
+  if(wasLangPopupShowing) scheduleCodPopup();
 }
 function toggleLangMenu(){ document.getElementById('langMenu').classList.toggle('show'); }
 document.addEventListener('click', (e) => {
@@ -3413,13 +3464,24 @@ function renderCart(){
 function openCart(){ document.getElementById('overlay').classList.add('show'); document.getElementById('drawer').classList.add('show'); lockBodyScroll(); }
 function closeCart(){ document.getElementById('overlay').classList.remove('show'); document.getElementById('drawer').classList.remove('show'); unlockBodyScroll(); }
 
-const PAYMENT_METHODS = [
-  { id:'card', get label(){ return T('payCardLabel'); }, get desc(){ return T('payCardDesc'); }, available:false },
-  { id:'benefitpay', get label(){ return T('payBenefitpayLabel'); }, get desc(){ return T('payBenefitpayDesc'); }, available:false },
-  { id:'cod', get label(){ return T('payCodLabel'); }, get desc(){ return T('payCodDesc'); }, available:true }
-];
+let PAYMENT_CARD_ENABLED = false;
+let PAYMENT_BENEFITPAY_ENABLED = false;
+function getPaymentMethods(){
+  const list = [];
+  if(PAYMENT_CARD_ENABLED) list.push({ id:'card', get label(){ return T('payCardLabel'); }, get desc(){ return T('payCardDesc'); }, available:true });
+  if(PAYMENT_BENEFITPAY_ENABLED) list.push({ id:'benefitpay', get label(){ return T('payBenefitpayLabel'); }, get desc(){ return T('payBenefitpayDesc'); }, available:true });
+  list.push({ id:'cod', get label(){ return T('payCodLabel'); }, get desc(){ return T('payCodDesc'); }, available:true });
+  return list;
+}
+function applyPaymentSettings(settings){
+  const s = settings || {};
+  PAYMENT_CARD_ENABLED = s.paymentCardEnabled === true || s.paymentCardEnabled === 'TRUE';
+  PAYMENT_BENEFITPAY_ENABLED = s.paymentBenefitpayEnabled === true || s.paymentBenefitpayEnabled === 'TRUE';
+  safeCall(buildPayOptions);
+}
 function buildPayOptions(){
-  document.getElementById('payOptions').innerHTML = PAYMENT_METHODS.map((m) => `
+  const methods = getPaymentMethods();
+  document.getElementById('payOptions').innerHTML = methods.map((m) => `
     <label class="pay-opt ${m.available?'':'unavailable'} ${m.id==='cod'?'selected':''}" onclick="${m.available ? 'selectPay(this)' : `event.preventDefault();openPaymentMaint('${m.id}')`}">
       <input type="radio" name="pay" value="${m.id}" ${m.id==='cod'?'checked':''} ${m.available?'':'disabled'} onchange="updateSubmitBtnLabel()">
       <div style="flex:1;">
@@ -3637,8 +3699,10 @@ function openCheckout(){
   document.getElementById('promoInputRow').style.display = 'flex';
   if(!CUSTOMER){
     document.getElementById('promoCodeWrap').style.display = 'none';
+    document.getElementById('promoRegisterNotice').style.display = 'flex';
   } else {
     document.getElementById('promoCodeWrap').style.display = 'block';
+    document.getElementById('promoRegisterNotice').style.display = 'none';
   }
   loadCheckoutPromoBanner();
   if(CUSTOMER && Number(CUSTOMER.walletBalance) > 0){
@@ -4034,9 +4098,23 @@ function maybeShowLangPopup(){
   const saved = localStorage.getItem('gm_lang');
   if(saved){
     applyLanguage(saved);
+    scheduleCodPopup();
   } else {
     setTimeout(() => { document.getElementById('langPopupOverlay').classList.add('show'); lockBodyScroll(); }, 250);
   }
+}
+function scheduleCodPopup(){
+  if(sessionStorage.getItem('gm_cod_popup_shown')) return;
+  setTimeout(() => {
+    if(document.getElementById('langPopupOverlay').classList.contains('show')) return; // don't stack on top of the language picker
+    document.getElementById('codPopupOverlay').classList.add('show');
+    lockBodyScroll();
+    sessionStorage.setItem('gm_cod_popup_shown', '1');
+  }, 5000);
+}
+function closeCodPopup(){
+  document.getElementById('codPopupOverlay').classList.remove('show');
+  unlockBodyScroll();
 }
 
 function observeReveal(){
@@ -4160,6 +4238,32 @@ function ratioClass(ratio){
   if(ratio === '16:9') return 'ratio-16-9';
   return '';
 }
+// Cloudinary serves an auto-generated JPG thumbnail for any video URL just by
+// swapping the file extension — this shows an instant frame for every card
+// with zero video bytes downloaded, instead of every clip trying to buffer
+// at once the moment the section appears.
+function cloudinaryPoster(videoUrl){
+  if(!videoUrl) return '';
+  return videoUrl.replace(/\.(mp4|mov|webm|m4v)(\?.*)?$/i, '.jpg$2');
+}
+let mediaLazyObserver = null;
+// Videos start with no `src` at all (only a poster image) so the section
+// paints instantly. The real video file is only requested once a card
+// actually scrolls into view, and even then only its metadata — the full
+// clip streams in on tap thanks to the native `controls` UI.
+function setupMediaLazyLoad(){
+  if(mediaLazyObserver) mediaLazyObserver.disconnect();
+  mediaLazyObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(!entry.isIntersecting) return;
+      const vid = entry.target;
+      const src = vid.getAttribute('data-src');
+      if(src && !vid.getAttribute('src')){ vid.setAttribute('src', src); vid.setAttribute('preload','metadata'); }
+      mediaLazyObserver.unobserve(vid);
+    });
+  }, { root: null, rootMargin: '400px', threshold: 0.01 });
+  document.querySelectorAll('#mediaTrack video[data-src]').forEach(v => mediaLazyObserver.observe(v));
+}
 function renderMediaLibrary(list){
   const section = document.getElementById('mediaLibrary');
   const track = document.getElementById('mediaTrack');
@@ -4169,12 +4273,13 @@ function renderMediaLibrary(list){
   track.innerHTML = list.map(m => `
     <div class="media-card ${ratioClass(m.ratio)}">
       <div class="media-inner">
-        <video src="${m.videoUrl}" playsinline muted loop controls preload="metadata"></video>
+        <video data-src="${m.videoUrl}" poster="${cloudinaryPoster(m.videoUrl)}" playsinline muted loop controls preload="none"></video>
       </div>
       ${m.title ? `<div class="media-title">${escapeHtmlClient(m.title)}</div>` : ''}
     </div>
   `).join('');
   track.classList.toggle('grid-layout', MEDIA_LAYOUT === 'grid');
+  setupMediaLazyLoad();
   requestAnimationFrame(() => observeReveal());
 }
 function mediaScrollBy(dir){
@@ -4184,11 +4289,32 @@ function mediaScrollBy(dir){
   const step = card ? (card.getBoundingClientRect().width + 16) : 220;
   track.scrollBy({ left: dir * step * 2, behavior: 'smooth' });
 }
+const MEDIA_CACHE_KEY = 'gm_media_cache_v1';
+function readMediaCache(){
+  try{
+    const raw = localStorage.getItem(MEDIA_CACHE_KEY);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(!parsed || !Array.isArray(parsed.media)) return null;
+    return parsed.media;
+  }catch(e){ return null; }
+}
+function writeMediaCache(media){
+  try{ localStorage.setItem(MEDIA_CACHE_KEY, JSON.stringify({ media, ts: Date.now() })); }catch(e){ /* private mode / quota — fine to skip caching */ }
+}
 async function loadMediaLibrary(){
+  // Instant path: render last-known-good videos from a previous visit with
+  // zero network wait, exactly like loadProducts() does — this is what makes
+  // the section feel instant instead of popping in a beat after the page.
+  const cached = readMediaCache();
+  if(cached && cached.length) renderMediaLibrary(cached);
   try{
     const res = await fetch(`${CONFIG.API_URL}?action=listMedia&_=${Date.now()}`);
     const data = await res.json();
-    if(data.ok) renderMediaLibrary(data.media || []);
+    if(data.ok){
+      renderMediaLibrary(data.media || []);
+      writeMediaCache(data.media || []);
+    }
   }catch(err){ /* homepage still works fine without the video section */ }
 }
 
@@ -4246,6 +4372,7 @@ async function loadSettings(){
     applyAnnouncementSettings(cached);
     applyReferEarnSettings(cached);
     applyMediaLayoutSetting(cached);
+    applyPaymentSettings(cached);
   }
 
   // Instant path #2 (first-ever visit, nothing cached yet): the static
@@ -4262,6 +4389,7 @@ async function loadSettings(){
           applyAnnouncementSettings(data2.settings);
           applyReferEarnSettings(data2.settings);
           applyMediaLayoutSetting(data2.settings);
+          applyPaymentSettings(data2.settings);
           writeSettingsCache(data2.settings);
         }
       }
@@ -4279,6 +4407,7 @@ async function loadSettings(){
       applyAnnouncementSettings(data.settings);
       applyReferEarnSettings(data.settings);
       applyMediaLayoutSetting(data.settings);
+      applyPaymentSettings(data.settings);
       writeSettingsCache(data.settings);
     }
   }catch(err){ /* static file or cache is already showing — fine to skip this round */ }
