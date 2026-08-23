@@ -2804,12 +2804,15 @@ function renderProducts(){
   const grid = document.getElementById('productGrid');
   if(!filtered.length){
     grid.innerHTML = `<div class="empty">${PRODUCTS.length ? T('noProductsMatch') : T('noProductsLoaded')}</div>`;
+    grid.classList.remove('in');
     observeReveal();
     return;
   }
-  grid.innerHTML = filtered.map(p => productCardHtml(p)).join('');
-  grid.classList.remove('in');
-  requestAnimationFrame(() => observeReveal());
+  const needsReveal = renderCardSection(grid, filtered);
+  if(needsReveal){
+    grid.classList.remove('in');
+    requestAnimationFrame(() => observeReveal());
+  }
   translateProductsIfNeeded(filtered);
 }
 function clearDealsFilter(){
@@ -2839,22 +2842,21 @@ function setBottomNavActive(id){
   if(btn) btn.classList.add('active');
 }
 
-function productCardHtml(p){
+function cardBadgesHtml(p){
   const pct = discountPct(p);
-  const stock = Number(p.stock);
-  const outOfStock = stock <= 0;
-  const lowStock = !outOfStock && stock <= 5;
-  const badges = [
+  const outOfStock = Number(p.stock) <= 0;
+  return [
     pct > 0 && !outOfStock ? `<span class="card-badge sale">🏷️ ${pct}% ${T('saleOff')}</span>` : '',
     p.featured ? `<span class="card-badge featured">${T('featuredBadge')}</span>` : '',
     p.bestseller ? `<span class="card-badge bestseller">${T('bestsellerBadge')}</span>` : '',
     outOfStock ? `<span class="card-badge out">${T('outOfStock')}</span>` : ''
   ].join('');
+}
+function cardBodyHtml(p){
+  const stock = Number(p.stock);
+  const outOfStock = stock <= 0;
+  const lowStock = !outOfStock && stock <= 5;
   return `
-    <div class="card ${outOfStock?'out-of-stock':''}" onclick="openProduct('${p.id}')">
-      ${badges ? `<div class="card-badges">${badges}</div>` : ''}
-      <div class="imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy" decoding="async"></div>
-      <div class="body">
         <div class="cat">${catLabel(p.category)}</div>
         <div class="name">${pName(p)}</div>
         ${pShortDesc(p) ? `<div class="card-short-desc">${escapeHtmlClient(pShortDesc(p))}</div>` : ''}
@@ -2867,9 +2869,106 @@ function productCardHtml(p){
             : `<button class="add-btn" onclick="event.stopPropagation();popButton(this);addToCart('${p.id}',1,event)">${T('addBtn')}</button>`}
         </div>
         <div class="free-delivery"><span class="van">🚚</span> ${T('freeDeliveryBadge')}</div>
-      </div>
+  `;
+}
+function productCardHtml(p){
+  const badges = cardBadgesHtml(p);
+  const outOfStock = Number(p.stock) <= 0;
+  return `
+    <div class="card ${outOfStock?'out-of-stock':''}" data-pid="${p.id}" onclick="openProduct('${p.id}')">
+      ${badges ? `<div class="card-badges">${badges}</div>` : ''}
+      <div class="imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy" decoding="async"></div>
+      <div class="body">${cardBodyHtml(p)}</div>
     </div>
   `;
+}
+// A short fingerprint of everything a card actually displays (incl. the
+// current language, since translated names/descriptions change this).
+// Used to skip touching a card at all when nothing about it changed.
+function cardSignature(p){
+  return [p.id, currentLang, (p.images && p.images[0]) || '', pName(p), p.price, p.compareAtPrice, p.stock,
+    p.category, p.featured?1:0, p.bestseller?1:0, p.reviewCount, p.avgRating, pShortDesc(p)].join('|');
+}
+// Updates an existing card element's content in place. Crucially, the
+// <img> element itself is only touched (its src re-set) when the image
+// URL actually changed -- otherwise it's left completely alone, so the
+// browser never re-fetches/re-decodes it and the photo doesn't blink.
+function patchCardEl(el, p){
+  el.classList.toggle('out-of-stock', Number(p.stock) <= 0);
+  const img = el.querySelector('.imgwrap img');
+  if(img){
+    const newSrc = p.images[0] || '';
+    if(newSrc && img.getAttribute('src') !== newSrc) img.setAttribute('src', newSrc);
+    const newAlt = pName(p);
+    if(img.getAttribute('alt') !== newAlt) img.setAttribute('alt', newAlt);
+  }
+  const badgesHtml = cardBadgesHtml(p);
+  let badgesWrap = el.querySelector('.card-badges');
+  if(badgesHtml){
+    if(!badgesWrap){
+      badgesWrap = document.createElement('div');
+      badgesWrap.className = 'card-badges';
+      el.insertBefore(badgesWrap, el.firstChild);
+    }
+    badgesWrap.innerHTML = badgesHtml;
+  } else if(badgesWrap){
+    badgesWrap.remove();
+  }
+  const body = el.querySelector('.body');
+  if(body) body.innerHTML = cardBodyHtml(p);
+}
+// Reconciles a rail/grid's children against `items` by product id instead
+// of wiping and rebuilding the whole container on every refresh. Existing
+// cards (and their already-loaded <img>s) are reused and only patched if
+// something about them actually changed; only genuinely new cards are
+// created from scratch. Returns the newly-created elements (if any), so
+// callers can fade in just those instead of replaying the reveal
+// animation for the whole section.
+function syncCardsIntoContainer(container, items){
+  const existingByPid = new Map();
+  Array.from(container.children).forEach(el => {
+    const pid = el.getAttribute('data-pid');
+    if(pid) existingByPid.set(pid, el);
+  });
+  const newlyAdded = [];
+  items.forEach(p => {
+    const sig = cardSignature(p);
+    let el = existingByPid.get(p.id);
+    if(el){
+      existingByPid.delete(p.id);
+      if(el.getAttribute('data-sig') !== sig){
+        patchCardEl(el, p);
+        el.setAttribute('data-sig', sig);
+      }
+    } else {
+      const wrap = document.createElement('div');
+      wrap.innerHTML = productCardHtml(p);
+      el = wrap.firstElementChild;
+      el.setAttribute('data-sig', sig);
+      newlyAdded.push(el);
+    }
+    container.appendChild(el); // re-appending an existing child just moves it into the right order, it isn't recreated
+  });
+  existingByPid.forEach(el => el.remove());
+  return newlyAdded;
+}
+// Renders `items` into `container`, patching in place whenever the
+// container already has cards in it (so repeat calls -- from the initial
+// cache render, the fresh fetch, live stock refreshes, and Arabic
+// translations landing -- don't tear down and reload every product photo).
+// Only does a full rebuild (with the normal reveal-on-scroll fade) the
+// very first time a section renders.
+function renderCardSection(container, items){
+  if(!container.querySelector('.card') || container.querySelector('.empty')){
+    container.innerHTML = items.map(p => productCardHtml(p)).join('');
+    container.querySelectorAll('.card').forEach((el, i) => el.setAttribute('data-sig', cardSignature(items[i])));
+    return true; // needs the reveal observer (first paint)
+  }
+  syncCardsIntoContainer(container, items);
+  // No need to re-run the reveal observer: if the container is already
+  // showing (class "in"), CSS makes any newly-appended card visible
+  // immediately, with its own fade-in transition -- no full-grid replay.
+  return false;
 }
 
 function renderFeatured(){
@@ -2877,16 +2976,16 @@ function renderFeatured(){
   const section = document.getElementById('featuredSection');
   if(!items.length){ section.style.display='none'; return; }
   section.style.display='block';
-  document.getElementById('featuredRail').innerHTML = items.map(p => productCardHtml(p)).join('');
-  requestAnimationFrame(() => observeReveal());
+  const needsReveal = renderCardSection(document.getElementById('featuredRail'), items);
+  if(needsReveal) requestAnimationFrame(() => observeReveal());
 }
 function renderBestsellers(){
   const items = PRODUCTS.filter(p => p.bestseller);
   const section = document.getElementById('bestsellersSection');
   if(!items.length){ section.style.display='none'; return; }
   section.style.display='block';
-  document.getElementById('bestsellersRail').innerHTML = items.map(p => productCardHtml(p)).join('');
-  requestAnimationFrame(() => observeReveal());
+  const needsReveal = renderCardSection(document.getElementById('bestsellersRail'), items);
+  if(needsReveal) requestAnimationFrame(() => observeReveal());
 }
 
 function addToCart(id, qty, evt, color){
@@ -4182,7 +4281,13 @@ function scheduleCodPopup(){
   if(sessionStorage.getItem('gm_cod_popup_shown')) return;
   setTimeout(() => {
     if(document.getElementById('langPopupOverlay').classList.contains('show')) return; // don't stack on top of the language picker
-    document.getElementById('codPopupOverlay').classList.add('show');
+    const popup = document.getElementById('codPopupOverlay');
+    // Belt-and-braces: (re)apply the current language to just this popup's
+    // text right before it's shown, so a returning Arabic customer always
+    // sees it in Arabic and a first-time (still-English) customer always
+    // sees it in English, regardless of when/how it ends up being shown.
+    popup.querySelectorAll('[data-i18n]').forEach(el => { try{ el.textContent = T(el.getAttribute('data-i18n')); }catch(e){} });
+    popup.classList.add('show');
     lockBodyScroll();
     sessionStorage.setItem('gm_cod_popup_shown', '1');
   }, 5000);
