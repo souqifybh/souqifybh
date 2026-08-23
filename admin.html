@@ -420,24 +420,48 @@
             <label>Banner image 1 <span class="opt">— paste an image URL, cropped to a 2:1 ratio works best</span></label>
             <img class="prev" id="heroImgPrev" style="width:100%;aspect-ratio:2/1;object-fit:cover;border-radius:12px;border:1.5px dashed var(--line);margin-bottom:8px;" src="https://placehold.co/600x300/F7F5F5/8A3B3B?text=%20" onerror="this.src='https://placehold.co/600x300/F7F5F5/8A3B3B?text=%20'">
             <input type="text" id="heroImage" placeholder="https://…" oninput="document.getElementById('heroImgPrev').src=this.value||'https://placehold.co/600x300/F7F5F5/8A3B3B?text=%20'">
-            <label style="margin-top:8px;">Link image 1 to a product <span class="opt">(optional)</span></label>
-            <select id="heroProductId"><option value="">— none, just a photo —</option></select>
+            <div class="row" style="margin-top:8px;">
+              <div class="field">
+                <label>Link image 1 to a product <span class="opt">(optional)</span></label>
+                <select id="heroProductId"><option value="">— none, just a photo —</option></select>
+              </div>
+              <div class="field">
+                <label>Or link image 1 to a category <span class="opt">(optional)</span></label>
+                <select id="heroCategory"><option value="">— none —</option></select>
+              </div>
+            </div>
           </div>
           <div class="row">
             <div class="field">
               <label>Banner image 2 <span class="opt">(optional — adds a slide)</span></label>
               <input type="text" id="heroImage2" placeholder="https://…">
-              <label style="margin-top:8px;">Link image 2 to a product <span class="opt">(optional)</span></label>
-              <select id="heroProductId2"><option value="">— none, just a photo —</option></select>
+              <div class="row" style="margin-top:8px;">
+                <div class="field">
+                  <label>Link image 2 to a product <span class="opt">(optional)</span></label>
+                  <select id="heroProductId2"><option value="">— none, just a photo —</option></select>
+                </div>
+                <div class="field">
+                  <label>Or link image 2 to a category <span class="opt">(optional)</span></label>
+                  <select id="heroCategory2"><option value="">— none —</option></select>
+                </div>
+              </div>
             </div>
             <div class="field">
               <label>Banner image 3 <span class="opt">(optional — adds a slide)</span></label>
               <input type="text" id="heroImage3" placeholder="https://…">
-              <label style="margin-top:8px;">Link image 3 to a product <span class="opt">(optional)</span></label>
-              <select id="heroProductId3"><option value="">— none, just a photo —</option></select>
+              <div class="row" style="margin-top:8px;">
+                <div class="field">
+                  <label>Link image 3 to a product <span class="opt">(optional)</span></label>
+                  <select id="heroProductId3"><option value="">— none, just a photo —</option></select>
+                </div>
+                <div class="field">
+                  <label>Or link image 3 to a category <span class="opt">(optional)</span></label>
+                  <select id="heroCategory3"><option value="">— none —</option></select>
+                </div>
+              </div>
             </div>
           </div>
-          <p class="muted" style="margin:-4px 0 14px;">Add 2 or 3 images to turn the banner into an auto-rotating slideshow (5 seconds per slide, with dots and arrows). Leave 2 and 3 blank to show just one image. Each image can link to a different product, or none at all.</p>
+          <p class="muted" style="margin:-4px 0 14px;">Add 2 or 3 images to turn the banner into an auto-rotating slideshow (5 seconds per slide, with dots and arrows). Leave 2 and 3 blank to show just one image. Each image can link to one product OR one category — clicking it takes the customer straight to that product page or to the shop filtered to that category. Pick a product for a single item, or a category to send customers to that whole collection. If both are set for the same image, the product link is used.</p>
           <div class="row">
             <div class="field"><label>Small label above the banner</label><input id="heroEyebrow" placeholder="Order online, get it delivered easily"></div>
           </div>
@@ -772,6 +796,17 @@ function buildHeroProductOptions(){
     if(!sel) return;
     const current = sel.value;
     sel.innerHTML = '<option value="">— none, just a photo —</option>' + PRODUCTS.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+    sel.value = current;
+  });
+  buildHeroCategoryOptions();
+}
+function buildHeroCategoryOptions(){
+  const cats = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+  ['heroCategory','heroCategory2','heroCategory3'].forEach(id => {
+    const sel = document.getElementById(id);
+    if(!sel) return;
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— none —</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
     sel.value = current;
   });
 }
@@ -1444,6 +1479,9 @@ async function loadHeroSettings(){
     document.getElementById('heroProductId').value = s.heroProductId || '';
     document.getElementById('heroProductId2').value = s.heroProductId2 || '';
     document.getElementById('heroProductId3').value = s.heroProductId3 || '';
+    document.getElementById('heroCategory').value = s.heroCategory || '';
+    document.getElementById('heroCategory2').value = s.heroCategory2 || '';
+    document.getElementById('heroCategory3').value = s.heroCategory3 || '';
     updateHeroPreview();
     document.getElementById('announcementActive').checked = s.announcementActive === true || s.announcementActive === 'TRUE';
     syncPill('announcementActive','announcementActivePill');
@@ -1475,7 +1513,10 @@ async function saveHeroSettings(){
     heroBadge2: document.getElementById('heroBadge2').value.trim(),
     heroProductId: document.getElementById('heroProductId').value,
     heroProductId2: document.getElementById('heroProductId2').value,
-    heroProductId3: document.getElementById('heroProductId3').value
+    heroProductId3: document.getElementById('heroProductId3').value,
+    heroCategory: document.getElementById('heroCategory').value,
+    heroCategory2: document.getElementById('heroCategory2').value,
+    heroCategory3: document.getElementById('heroCategory3').value
   };
   const msg = document.getElementById('heroSaveMsg');
   msg.textContent = 'Saving…';

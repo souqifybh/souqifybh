@@ -4327,15 +4327,22 @@ function hsApplySlideLinks(){
   const s = LAST_SETTINGS;
   if(!s) return;
   const ids = [s.heroProductId, s.heroProductId2, s.heroProductId3];
+  const cats = [s.heroCategory, s.heroCategory2, s.heroCategory3];
   [document.getElementById('heroImage'), document.getElementById('heroImage2'), document.getElementById('heroImage3')].forEach((img, i) => {
-    if(img) img.style.cursor = ids[i] ? 'pointer' : 'default';
+    if(img) img.style.cursor = (ids[i] || cats[i]) ? 'pointer' : 'default';
   });
 }
 function hsSlideClick(i){
   const s = LAST_SETTINGS;
   if(!s) return;
   const pid = i === 0 ? s.heroProductId : (i === 1 ? s.heroProductId2 : s.heroProductId3);
-  if(pid) openProduct(pid);
+  if(pid){ openProduct(pid); return; }
+  // No specific product picked for this slide — if the admin instead
+  // linked it to a category, take the customer straight to the shop
+  // section filtered to that collection (same behaviour as tapping a
+  // category card or the top category strip).
+  const cat = i === 0 ? s.heroCategory : (i === 1 ? s.heroCategory2 : s.heroCategory3);
+  if(cat){ setCategory(cat); document.getElementById('shop').scrollIntoView({behavior:'smooth'}); }
 }
 function applyHeroLanguage(){
   const s = LAST_SETTINGS;
