@@ -52,9 +52,9 @@
   .hero h1{font-size:clamp(28px,5vw,42px);font-weight:800;margin:0 0 16px;line-height:1.15;}
   .hero p.lead{max-width:640px;margin:0 auto;color:var(--ink-soft);font-size:16px;line-height:1.65;}
 
-  .banner-wrap{max-width:900px;margin:36px auto 0;padding:0 24px;}
+  .banner-wrap{max-width:1100px;margin:36px auto 0;padding:0 24px;}
   .banner-card{background:var(--paper-soft);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:var(--shadow-sm);}
-  .banner-card svg{border-radius:16px;width:100%;height:auto;}
+  .banner-card img{border-radius:16px;width:100%;height:auto;aspect-ratio:2.5/1;object-fit:cover;display:block;}
 
   .section{padding:56px 24px;}
   .section-head{max-width:640px;margin:0 auto 36px;text-align:center;}
@@ -123,71 +123,7 @@
 
 <div class="banner-wrap">
   <div class="banner-card">
-    <svg viewBox="0 0 900 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a delivery courier handing a package to a customer at their door, accepting cash or BenefitPay payment">
-      <defs>
-        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#F3F7E9"/>
-          <stop offset="100%" stop-color="#FDF7F7"/>
-        </linearGradient>
-      </defs>
-      <rect x="0" y="0" width="900" height="340" rx="16" fill="url(#skyGrad)"/>
-      <rect x="0" y="280" width="900" height="60" fill="#EFE4E4" opacity="0.5"/>
-
-      <!-- Doorstep / house -->
-      <g transform="translate(60,110)">
-        <rect x="0" y="70" width="150" height="120" rx="6" fill="#FFFFFF" stroke="#EFE4E4" stroke-width="2"/>
-        <polygon points="-10,70 75,15 160,70" fill="#46501B"/>
-        <rect x="55" y="120" width="40" height="70" rx="4" fill="#A5BA4A"/>
-        <circle cx="85" cy="155" r="3" fill="#181B09"/>
-        <rect x="10" y="95" width="30" height="30" rx="3" fill="#FDF7F7" stroke="#EFE4E4" stroke-width="2"/>
-        <rect x="110" y="95" width="30" height="30" rx="3" fill="#FDF7F7" stroke="#EFE4E4" stroke-width="2"/>
-      </g>
-
-      <!-- Courier figure -->
-      <g transform="translate(330,90)">
-        <circle cx="40" cy="30" r="26" fill="#F4C7A1"/>
-        <rect x="10" y="52" width="60" height="90" rx="18" fill="#46501B"/>
-        <rect x="2" y="70" width="20" height="55" rx="10" fill="#46501B"/>
-        <rect x="78" y="70" width="20" height="55" rx="10" fill="#46501B"/>
-        <rect x="14" y="140" width="20" height="55" rx="8" fill="#181B09"/>
-        <rect x="46" y="140" width="20" height="55" rx="8" fill="#181B09"/>
-      </g>
-
-      <!-- Package being handed over -->
-      <g transform="translate(430,150)">
-        <rect x="0" y="0" width="70" height="60" rx="6" fill="#A5BA4A" stroke="#46501B" stroke-width="3"/>
-        <line x1="0" y1="30" x2="70" y2="30" stroke="#FDF7F7" stroke-width="4"/>
-        <line x1="35" y1="0" x2="35" y2="60" stroke="#FDF7F7" stroke-width="4"/>
-      </g>
-
-      <!-- Customer figure -->
-      <g transform="translate(560,90)">
-        <circle cx="40" cy="30" r="26" fill="#E7B48C"/>
-        <rect x="10" y="52" width="60" height="90" rx="18" fill="#1C1C1E"/>
-        <rect x="14" y="140" width="20" height="55" rx="8" fill="#6B6B70"/>
-        <rect x="46" y="140" width="20" height="55" rx="8" fill="#6B6B70"/>
-      </g>
-
-      <!-- Cash bills icon -->
-      <g transform="translate(650,60) rotate(-8)">
-        <rect x="0" y="0" width="78" height="46" rx="6" fill="#FFFFFF" stroke="#46501B" stroke-width="3"/>
-        <circle cx="39" cy="23" r="12" fill="none" stroke="#A5BA4A" stroke-width="3"/>
-        <text x="39" y="28" font-family="Sora,sans-serif" font-size="13" font-weight="800" fill="#46501B" text-anchor="middle">BHD</text>
-      </g>
-      <g transform="translate(672,92) rotate(-8)">
-        <rect x="0" y="0" width="78" height="46" rx="6" fill="#FFFFFF" stroke="#EFE4E4" stroke-width="3"/>
-      </g>
-
-      <!-- Phone with BenefitPay checkmark -->
-      <g transform="translate(760,150)">
-        <rect x="0" y="0" width="60" height="100" rx="12" fill="#181B09"/>
-        <rect x="6" y="10" width="48" height="72" rx="4" fill="#A5BA4A"/>
-        <circle cx="30" cy="46" r="16" fill="#FFFFFF"/>
-        <path d="M22 46 L28 53 L40 38" stroke="#46501B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </g>
-
-      <text x="450" y="300" font-family="Inter,sans-serif" font-size="16" font-weight="700" fill="#46501B" text-anchor="middle">Pay in cash — or with BenefitPay — right at your door</text>
-    </svg>
+    <img src="images/cash-on-delivery-banner.png" alt="Souqify-bh courier handing a package and receiving cash payment from a customer at their doorstep in Bahrain" width="2000" height="800" loading="eager">
   </div>
 </div>
 
@@ -261,7 +197,7 @@
     <div style="height:28px;"></div>
     <div class="safe-panel">
       <b>🔒 Paying at the door is safe</b>
-      <p>Our delivery partners are trained to confirm your order details before handing anything over, and every Cash on Delivery order is tracked from dispatch to doorstep. If anything ever looks off, you're never obligated to pay — just contact us on WhatsApp.</p>
+      <p>Deliveries are handled by our trusted courier partner. Our courier partner trains its couriers to confirm your order details before handing anything over, and every Cash on Delivery order is tracked from dispatch to doorstep. If anything ever looks off, you're never obligated to pay — just contact us on WhatsApp.</p>
     </div>
   </div>
 </section>
