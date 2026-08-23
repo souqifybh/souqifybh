@@ -298,12 +298,32 @@
     display:none; align-items:center; gap:10px; padding:0 24px 16px; max-width:1180px; margin:0 auto;
   }
   .header-search-bar.show{display:flex;}
+  .header-search-inputwrap{flex:1;position:relative;min-width:0;}
   .header-search-bar input{
-    flex:1; padding:12px 16px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14.5px;
+    width:100%; padding:12px 16px; border:1.5px solid var(--line); border-radius:12px; font-family:inherit; font-size:14.5px;
     background:var(--paper-soft);
   }
   .header-search-bar input:focus{outline:none;border-color:var(--blush-deep);background:#fff;}
   .header-search-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--ink-soft);padding:6px;flex-shrink:0;}
+  .search-suggest{
+    display:none; position:absolute; top:calc(100% + 8px); left:0; right:0; background:#fff; border:1.5px solid var(--line);
+    border-radius:14px; box-shadow:var(--shadow-md); max-height:420px; overflow-y:auto; z-index:60;
+  }
+  .search-suggest.show{display:block;}
+  .search-suggest-item{
+    display:flex; align-items:center; gap:12px; padding:10px 14px; cursor:pointer; border-bottom:1px solid var(--line);
+  }
+  .search-suggest-item:last-child{border-bottom:none;}
+  .search-suggest-item:hover{background:var(--paper-soft);}
+  .search-suggest-item img{width:44px;height:44px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--paper-soft);}
+  .search-suggest-item .ssi-body{min-width:0;flex:1;}
+  .search-suggest-item .ssi-name{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .search-suggest-item .ssi-cat{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.04em;}
+  .search-suggest-item .ssi-price{font-weight:800;font-size:13px;color:var(--blush-ink);flex-shrink:0;}
+  .search-suggest-empty, .search-suggest-more{padding:12px 14px;font-size:13px;color:var(--ink-soft);text-align:center;}
+  .search-suggest-more{cursor:pointer;font-weight:700;color:var(--blush-ink);}
+  .search-suggest-more:hover{background:var(--paper-soft);}
+  @media (max-width:760px){ .search-suggest{max-height:60vh;} }
   @media (max-width:760px){ .header-search-bar{padding:0 16px 14px;} }
   @media (max-width:760px){
     nav{position:relative;justify-content:center;padding:14px 16px;}
@@ -614,6 +634,14 @@
   .cat-card .ic{font-size:28px;margin-bottom:10px;width:56px;height:56px;border-radius:50%;overflow:hidden;margin-left:auto;margin-right:auto;display:flex;align-items:center;justify-content:center;background:#fff;}
   .cat-card .ic img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
   .cat-card .n{font-weight:700;font-size:14px;}
+
+  /* Larger, more prominent category tiles on desktop widths only; mobile sizing (≤900px) is untouched below */
+  @media (min-width:901px){
+    .cat-grid{gap:26px;}
+    .cat-card{padding:34px 22px;}
+    .cat-card .ic{width:88px;height:88px;font-size:40px;margin-bottom:16px;}
+    .cat-card .n{font-size:17px;}
+  }
 
   .toolbar-inner{
     background:var(--paper-soft); border-radius:var(--radius);
@@ -1036,7 +1064,10 @@
     </div>
   </nav>
   <div class="header-search-bar" id="headerSearchBar">
-    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" placeholder="Search products…" oninput="onHeaderSearchInput()">
+    <div class="header-search-inputwrap">
+      <input type="text" id="searchInput" autocomplete="off" data-i18n-placeholder="searchPlaceholder" placeholder="Search products…" oninput="onHeaderSearchInput()" onfocus="onHeaderSearchInput()">
+      <div class="search-suggest" id="searchSuggest"></div>
+    </div>
     <button class="header-search-close" onclick="closeHeaderSearch()" aria-label="Close search">✕</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
@@ -1208,7 +1239,7 @@
     </div>
     <div><h4 data-i18n="footerShop">Shop</h4><a href="#shop" data-i18n="footerAllProducts">All products</a><a href="deals.html" data-i18n="footerDeals">Deals</a><a href="#categories" data-i18n="navCategories">Categories</a><a href="#reviews" data-i18n="navReviews">Reviews</a><a href="about-us.html" data-i18n="footerAboutUs">About us</a></div>
     <div><h4 data-i18n="footerSupport">Support</h4><a id="waFooterLink" href="#" target="_blank" data-i18n="footerWhatsapp">WhatsApp us</a><a href="delivery-policy.html" data-i18n="footerDeliveryPolicy">Delivery policy</a><a href="return-refund-policy.html" data-i18n="footerReturns">Returns &amp; refunds</a></div>
-    <div><h4 data-i18n="footerPayments">Payments</h4><a href="#" data-i18n="footerBenefitpay">BenefitPay QR</a><a href="#" data-i18n="footerCod">Cash on delivery</a></div>
+    <div><h4 data-i18n="footerPayments">Payments</h4><a href="cash-on-delivery.html" data-i18n="footerCod">Cash on delivery</a></div>
   </div>
   <div class="foot-social">
     <a href="https://www.facebook.com/Souqifybh/" target="_blank" rel="noopener" aria-label="Facebook">
@@ -2308,7 +2339,7 @@ const I18N = {
     promoInvalid:'This code is not valid.', promoNetworkError:'Could not reach the server. Please try again.',
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
     addBtn:'Add', freeDeliveryBadge:'Free Delivery in Bahrain', chipAll:'All', catGeneral:'General',
-    saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet — try another search.',
+    saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet — try another search.', viewAllResults:'View all matching products',
     productsAvailable:'{n} products available now', productAvailable:'1 product available now',
     inStock:'✓ In stock', outOfStock:'✕ Out of stock', onlyLeftStock:'⚠ Only {n} left in stock', saveLabel:'Save',
     outOfStockBtn:'Out of stock', outOfStockAlert:'Sorry, this product is out of stock.', maxStockAlert:'Sorry, only {n} left in stock.',
@@ -2384,7 +2415,7 @@ const I18N = {
     promoInvalid:'هذا الرمز غير صالح.', promoNetworkError:'تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى.',
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
     addBtn:'أضف', freeDeliveryBadge:'توصيل مجاني في البحرين', chipAll:'الكل', catGeneral:'عام',
-    saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة — جرّب بحثًا آخر.',
+    saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة — جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
     productsAvailable:'{n} منتج متوفر الآن', productAvailable:'منتج واحد متوفر الآن',
     inStock:'✓ متوفر', outOfStock:'✕ غير متوفر', onlyLeftStock:'⚠ {n} فقط متبقي في المخزون', saveLabel:'وفّر',
     outOfStockBtn:'غير متوفر', outOfStockAlert:'عذرًا، هذا المنتج غير متوفر حاليًا.', maxStockAlert:'عذرًا، يتبقى {n} فقط في المخزون.',
@@ -4020,15 +4051,59 @@ function toggleHeaderSearch(){
 }
 function closeHeaderSearch(){
   document.getElementById('headerSearchBar').classList.remove('show');
+  closeSearchSuggestions();
 }
 function onHeaderSearchInput(){
   renderProducts();
-  const q = document.getElementById('searchInput').value.trim();
-  if(q){
-    const shop = document.getElementById('shop');
-    if(shop) shop.scrollIntoView({ behavior:'smooth' });
-  }
+  renderSearchSuggestions();
 }
+function closeSearchSuggestions(){
+  const box = document.getElementById('searchSuggest');
+  if(box){ box.classList.remove('show'); box.innerHTML = ''; }
+}
+const SEARCH_SUGGEST_LIMIT = 6;
+function renderSearchSuggestions(){
+  const box = document.getElementById('searchSuggest');
+  if(!box) return;
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  if(!q){ closeSearchSuggestions(); return; }
+  const matches = (PRODUCTS || []).filter(p => (pName(p) || p.name || '').toLowerCase().includes(q));
+  if(!matches.length){
+    box.innerHTML = `<div class="search-suggest-empty">${T('noProductsMatch') || 'No matching products'}</div>`;
+    box.classList.add('show');
+    return;
+  }
+  const shown = matches.slice(0, SEARCH_SUGGEST_LIMIT);
+  box.innerHTML = shown.map(p => `
+    <div class="search-suggest-item" onclick="selectSearchSuggestion('${p.id}')">
+      <img src="${(p.images && p.images[0]) || ''}" alt="${pName(p)}" loading="lazy">
+      <div class="ssi-body">
+        <div class="ssi-name">${pName(p)}</div>
+        <div class="ssi-cat">${catLabel(p.category)}</div>
+      </div>
+      <div class="ssi-price">${Number(p.price).toFixed(3)} BHD</div>
+    </div>
+  `).join('') + (matches.length > shown.length
+    ? `<div class="search-suggest-more" onclick="viewAllSearchMatches()">${T('viewAllResults') || 'View all matching products'} (${matches.length})</div>`
+    : '');
+  box.classList.add('show');
+}
+function selectSearchSuggestion(id){
+  closeSearchSuggestions();
+  closeHeaderSearch();
+  openProduct(id);
+}
+function viewAllSearchMatches(){
+  closeSearchSuggestions();
+  const shop = document.getElementById('shop');
+  if(shop) shop.scrollIntoView({ behavior:'smooth' });
+}
+document.addEventListener('click', function(evt){
+  const bar = document.getElementById('headerSearchBar');
+  if(bar && bar.classList.contains('show') && !bar.contains(evt.target)){
+    closeSearchSuggestions();
+  }
+});
 let notifLoaded = false;
 async function toggleNotifPanel(evt){
   if(evt) evt.stopPropagation();
