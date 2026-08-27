@@ -735,14 +735,17 @@ let ORDERS = [];
 function login(){
   ADMIN_PASSWORD = document.getElementById('pwInput').value;
   document.getElementById('loginMsg').textContent = 'Checking…';
-  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listAllProducts', password: ADMIN_PASSWORD }) })
+  // Single request: checks the password AND fetches every sheet the panel
+  // needs in one Apps Script execution, instead of 1 (old password check)
+  // + 9 (old parallel loadAll) + 1 (old loadReturns) = 11 round trips.
+  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrap', password: ADMIN_PASSWORD }) })
     .then(r => r.json())
     .then(data => {
       if(data.ok){
         sessionStorage.setItem('gm_admin_pw', ADMIN_PASSWORD);
         document.getElementById('loginScreen').style.display='none';
         document.getElementById('shell').classList.add('show');
-        loadAll();
+        applyBootstrap(data);
       } else {
         document.getElementById('loginMsg').textContent = data.error || 'Incorrect password.';
       }
@@ -756,9 +759,27 @@ function switchTab(tab){
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+tab));
 }
 
+// One round trip that returns everything the panel needs at once (see
+// adminBootstrap_ in Code.gs). Used for both the initial login and the
+// "↻ Refresh" button, so both are now fast instead of firing off ~10
+// separate requests.
 async function loadAll(){
-  await Promise.all([loadProducts(), loadOrders(), loadCustomers(), loadHeroSettings(), loadSubscribers(), loadCampaigns(), loadPromoCodes(), loadMedia(), loadMediaLayout()]);
-  await loadReturns();
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrap', password: ADMIN_PASSWORD }) });
+  const data = await res.json();
+  if(!data.ok){ return; }
+  applyBootstrap(data);
+}
+
+function applyBootstrap(data){
+  applyProducts(data);
+  applyOrders(data);
+  applyCustomers(data);
+  applySettings(data.settings || {});
+  applySubscribers(data);
+  applyCampaigns(data);
+  applyPromoCodes(data);
+  applyMedia(data);
+  applyReturns(data);
   renderDashboard();
   renderPromoCodes(); // re-render now that ORDERS has definitely finished loading, for accurate redemption counts
 }
@@ -783,7 +804,9 @@ function syncPill(inputId, pillId){
 /* ---------------- products ---------------- */
 async function loadProducts(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listAllProducts', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applyProducts(await res.json());
+}
+function applyProducts(data){
   PRODUCTS = data.products || [];
   buildCatFilter();
   renderProductRows();
@@ -1129,7 +1152,9 @@ async function adminAddReview(){
 /* ---------------- orders ---------------- */
 async function loadOrders(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listOrdersAdmin', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applyOrders(await res.json());
+}
+function applyOrders(data){
   ORDERS = (data.orders || []).slice().reverse();
   renderOrderRows();
 }
@@ -1284,7 +1309,9 @@ const REPLACEMENT_STATUSES = ['Replacement Scheduled','Shipped','Product Replace
 
 async function loadReturns(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listReturnsAdmin', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applyReturns(await res.json());
+}
+function applyReturns(data){
   RETURNS = data.returns || [];
   renderRetOrderOptions();
   renderReturnRows();
@@ -1466,7 +1493,11 @@ async function loadHeroSettings(){
   try{
     const r = await fetch(`${CONFIG.API_URL}?action=getSettings`);
     const data = await r.json();
-    const s = data.settings || {};
+    applySettings(data.settings || {});
+  }catch(err){ /* settings sheet may not exist yet — defaults are fine */ }
+}
+function applySettings(s){
+  try{
     document.getElementById('heroActive').checked = s.heroActive === true || s.heroActive === 'TRUE';
     syncPill('heroActive','heroActivePill');
     document.getElementById('heroImage').value = s.heroImage || '';
@@ -1493,6 +1524,11 @@ async function loadHeroSettings(){
     syncPill('paymentCardActive','paymentCardActivePill');
     document.getElementById('paymentBenefitpayActive').checked = s.paymentBenefitpayEnabled === true || s.paymentBenefitpayEnabled === 'TRUE';
     syncPill('paymentBenefitpayActive','paymentBenefitpayActivePill');
+    const layout = s.mediaLayout === 'grid' ? 'grid' : 'carousel';
+    document.getElementById('mediaLayoutCarousel').checked = layout === 'carousel';
+    document.getElementById('mediaLayoutGrid').checked = layout === 'grid';
+    syncPill('mediaLayoutCarousel','mediaLayoutCarouselPill');
+    syncPill('mediaLayoutGrid','mediaLayoutGridPill');
   }catch(err){ /* settings sheet may not exist yet — defaults are fine */ }
 }
 function updateHeroPreview(){
@@ -1578,7 +1614,9 @@ function updateMediaPreview(){
 document.getElementById('mediaRatio').addEventListener('change', updateMediaPreview);
 async function loadMedia(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listMediaAdmin', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applyMedia(await res.json());
+}
+function applyMedia(data){
   MEDIA = data.media || [];
   renderMediaRows();
 }
@@ -1654,15 +1692,13 @@ async function deleteMedia(id){
   await loadMedia();
 }
 async function loadMediaLayout(){
+  // mediaLayout lives in the same Settings sheet as the hero banner, so
+  // this just reuses applySettings (see loadHeroSettings) instead of a
+  // second separate getSettings request.
   try{
     const r = await fetch(`${CONFIG.API_URL}?action=getSettings`);
     const data = await r.json();
-    const s = data.settings || {};
-    const layout = s.mediaLayout === 'grid' ? 'grid' : 'carousel';
-    document.getElementById('mediaLayoutCarousel').checked = layout === 'carousel';
-    document.getElementById('mediaLayoutGrid').checked = layout === 'grid';
-    syncPill('mediaLayoutCarousel','mediaLayoutCarouselPill');
-    syncPill('mediaLayoutGrid','mediaLayoutGridPill');
+    applySettings(data.settings || {});
   }catch(err){ /* defaults are fine */ }
 }
 async function saveMediaLayout(){
@@ -1680,7 +1716,9 @@ async function saveMediaLayout(){
 let CUSTOMERS = [];
 async function loadCustomers(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listCustomersAdmin', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applyCustomers(await res.json());
+}
+function applyCustomers(data){
   CUSTOMERS = (data.customers || []).slice().reverse();
   renderCustomerRows();
 }
@@ -1728,7 +1766,9 @@ async function saveWalletInput(email){
 let PROMO_CODES = [];
 async function loadPromoCodes(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listPromoCodesAdmin', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applyPromoCodes(await res.json());
+}
+function applyPromoCodes(data){
   PROMO_CODES = (data.promoCodes || []).slice().reverse();
   renderPromoCodes();
 }
@@ -1862,7 +1902,9 @@ async function sendCampaign(testOnly){
 let SUBSCRIBERS = [];
 async function loadSubscribers(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listSubscribersAdmin', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applySubscribers(await res.json());
+}
+function applySubscribers(data){
   SUBSCRIBERS = (data.subscribers || []).slice().reverse();
   document.getElementById('subCount').textContent = `— ${SUBSCRIBERS.length} total`;
   document.getElementById('subscriberRows').innerHTML = SUBSCRIBERS.length ? SUBSCRIBERS.map(s => `
@@ -1873,7 +1915,9 @@ async function loadSubscribers(){
 let CAMPAIGNS = [];
 async function loadCampaigns(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listCampaignsAdmin', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
+  applyCampaigns(await res.json());
+}
+function applyCampaigns(data){
   CAMPAIGNS = (data.campaigns || []).slice().reverse();
   document.getElementById('campaignRows').innerHTML = CAMPAIGNS.length ? CAMPAIGNS.map(c => `
     <tr><td>${c.subject}</td><td class="muted">${c.sentAt ? new Date(c.sentAt).toLocaleString() : '—'}</td><td>${c.recipients||0}</td></tr>
