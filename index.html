@@ -2381,7 +2381,7 @@ const I18N = {
     maintTitle:"This payment option is under maintenance",
     maintText:"Don't worry, you can proceed confidently with Cash on Delivery and pay with cash or Benefit at your door when your order arrives.",
     maintGatewayTitle:'Our payment gateway is being linked',
-    maintGatewayText:"Payment Gateway being integrated and will be available soon. For now, choose Cash on Delivery and pay only when your order reaches your hands",
+    maintGatewayText:"We're currently connecting BenefitPay and card payments to our checkout, so this option isn't live just yet. You can still order with full confidence: choose Cash on Delivery below and pay only once your order reaches your hands.",
     maintCodBtn:'Proceed with Cash on Delivery',
     preparingBenefitpay:'Preparing BenefitPay QR', placingOrder:'Placing order',
     noProductsLoaded:"We couldn't load products right now. Please refresh the page in a moment.",
@@ -3530,8 +3530,13 @@ async function loadHomeTestimonials(){
   // Scanning every product's reviews to find 5-star quotes means firing off
   // one request per product — expensive, and not something that needs to
   // happen on every single page load. Only redo it once the cache is
-  // properly stale (once a day); otherwise this function is done here.
-  const isStale = !cached || (Date.now() - cached.ts) > TESTIMONIALS_CACHE_MAX_AGE;
+  // properly stale (once a day) OR it has fewer than 3 reviews cached —
+  // a <3 cache means an earlier visit only found 1-2 five-star reviews at
+  // the time, and without this it would keep showing just that 1-2 for
+  // up to 24h even after more 5-star reviews come in (this was the "only
+  // one review shows on desktop" bug: whichever device cached first when
+  // the store had few 5-star reviews got stuck on that small set).
+  const isStale = !cached || cached.reviews.length < 3 || (Date.now() - cached.ts) > TESTIMONIALS_CACHE_MAX_AGE;
   if(!isStale) return;
   if(!PRODUCTS.length){ if(!cached) renderTestimonials(DEFAULT_TESTIMONIALS); return; }
 
