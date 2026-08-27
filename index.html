@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google" content="notranslate">
-<title>Souqify-bh: Shop More. Pay Less.</title>
-<meta name="description" content="Souqify-bh: Shop More. Pay Less. Gadgets and more in Bahrain.">
+<title>Souqify-bh - Shop More. Pay Less.</title>
+<meta name="description" content="Souqify-bh — Shop More. Pay Less. Gadgets and more in Bahrain.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Souqify-bh">
-<meta property="og:title" content="Souqify-bh: Shop More. Pay Less.">
+<meta property="og:title" content="Souqify-bh — Shop More. Pay Less.">
 <meta property="og:description" content="Shop More. Pay Less. Gadgets and more in Bahrain.">
 <meta property="og:image" content="assets/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Souqify-bh: Shop More. Pay Less.">
+<meta name="twitter:title" content="Souqify-bh — Shop More. Pay Less.">
 <meta name="twitter:description" content="Shop More. Pay Less. Gadgets and more in Bahrain.">
 <meta name="twitter:image" content="assets/og-image.png">
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -46,26 +46,6 @@
     --shadow-sm: 0 2px 10px rgba(28,28,30,0.06);
     --shadow-md: 0 14px 40px rgba(28,28,30,0.10);
     --ease: cubic-bezier(.22,.61,.36,1);
-    --header-h:64px;
-  }
-  /* Theme tokens: swap the accent pair from the console/admin later with
-     document.documentElement.dataset.theme = 'festive' (e.g. for Eid/National
-     Day promos). Falls back to the default palette above when unset. */
-  [data-theme="festive"]{
-    --blush:#C9A227; --blush-deep:#7A5B0A; --blush-ink:#241B03;
-  }
-  /* Best-effort dark mode: follows the OS/browser preference automatically.
-     Most components already read these root tokens, so this covers the
-     bulk of the UI; a few hardcoded white/black accents (icons, shadows)
-     are intentionally left alone rather than guessed at. */
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --ink:#F2F1EF; --ink-soft:#B7B5B2;
-      --paper:#161615; --paper-soft:#1E1E1C;
-      --line:#302F2C;
-      --shadow-sm: 0 2px 10px rgba(0,0,0,0.35);
-      --shadow-md: 0 14px 40px rgba(0,0,0,0.45);
-    }
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -75,9 +55,6 @@
   a{color:inherit;text-decoration:none;}
   img{max-width:100%;display:block;}
   .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
-
-  #scrollProgress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--blush-deep);z-index:999;transform-origin:left;transition:width .08s linear;}
-  @media (prefers-reduced-motion: reduce){ #scrollProgress{transition:none;} }
 
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease), transform .7s var(--ease);}
   .reveal.in{opacity:1;transform:translateY(0);}
@@ -515,8 +492,7 @@
   }
   .eyebrow-standalone .dot{width:7px;height:7px;border-radius:50%;background:var(--blush);flex-shrink:0;}
   .hero-full{position:relative;width:100%;aspect-ratio:2/1;overflow:hidden;background:var(--paper-soft);}
-  .hs-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .7s ease;z-index:1;transform:scale(1.12);will-change:transform;}
-  @media (prefers-reduced-motion: reduce){ .hs-slide{transform:none!important;} }
+  .hs-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .7s ease;z-index:1;}
   .hs-slide.active{opacity:1;z-index:2;}
   .hs-next-circle{
     position:absolute;bottom:16px;right:16px;background:#fff;border:none;width:38px;height:38px;border-radius:50%;
@@ -658,7 +634,6 @@
   .cat-card .ic{font-size:28px;margin-bottom:10px;width:56px;height:56px;border-radius:50%;overflow:hidden;margin-left:auto;margin-right:auto;display:flex;align-items:center;justify-content:center;background:#fff;}
   .cat-card .ic img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
   .cat-card .n{font-weight:700;font-size:14px;}
-  .cat-card .cat-count{font-size:11.5px;color:var(--ink-soft);margin-top:4px;}
 
   /* Larger, more prominent category tiles on desktop widths only; mobile sizing (≤900px) is untouched below */
   @media (min-width:901px){
@@ -671,9 +646,7 @@
   .toolbar-inner{
     background:var(--paper-soft); border-radius:var(--radius);
     padding:14px 18px; display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:34px;
-    position:sticky; top:var(--header-h); z-index:60; transition:box-shadow .2s ease;
   }
-  .toolbar-inner.stuck{box-shadow:var(--shadow-sm);}
   .toolbar input[type=text]{
     flex:1; min-width:160px; border:1px solid var(--line); border-radius:10px; padding:11px 14px; font-size:14px; font-family:inherit; background:#fff;
   }
@@ -833,25 +806,6 @@
   .qty-selector button{width:38px;height:42px;background:var(--paper-soft);border:none;font-size:17px;font-weight:700;cursor:pointer;}
   .qty-selector span{width:40px;text-align:center;font-weight:700;font-size:15px;}
   .pdp-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:28px;}
-
-  /* Sticky mobile buy bar: mirrors the main Add to cart CTA once it scrolls
-     out of view on a PDP, so the purchase action stays reachable while
-     browsing the description/reviews below. Desktop keeps the two-column
-     layout where the CTA is already always visible, so this stays hidden there. */
-  #pdpStickyBar{
-    position:fixed; left:0; right:0; bottom:0; z-index:150;
-    display:none; align-items:center; gap:10px;
-    background:var(--paper); border-top:1px solid var(--line); box-shadow:0 -8px 24px rgba(28,28,30,0.08);
-    padding:10px 16px calc(10px + env(safe-area-inset-bottom));
-    transform:translateY(100%); transition:transform .25s var(--ease);
-  }
-  #pdpStickyBar.show{transform:translateY(0);}
-  #pdpStickyBar .psb-price{font-family:'Sora',sans-serif;font-weight:800;font-size:15px;flex-shrink:0;}
-  #pdpStickyBar button{flex:1;}
-  @media (max-width:900px){
-    body.pdp-open #pdpStickyBar{display:flex;}
-  }
-  @media (prefers-reduced-motion: reduce){ #pdpStickyBar{transition:none;} }
   .pdp-actions .btn-primary,.pdp-actions .btn-ghost{padding:15px 24px;flex:1;min-width:160px;text-align:center;}
   .pdp-trust{display:flex;flex-direction:column;gap:10px;background:var(--paper-soft);border-radius:14px;padding:16px 18px;font-size:13px;color:var(--ink-soft);}
   .pdp-trust div{display:flex;align-items:center;gap:9px;}
@@ -1032,11 +986,9 @@
 </head>
 <body class="notranslate">
 
-<div id="scrollProgress"></div>
-
 <div id="introScreen">
   <div class="intro-inner">
-    <div class="intro-logo-full brand-full-logo" role="img" aria-label="Souqify-bh: Shop More. Pay Less."></div>
+    <div class="intro-logo-full brand-full-logo" role="img" aria-label="Souqify-bh — Shop More. Pay Less."></div>
   </div>
 </div>
 
@@ -1057,7 +1009,7 @@
     <button class="cod-popup-close" onclick="closeCodPopup()" aria-label="Close">✕</button>
     <div class="cod-popup-emoji">💚🛍️💵</div>
     <h3 data-i18n="codPopupTitle">Shop with zero risk!</h3>
-    <p data-i18n="codPopupText">No advance payment needed, ever! 🚫💳 Order anything you like today, and pay 100% Cash on Delivery 💵 only when it's in your hands 📦✅. Simple, safe, and completely risk-free shopping with Souqify-bh! 🛍️💚</p>
+    <p data-i18n="codPopupText">No advance payment needed — ever! 🚫💳 Order anything you like today, and pay 100% Cash on Delivery 💵 only when it's in your hands 📦✅. Simple, safe, and completely risk-free shopping with Souqify-bh! 🛍️💚</p>
     <button class="cod-popup-okay" onclick="closeCodPopup()" data-i18n="codPopupOkay">Okay, got it! 👍</button>
   </div>
 </div>
@@ -1180,7 +1132,7 @@
     <div class="section-head reveal" style="margin-bottom:26px;">
       <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowHandpicked">Handpicked</span></span>
       <h2 data-i18n="headFeatured">Featured this week</h2>
-      <p data-i18n="subFeatured">A short list we personally rate. Swipe through.</p>
+      <p data-i18n="subFeatured">A short list we personally rate — swipe through.</p>
     </div>
   </div>
   <div class="rail-scroll rail-bleed reveal-stagger" id="featuredRail"></div>
@@ -1202,7 +1154,7 @@
     <div class="section-head reveal">
       <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowShopByCat">Shop by category</span></span>
       <h2 data-i18n="headFindGadget">Find your next favorite gadget</h2>
-      <p data-i18n="subFindGadget">Browse what people in Bahrain are buying right now.</p>
+      <p data-i18n="subFindGadget"> browse what people in Bahrain are buying right now.</p>
     </div>
     <div class="cat-grid reveal-stagger" id="categoryCardGrid"></div>
   </div>
@@ -1215,7 +1167,7 @@
       <h2 data-i18n="headAllProducts">All products</h2>
       <p id="resultCount" data-i18n="loadingProducts">Loading products…</p>
     </div>
-    <div class="toolbar-inner reveal" id="shopToolbarInner">
+    <div class="toolbar-inner reveal">
       <div id="categoryChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
       <span id="dealsFilterChip" class="chip active" style="display:none;align-items:center;gap:6px;" onclick="clearDealsFilter()">
         <span data-i18n="dealsChipLabel">Deals</span> ✕
@@ -1266,7 +1218,7 @@
   <div class="wrap">
     <div class="newsletter reveal">
       <h2 data-i18n="newsletterHead">Get early access to new drops</h2>
-      <p data-i18n="newsletterSub">One short email a week: new gadgets, restocks, and Bahrain-only offers.</p>
+      <p data-i18n="newsletterSub">One short email a week — new gadgets, restocks, and Bahrain-only offers.</p>
       <div class="newsletter-form">
         <input type="email" placeholder="you@email.com" id="newsletterEmail">
         <button id="newsletterBtn" onclick="subscribeNewsletter()" data-i18n="newsletterBtn">Subscribe</button>
@@ -1377,7 +1329,7 @@
         </div>
       </div>
       <div class="promo-register-notice" id="promoRegisterNotice" style="display:none;" onclick="switchToLogin()">
-        <span>🔒</span><span data-i18n-html="promoRegisterNotice">Promo codes &amp; member offers are for <b>registered customers</b>. Create a free account to unlock discounts on this order.</span>
+        <span>🔒</span><span data-i18n-html="promoRegisterNotice">Promo codes &amp; member offers are for <b>registered customers</b> — create a free account to unlock discounts on this order.</span>
       </div>
       <div class="field" id="walletUseWrap" style="display:none;background:#FFF8F5;border:1px solid var(--line);border-radius:10px;padding:12px 14px;">
         <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;cursor:pointer;margin:0;">
@@ -1390,12 +1342,12 @@
         <label data-i18n="fieldPayment">Payment method</label>
         <div class="pay-options" id="payOptions"></div>
       </div>
-      <button class="submit-btn" id="checkoutSubmitBtn" onclick="placeOrder()"><span id="submitBtnLabel" data-i18n="placeOrderBtn">Place order</span> · <span id="modalTotal">0.000 BHD</span><span class="btn-spinner" id="submitBtnSpinner"></span></button>
+      <button class="submit-btn" id="checkoutSubmitBtn" onclick="placeOrder()"><span id="submitBtnLabel" data-i18n="placeOrderBtn">Place order</span> — <span id="modalTotal">0.000 BHD</span><span class="btn-spinner" id="submitBtnSpinner"></span></button>
     </div>
     <div id="checkoutStepQR" style="display:none;">
       <div class="qr-page">
         <h3 data-i18n="qrScanTitle">Scan &amp; pay with BenefitPay</h3>
-        <p class="qr-sub" id="qrOrderLine" data-i18n="qrOrderLine">Order: will be confirmed once payment is received.</p>
+        <p class="qr-sub" id="qrOrderLine" data-i18n="qrOrderLine">Order — will be confirmed once payment is received.</p>
         <div class="qr-amount">
           <div class="lbl" data-i18n="qrAmountLabel">Amount to send</div>
           <div class="amt" id="qrAmount">0.000 BHD</div>
@@ -1408,16 +1360,16 @@
           3. Enter the exact amount shown above<br>
           4. Complete the payment in the app<br>
           5. Take a screenshot of the payment success screen<br>
-          6. Tap <b>Payment done</b> below. This places your order and sends your screenshot to us on WhatsApp
+          6. Tap <b>Payment done</b> below — this places your order and sends your screenshot to us on WhatsApp
         </div>
         <div class="qr-actions">
-          <button class="wa-btn" id="qrPaidBtn" style="border:none;cursor:pointer;font-family:inherit;font-size:15px;" onclick="onQrPaidClick()"><span id="qrPaidBtnLabel" data-i18n="qrPaidBtn">✅ Payment done: send screenshot on WhatsApp</span><span class="btn-spinner" id="qrPaidBtnSpinner"></span></button>
+          <button class="wa-btn" id="qrPaidBtn" style="border:none;cursor:pointer;font-family:inherit;font-size:15px;" onclick="onQrPaidClick()"><span id="qrPaidBtnLabel" data-i18n="qrPaidBtn">✅ Payment done — send screenshot on WhatsApp</span><span class="btn-spinner" id="qrPaidBtnSpinner"></span></button>
           <a class="qr-help-btn" id="qrHelpBtn" href="#" target="_blank" data-i18n="qrHelpBtn">🙋 Not confident about the QR? Talk to our team</a>
         </div>
         <p style="font-size:11.5px;color:var(--ink-soft);margin-top:10px;" data-i18n="qrOnlyPlaced">Your order is only placed once you tap "Payment done" above.</p>
         <div class="qr-confidence">
           <b data-i18n="qrSafeTitle">🔒 Paying with BenefitPay is safe</b>
-          <span data-i18n="qrSafeText">BenefitPay runs on Benefit Company's national payment network, regulated by the Central Bank of Bahrain. Your card and bank details are never shared with us. We only see your payment confirmation. Thousands of customers in Bahrain use it every day for everyday purchases.</span>
+          <span data-i18n="qrSafeText">BenefitPay runs on Benefit Company's national payment network, regulated by the Central Bank of Bahrain. Your card and bank details are never shared with us — we only see your payment confirmation. Thousands of customers in Bahrain use it every day for everyday purchases.</span>
         </div>
         <button class="submit-btn" style="margin-top:18px;background:none;color:var(--ink-soft);font-weight:600;" onclick="closeCheckout()" data-i18n="qrDoLater">I'll do this later</button>
       </div>
@@ -1447,8 +1399,8 @@
   <div class="modal" style="max-width:380px;text-align:center;position:relative;">
     <button class="close-x" onclick="closePaymentMaint()">✕</button>
     <div class="maint-emoji">🛠️</div>
-    <h3 data-i18n="maintTitle" style="margin-bottom:8px;">Online payment is not ready yet</h3>
-    <p style="color:var(--ink-soft);font-size:13.5px;line-height:1.6;margin-bottom:22px;" data-i18n="maintText">Our payment gateway is still being linked, so online payment cannot be completed right now. You can confidently place your order and pay with Cash on Delivery when it reaches your hands.</p>
+    <h3 data-i18n="maintTitle" style="margin-bottom:8px;">This payment option is under maintenance</h3>
+    <p style="color:var(--ink-soft);font-size:13.5px;line-height:1.6;margin-bottom:22px;" data-i18n="maintText">Don't worry — you can proceed confidently with Cash on Delivery and pay with cash or Benefit at your door when your order arrives.</p>
     <button class="submit-btn" onclick="proceedWithCod()" data-i18n="maintCodBtn">Proceed with Cash on Delivery</button>
   </div>
 </div>
@@ -1496,7 +1448,7 @@
 
     <div id="authRegisterPanel" style="display:none;">
       <h3 data-i18n="registerTitle">Create your account</h3>
-      <p style="color:var(--ink-soft);font-size:13px;margin:-8px 0 16px;" data-i18n="registerSub">Takes 20 seconds, just enough to fill your order in one tap next time.</p>
+      <p style="color:var(--ink-soft);font-size:13px;margin:-8px 0 16px;" data-i18n="registerSub">Takes 20 seconds — just enough to fill your order in one tap next time.</p>
       <div class="field"><label data-i18n="fieldFullName">Full name</label><input type="text" id="regName" data-i18n-placeholder="phFullName" placeholder="Your name"></div>
       <div class="field"><label data-i18n="fieldEmail">Email</label><input type="email" id="regEmail" placeholder="you@email.com"></div>
       <div class="reg-subscribe-check">
@@ -1566,7 +1518,7 @@
       </div>
       <div id="referralInviteBlock">
         <p style="font-size:13.5px;font-weight:700;margin:0 0 6px;" data-i18n="referralShareTitle">Invite friends, earn BHD</p>
-        <p style="font-size:13px;color:var(--ink-soft);margin:0 0 12px;" data-i18n="referralShareSub">Share your code. When a friend registers with it, you both get 0.200 BHD in your wallet.</p>
+        <p style="font-size:13px;color:var(--ink-soft);margin:0 0 12px;" data-i18n="referralShareSub">Share your code — when a friend registers with it, you both get 0.200 BHD in your wallet.</p>
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
           <input type="text" id="myReferralCode" readonly style="flex:1;font-weight:800;letter-spacing:.05em;text-align:center;padding:12px;border:1.5px dashed var(--blush-ink);border-radius:10px;background:#fff;">
           <button class="btn-ghost" style="padding:12px 16px;" onclick="copyReferralCode()" data-i18n="copyBtn">Copy</button>
@@ -1626,10 +1578,6 @@
         <div class="pdp-actions">
           <button class="btn-primary" id="pdpAddBtn" onclick="popButton(this);pdpAddToCart(event)" data-i18n="pdpAddToCart">Add to cart</button>
           <button class="btn-ghost" id="pdpBuyBtn" onclick="pdpBuyNow()" data-i18n="pdpBuyNow">Buy now</button>
-        </div>
-        <div id="pdpStickyBar">
-          <span class="psb-price" id="pdpStickyPrice"></span>
-          <button class="btn-primary" id="pdpStickyAddBtn" onclick="popButton(this);pdpAddToCart(event)" data-i18n="pdpAddToCart">Add to cart</button>
         </div>
         <div class="pdp-trust">
           <div data-i18n="pdpTrustCod">✅ Cash on delivery available</div>
@@ -1918,7 +1866,7 @@ async function loadMyOrders(){
     const data = await res.json();
     const orders = data.orders || [];
     CUSTOMER_ORDERS = orders;
-    if(!orders.length){ wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">No orders yet. Once you place one, it will show up here.</p>'; return; }
+    if(!orders.length){ wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">No orders yet — once you place one, it will show up here.</p>'; return; }
     // A return/replacement failure shouldn't block the order list itself from
     // showing — just fall back to no return/replacement info on the cards.
     try{
@@ -1961,7 +1909,7 @@ function orderCardHtml(o){
   const itemsText = items.map(i => `${i.name} ×${i.qty}`).join(', ');
   const status = o.orderStatus || 'new';
   const track = (status === 'shipped' || status === 'delivered') && o.trackingNumber
-    ? `<div class="oc-track">📦 Tracking number: <strong>${o.trackingNumber}</strong>${o.trackingUrl ? ` · <a href="${o.trackingUrl}" target="_blank" rel="noopener">Track package →</a>` : ''}</div>`
+    ? `<div class="oc-track">📦 Tracking number: <strong>${o.trackingNumber}</strong>${o.trackingUrl ? ` — <a href="${o.trackingUrl}" target="_blank" rel="noopener">Track package →</a>` : ''}</div>`
     : '';
   const returnBlock = status === 'delivered' ? returnSectionHtml(o) : '';
   const reviewSection = status === 'delivered' && items.length ? `
@@ -2027,7 +1975,7 @@ async function submitInlineReview(key, productId){
     const data = await res.json();
     if(!data.ok){ errEl.textContent = data.error || 'Could not post your review.'; return; }
     const link = document.getElementById('rateLink_' + key);
-    link.textContent = '✓ Reviewed, thank you!';
+    link.textContent = '✓ Reviewed — thank you!';
     link.style.pointerEvents = 'none';
     link.style.color = 'var(--ink-soft)';
     document.getElementById('inlineForm_' + key).classList.remove('show');
@@ -2051,7 +1999,7 @@ async function loadAddresses(){
 }
 function renderAddressList(){
   const wrap = document.getElementById('addressList');
-  if(!ADDRESSES.length){ wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">No saved addresses yet. Add one below for faster checkout.</p>'; return; }
+  if(!ADDRESSES.length){ wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">No saved addresses yet — add one below for faster checkout.</p>'; return; }
   wrap.innerHTML = ADDRESSES.map(a => `
     <div class="addr-card ${isTrue(a.isDefault) ? 'is-default' : ''}">
       <div class="addr-label-row">
@@ -2179,7 +2127,7 @@ async function subscribeNewsletter(){
   try{
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'subscribeNewsletter', email }) });
     const data = await res.json();
-    msg.textContent = data.ok ? "✓ You're subscribed. Check your inbox!" : (data.error || 'Could not subscribe right now.');
+    msg.textContent = data.ok ? "✓ You're subscribed — check your inbox!" : (data.error || 'Could not subscribe right now.');
     if(data.ok) emailEl.value = '';
   }catch(err){
     msg.textContent = 'Could not reach the server. Please try again.';
@@ -2343,15 +2291,15 @@ const I18N = {
     heroEyebrowDefault:'ORDER ONLINE, GET IT DELIVERED EASILY',
     acctOrders:'📦 My orders', acctAddresses:'🏠 Saved addresses', acctProfile:'⚙️ Profile', acctLogout:'↩ Log out',
     acctReferEarn:'Refer & earn', acctReferEarnSub:'Earn 0.200 BHD per successful registration',
-    eyebrowHandpicked:'Handpicked', headFeatured:'Featured this week', subFeatured:'A short list we personally rate. Swipe through.',
+    eyebrowHandpicked:'Handpicked', headFeatured:'Featured this week', subFeatured:'A short list we personally rate — swipe through.',
     eyebrowCrowd:'Crowd favorites', headBestsellers:'Best sellers', subBestsellers:'What Bahrain keeps adding to cart.',
     dealsBannerEyebrow:'Hot deals', dealsBannerTitle:'Save big on select gadgets', dealsBannerSub:'Check out today\'s best discounted picks', dealsBannerCta:'Shop deals →',
     eyebrowShopByCat:'Shop by category', headFindGadget:'Find your next favorite gadget', subFindGadget:'Browse what people in Bahrain are buying right now.',
-    notifHeading:'Offers & updates', notifLoading:'Loading…', notifEmpty:'No active offers right now. Check back soon!',
+    notifHeading:'Offers & updates', notifLoading:'Loading…', notifEmpty:'No active offers right now — check back soon!',
     eyebrowCatalogue:'Full catalogue', headAllProducts:'All products', loadingProducts:'Loading products…', searchPlaceholder:'Search products…',
     eyebrowLovedLocally:'Loved locally', headReviews:'What Bahrain is saying',
     eyebrowMediaLibrary:'See it in action', headMediaLibrary:'From our community',
-    newsletterHead:'Get early access to new drops', newsletterSub:'One short email a week: new gadgets, restocks, and Bahrain-only offers.', newsletterBtn:'Subscribe',
+    newsletterHead:'Get early access to new drops', newsletterSub:'One short email a week — new gadgets, restocks, and Bahrain-only offers.', newsletterBtn:'Subscribe',
     footerTagline:'Shop More. Pay Less.', footerShop:'Shop', footerAllProducts:'All products', footerDeals:'Deals', footerAboutUs:'About us',
     footerSupport:'Support', footerWhatsapp:'WhatsApp us', footerDeliveryPolicy:'Delivery policy', footerReturns:'Returns & refunds',
     footerPayments:'Payments', footerBenefitpay:'BenefitPay QR', footerCod:'Cash on delivery', footerPricesBhd:'Prices shown in BHD.',
@@ -2361,29 +2309,29 @@ const I18N = {
     fieldFlat:'Flat / Shop no.', fieldBuilding:'Building', fieldRoad:'Road', fieldBlock:'Block', fieldArea:'Area',
     phFullName:'Your name', phFlat:'e.g. Flat 12', phBuilding:'Building name/no.', phRoad:'Road no.', phBlock:'Block no.', phArea:'e.g. Manama, Riffa, Muharraq…',
     saveAddrLabel:'Save this address for next time', fieldPayment:'Payment method', placeOrderBtn:'Place order',
-    qrScanTitle:'Scan & pay with BenefitPay', qrOrderLine:'Order: will be confirmed once payment is received.', qrAmountLabel:'Amount to send', qrCopyAmount:'📋 Copy amount',
-    qrSteps:`1. Open the <b>BenefitPay</b> app on your phone<br>2. Tap <b>Scan &amp; Pay</b> and scan the QR code above<br>3. Enter the exact amount shown above<br>4. Complete the payment in the app<br>5. Take a screenshot of the payment success screen<br>6. Tap <b>Payment done</b> below. This places your order and sends your screenshot to us on WhatsApp`,
-    qrPaidBtn:'✅ Payment done: send screenshot on WhatsApp', qrHelpBtn:'🙋 Not confident about the QR? Talk to our team',
+    qrScanTitle:'Scan & pay with BenefitPay', qrOrderLine:'Order — will be confirmed once payment is received.', qrAmountLabel:'Amount to send', qrCopyAmount:'📋 Copy amount',
+    qrSteps:`1. Open the <b>BenefitPay</b> app on your phone<br>2. Tap <b>Scan &amp; Pay</b> and scan the QR code above<br>3. Enter the exact amount shown above<br>4. Complete the payment in the app<br>5. Take a screenshot of the payment success screen<br>6. Tap <b>Payment done</b> below — this places your order and sends your screenshot to us on WhatsApp`,
+    qrPaidBtn:'✅ Payment done — send screenshot on WhatsApp', qrHelpBtn:'🙋 Not confident about the QR? Talk to our team',
     qrOnlyPlaced:'Your order is only placed once you tap "Payment done" above.',
     qrSafeTitle:'🔒 Paying with BenefitPay is safe',
-    qrSafeText:`BenefitPay runs on Benefit Company's national payment network, regulated by the Central Bank of Bahrain. Your card and bank details are never shared with us. We only see your payment confirmation. Thousands of customers in Bahrain use it every day for everyday purchases.`,
+    qrSafeText:`BenefitPay runs on Benefit Company's national payment network, regulated by the Central Bank of Bahrain. Your card and bank details are never shared with us — we only see your payment confirmation. Thousands of customers in Bahrain use it every day for everyday purchases.`,
     qrDoLater:"I'll do this later", confirmTitle:'Order received', confirmWaBtn:'📲 Continue on WhatsApp', confirmAnyQuery:'Any query?', confirmDone:'Done',
     loginTitle:'Log in', loginSub:'An account keeps your order history and delivery details ready for next time.',
     fieldPassword:'Password', forgotPasswordLink:'Forgot password?', loginBtn:'Log in', newHere:'New here?', createAccount:'Create an account', continueGuest:'Continue without an account',
     signupPerksTitle:'Register for exciting offers', signupPerksSub:'Plus refer & earn 0.200 BHD per successful referral',
     resetTitle:'Reset your password', resetSub:"Enter your account email and we'll send a reset link.", sendResetBtn:'Send reset link', backToLogin:'← Back to log in',
     chooseNewPwTitle:'Choose a new password', resettingPwFor:'Resetting the password for', fieldNewPassword:'New password (min 6 characters)', setNewPwBtn:'Set new password',
-    registerTitle:'Create your account', registerSub:'Takes 20 seconds, just enough to fill your order in one tap next time.',
+    registerTitle:'Create your account', registerSub:'Takes 20 seconds — just enough to fill your order in one tap next time.',
     fieldMobileOptional:'Mobile number (optional)', fieldPasswordMin:'Password (min 6 characters)', createAccountBtn:'Create account', alreadyHaveAccount:'Already have an account?',
     fieldReferralOptional:'Referral code (optional)', phReferralCode:'e.g. FATIF3K9',
     regSubscribeLabel:'📩 Yes, keep me first in line for offers, promo codes & restock alerts',
-    promoRegisterNotice:'Promo codes & member offers are for <b>registered customers</b>. Create a free account to unlock discounts on this order.',
+    promoRegisterNotice:'Promo codes & member offers are for <b>registered customers</b> — create a free account to unlock discounts on this order.',
     codPopupTitle:'Shop with zero risk!',
-    codPopupText:"No advance payment needed, ever! 🚫💳 Order anything you like today, and pay 100% Cash on Delivery 💵 only when it's in your hands 📦✅. Simple, safe, and completely risk-free shopping with Souqify-bh! 🛍️💚",
+    codPopupText:"No advance payment needed — ever! 🚫💳 Order anything you like today, and pay 100% Cash on Delivery 💵 only when it's in your hands 📦✅. Simple, safe, and completely risk-free shopping with Souqify-bh! 🛍️💚",
     codPopupOkay:'Okay, got it! 👍',
     myAccount:'My account', tabOrders:'Orders', tabAddresses:'Addresses', tabProfile:'Profile', loadingOrders:'Loading your orders…', addAddress:'+ Add a new address',
     tabReferrals:'Wallet', walletBalanceLabel:'Souqify-bh wallet balance', walletUseAtCheckout:'Use it to pay for part of any order at checkout.',
-    referralShareTitle:'Invite friends, earn BHD', referralShareSub:'Share your code. When a friend registers with it, you both get 0.200 BHD in your wallet.',
+    referralShareTitle:'Invite friends, earn BHD', referralShareSub:'Share your code — when a friend registers with it, you both get 0.200 BHD in your wallet.',
     copyBtn:'Copy', shareBtnLabel:'Share', referralCodeCopied:'Referral code copied!',
     useWalletLabel:'Use my wallet balance', fromWalletSuffix:'from wallet', walletAvailableSuffix:'BHD available',
     promoCodeLabel:'Have a promo code?', phPromoCode:'Enter code', applyBtn:'Apply', removeBtn:'Remove',
@@ -2391,26 +2339,24 @@ const I18N = {
     promoInvalid:'This code is not valid.', promoNetworkError:'Could not reach the server. Please try again.',
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
     addBtn:'Add', freeDeliveryBadge:'Free Delivery in Bahrain', chipAll:'All', catGeneral:'General',
-    saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet. Try another search.', viewAllResults:'View all matching products',
+    saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet — try another search.', viewAllResults:'View all matching products',
     productsAvailable:'{n} products available now', productAvailable:'1 product available now',
     inStock:'✓ In stock', outOfStock:'✕ Out of stock', onlyLeftStock:'⚠ Only {n} left in stock', saveLabel:'Save',
     outOfStockBtn:'Out of stock', outOfStockAlert:'Sorry, this product is out of stock.', maxStockAlert:'Sorry, only {n} left in stock.',
     shopCrumb:'Shop', pdpBack:'← Back to shop', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
     pdpTrustCod:'✅ Cash on delivery available', pdpTrustBenefitpay:'📲 BenefitPay via WhatsApp confirmation', pdpTrustDelivery:'🚚 Delivered across Bahrain',
-    pdpRelated:'You might also like', noReviewsYet:'No reviews yet', noReviewsShort:'No reviews yet, be the first',
+    pdpRelated:'You might also like', noReviewsYet:'No reviews yet', noReviewsShort:'No reviews yet — be the first',
     sortNewest:'Newest first', sortHighest:'Highest rated', sortLowest:'Lowest rated', writeReview:'Write a review',
-    reviewsLabel:'review', reviewsLabelPlural:'reviews', defaultProductDesc:'A Souqify-bh pick: quality checked, priced fairly in BHD, and ready to ship across Bahrain.',
+    reviewsLabel:'review', reviewsLabelPlural:'reviews', defaultProductDesc:'A Souqify-bh pick — quality checked, priced fairly in BHD, and ready to ship across Bahrain.',
     removeBtn:'Remove', payBenefitpayLabel:'BenefitPay QR', payBenefitpayDesc:'Scan our QR in the BenefitPay app, then send your screenshot on WhatsApp to confirm.',
     payCodLabel:'Cash on Delivery', payCodDesc:'Pay in cash when your order arrives.',
     payCardLabel:'Credit / Debit Card', payCardDesc:'Pay securely online with your card.',
-    payBenefitpayCardLabel:'BenefitPay or Card', payBenefitpayCardDesc:'Pay online with BenefitPay or a credit/debit card.',
-    catItemSingular:'1 item', catItemPlural:'{n} items',
     paySoonBadge:'Coming soon', placeOrderBtnBenefitpay:'Proceed with BenefitPay QR',
-    maintTitle:'Online payment is not ready yet',
-    maintText:'Our payment gateway is still being linked, so online payment cannot be completed right now. You can confidently place your order and pay with Cash on Delivery when it reaches your hands.',
+    maintTitle:"This payment option is under maintenance",
+    maintText:"Don't worry — you can proceed confidently with Cash on Delivery and pay with cash or Benefit at your door when your order arrives.",
     maintCodBtn:'Proceed with Cash on Delivery',
     preparingBenefitpay:'Preparing BenefitPay QR', placingOrder:'Placing order',
-    noProductsLoaded:"We couldn't load products right now. Please refresh the page in a moment.",
+    noProductsLoaded:"We couldn't load products right now — please refresh the page in a moment.",
     bnHome:'Home', bnDeals:'Deals', bnDealsPercent:'Deals%', bnProfile:'Profile', dealsChipLabel:'Deals',
     pdpAccDescription:'Description', pdpAccFeatures:'Features', pdpAccMoreDetails:'More details',
     pdpDetailCategory:'Category', pdpDetailDelivery:'Delivery', pdpDetailPayment:'Payment', pdpDetailReturns:'Returns',
@@ -2425,11 +2371,11 @@ const I18N = {
     eyebrowCrowd:'الأكثر طلبًا', headBestsellers:'الأكثر مبيعًا', subBestsellers:'ما يضيفه أهل البحرين إلى سلتهم باستمرار.',
     dealsBannerEyebrow:'عروض ساخنة', dealsBannerTitle:'وفّر كثيرًا على مختارات مميزة', dealsBannerSub:'اطّلع على أفضل التخفيضات اليوم', dealsBannerCta:'تسوق العروض ←',
     eyebrowShopByCat:'تسوق حسب الفئة', headFindGadget:'اعثر على أداتك المفضلة القادمة', subFindGadget:'تصفح ما يشتريه الناس في البحرين الآن.',
-    notifHeading:'العروض والتحديثات', notifLoading:'جارِ التحميل…', notifEmpty:'لا توجد عروض نشطة حاليًا. تحقق لاحقًا!',
+    notifHeading:'العروض والتحديثات', notifLoading:'جارِ التحميل…', notifEmpty:'لا توجد عروض نشطة حاليًا — تحقق لاحقًا!',
     eyebrowCatalogue:'الكتالوج الكامل', headAllProducts:'جميع المنتجات', loadingProducts:'جارِ تحميل المنتجات…', searchPlaceholder:'ابحث عن المنتجات…',
     eyebrowLovedLocally:'محبوب محليًا', headReviews:'ماذا يقول أهل البحرين',
     eyebrowMediaLibrary:'شاهدها بنفسك', headMediaLibrary:'من مجتمعنا',
-    newsletterHead:'احصل على وصول مبكر للمنتجات الجديدة', newsletterSub:'رسالة قصيرة أسبوعيًا: منتجات جديدة، إعادة تخزين، وعروض حصرية للبحرين.', newsletterBtn:'اشترك',
+    newsletterHead:'احصل على وصول مبكر للمنتجات الجديدة', newsletterSub:'رسالة قصيرة أسبوعيًا — منتجات جديدة، إعادة تخزين، وعروض حصرية للبحرين.', newsletterBtn:'اشترك',
     footerTagline:'الحل الكامل للأجهزة والإلكترونيات.', footerShop:'المتجر', footerAllProducts:'جميع المنتجات', footerDeals:'العروض', footerAboutUs:'من نحن',
     footerSupport:'الدعم', footerWhatsapp:'راسلنا عبر واتساب', footerDeliveryPolicy:'سياسة التوصيل', footerReturns:'الإرجاع والاسترداد',
     footerPayments:'طرق الدفع', footerBenefitpay:'رمز BenefitPay', footerCod:'الدفع عند الاستلام', footerPricesBhd:'الأسعار موضحة بالدينار البحريني.',
@@ -2439,29 +2385,29 @@ const I18N = {
     fieldFlat:'رقم الشقة / المحل', fieldBuilding:'المبنى', fieldRoad:'الطريق', fieldBlock:'المجمع', fieldArea:'المنطقة',
     phFullName:'اسمك', phFlat:'مثال: شقة 12', phBuilding:'اسم/رقم المبنى', phRoad:'رقم الطريق', phBlock:'رقم المجمع', phArea:'مثال: المنامة، الرفاع، المحرق…',
     saveAddrLabel:'احفظ هذا العنوان للمرة القادمة', fieldPayment:'طريقة الدفع', placeOrderBtn:'تأكيد الطلب',
-    qrScanTitle:'امسح وادفع عبر BenefitPay', qrOrderLine:'الطلب: سيتم تأكيده فور استلام الدفع.', qrAmountLabel:'المبلغ المطلوب إرساله', qrCopyAmount:'📋 نسخ المبلغ',
-    qrSteps:`1. افتح تطبيق <b>BenefitPay</b> على هاتفك<br>2. اضغط على <b>مسح ودفع</b> وامسح رمز QR أعلاه<br>3. أدخل المبلغ المطلوب بالضبط كما هو موضح أعلاه<br>4. أكمل عملية الدفع داخل التطبيق<br>5. التقط لقطة شاشة لصفحة نجاح الدفع<br>6. اضغط على <b>تم الدفع</b> أدناه. سيتم تأكيد طلبك وإرسال لقطة الشاشة لنا عبر واتساب`,
-    qrPaidBtn:'✅ تم الدفع: إرسال لقطة الشاشة عبر واتساب', qrHelpBtn:'🙋 غير متأكد من رمز QR؟ تواصل مع فريقنا',
+    qrScanTitle:'امسح وادفع عبر BenefitPay', qrOrderLine:'الطلب — سيتم تأكيده فور استلام الدفع.', qrAmountLabel:'المبلغ المطلوب إرساله', qrCopyAmount:'📋 نسخ المبلغ',
+    qrSteps:`1. افتح تطبيق <b>BenefitPay</b> على هاتفك<br>2. اضغط على <b>مسح ودفع</b> وامسح رمز QR أعلاه<br>3. أدخل المبلغ المطلوب بالضبط كما هو موضح أعلاه<br>4. أكمل عملية الدفع داخل التطبيق<br>5. التقط لقطة شاشة لصفحة نجاح الدفع<br>6. اضغط على <b>تم الدفع</b> أدناه — سيتم تأكيد طلبك وإرسال لقطة الشاشة لنا عبر واتساب`,
+    qrPaidBtn:'✅ تم الدفع — إرسال لقطة الشاشة عبر واتساب', qrHelpBtn:'🙋 غير متأكد من رمز QR؟ تواصل مع فريقنا',
     qrOnlyPlaced:'لن يتم تأكيد طلبك إلا بعد الضغط على "تم الدفع" أعلاه.',
     qrSafeTitle:'🔒 الدفع عبر BenefitPay آمن',
-    qrSafeText:`يعمل BenefitPay على شبكة الدفع الوطنية لشركة Benefit، الخاضعة لرقابة مصرف البحرين المركزي. لا تتم مشاركة بيانات بطاقتك أو حسابك البنكي معنا. نرى فقط تأكيد الدفع. يستخدمه آلاف العملاء في البحرين يوميًا.`,
+    qrSafeText:`يعمل BenefitPay على شبكة الدفع الوطنية لشركة Benefit، الخاضعة لرقابة مصرف البحرين المركزي. لا تتم مشاركة بيانات بطاقتك أو حسابك البنكي معنا — نرى فقط تأكيد الدفع. يستخدمه آلاف العملاء في البحرين يوميًا.`,
     qrDoLater:'سأفعل ذلك لاحقًا', confirmTitle:'تم استلام الطلب', confirmWaBtn:'📲 المتابعة عبر واتساب', confirmAnyQuery:'لديك استفسار؟', confirmDone:'تم',
     loginTitle:'تسجيل الدخول', loginSub:'يحتفظ الحساب بسجل طلباتك وتفاصيل التوصيل جاهزة للمرة القادمة.',
     fieldPassword:'كلمة المرور', forgotPasswordLink:'نسيت كلمة المرور؟', loginBtn:'تسجيل الدخول', newHere:'جديد هنا؟', createAccount:'إنشاء حساب', continueGuest:'المتابعة بدون حساب',
     signupPerksTitle:'سجّل واحصل على عروض حصرية', signupPerksSub:'وادعُ أصدقاءك واربح 0.200 دينار عن كل إحالة ناجحة',
     resetTitle:'إعادة تعيين كلمة المرور', resetSub:'أدخل بريد حسابك وسنرسل لك رابط إعادة التعيين.', sendResetBtn:'إرسال رابط إعادة التعيين', backToLogin:'← العودة لتسجيل الدخول',
     chooseNewPwTitle:'اختر كلمة مرور جديدة', resettingPwFor:'إعادة تعيين كلمة المرور لـ', fieldNewPassword:'كلمة المرور الجديدة (6 أحرف على الأقل)', setNewPwBtn:'تعيين كلمة المرور الجديدة',
-    registerTitle:'إنشاء حسابك', registerSub:'تستغرق 20 ثانية فقط، لملء طلبك بضغطة واحدة في المرة القادمة.',
+    registerTitle:'إنشاء حسابك', registerSub:'تستغرق 20 ثانية فقط — لملء طلبك بضغطة واحدة في المرة القادمة.',
     fieldMobileOptional:'رقم الجوال (اختياري)', fieldPasswordMin:'كلمة المرور (6 أحرف على الأقل)', createAccountBtn:'إنشاء الحساب', alreadyHaveAccount:'لديك حساب بالفعل؟',
     fieldReferralOptional:'رمز الإحالة (اختياري)', phReferralCode:'مثال: FATIF3K9',
     regSubscribeLabel:'📩 نعم، أبقوني على اطلاع بالعروض ورموز الخصم وتنبيهات إعادة التوفر',
-    promoRegisterNotice:'رموز الخصم وعروض الأعضاء متاحة <b>للعملاء المسجلين</b> فقط. أنشئ حسابًا مجانيًا للحصول على الخصومات على هذا الطلب.',
+    promoRegisterNotice:'رموز الخصم وعروض الأعضاء متاحة <b>للعملاء المسجلين</b> فقط — أنشئ حسابًا مجانيًا للحصول على الخصومات على هذا الطلب.',
     codPopupTitle:'تسوّق بدون أي مخاطرة!',
     codPopupText:'لا حاجة لأي دفع مسبق أبدًا! 🚫💳 اطلب ما تريد اليوم وادفع 100% نقدًا عند الاستلام 💵 فقط عندما يصل طلبك إلى يدك 📦✅. تسوّق بسيط وآمن وخالٍ من المخاطر تمامًا مع Souqify-bh! 🛍️💚',
     codPopupOkay:'حسنًا، فهمت! 👍',
     myAccount:'حسابي', tabOrders:'الطلبات', tabAddresses:'العناوين', tabProfile:'الملف الشخصي', loadingOrders:'جارِ تحميل طلباتك…', addAddress:'+ إضافة عنوان جديد',
     tabReferrals:'المحفظة', walletBalanceLabel:'رصيد محفظة Souqify-bh', walletUseAtCheckout:'استخدمه لدفع جزء من أي طلب عند الدفع.',
-    referralShareTitle:'ادعُ أصدقاءك واربح دنانير', referralShareSub:'شارك رمزك. عندما يسجّل صديق باستخدامه، يحصل كلاكما على 0.200 دينار في محفظتكما.',
+    referralShareTitle:'ادعُ أصدقاءك واربح دنانير', referralShareSub:'شارك رمزك — عندما يسجّل صديق باستخدامه، يحصل كلاكما على 0.200 دينار في محفظتكما.',
     copyBtn:'نسخ', shareBtnLabel:'مشاركة', referralCodeCopied:'تم نسخ رمز الإحالة!',
     useWalletLabel:'استخدام رصيد محفظتي', fromWalletSuffix:'من المحفظة', walletAvailableSuffix:'دينار متاح',
     promoCodeLabel:'لديك رمز ترويجي؟', phPromoCode:'أدخل الرمز', applyBtn:'تطبيق', removeBtn:'إزالة',
@@ -2469,26 +2415,24 @@ const I18N = {
     promoInvalid:'هذا الرمز غير صالح.', promoNetworkError:'تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى.',
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
     addBtn:'أضف', freeDeliveryBadge:'توصيل مجاني في البحرين', chipAll:'الكل', catGeneral:'عام',
-    saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة. جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
+    saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة — جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
     productsAvailable:'{n} منتج متوفر الآن', productAvailable:'منتج واحد متوفر الآن',
     inStock:'✓ متوفر', outOfStock:'✕ غير متوفر', onlyLeftStock:'⚠ {n} فقط متبقي في المخزون', saveLabel:'وفّر',
     outOfStockBtn:'غير متوفر', outOfStockAlert:'عذرًا، هذا المنتج غير متوفر حاليًا.', maxStockAlert:'عذرًا، يتبقى {n} فقط في المخزون.',
     shopCrumb:'المتجر', pdpBack:'← العودة للمتجر', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
     pdpTrustCod:'✅ الدفع عند الاستلام متاح', pdpTrustBenefitpay:'📲 BenefitPay عبر تأكيد واتساب', pdpTrustDelivery:'🚚 التوصيل لجميع مناطق البحرين',
-    pdpRelated:'قد يعجبك أيضًا', noReviewsYet:'لا توجد تقييمات بعد', noReviewsShort:'لا توجد تقييمات بعد، كن أول من يقيّم',
+    pdpRelated:'قد يعجبك أيضًا', noReviewsYet:'لا توجد تقييمات بعد', noReviewsShort:'لا توجد تقييمات بعد — كن أول من يقيّم',
     sortNewest:'الأحدث أولاً', sortHighest:'الأعلى تقييمًا', sortLowest:'الأقل تقييمًا', writeReview:'أضف تقييمًا',
-    reviewsLabel:'تقييم', reviewsLabelPlural:'تقييمات', defaultProductDesc:'اختيار Souqify-bh: تم فحص الجودة، وسعر عادل بالدينار البحريني، وجاهز للشحن في جميع أنحاء البحرين.',
+    reviewsLabel:'تقييم', reviewsLabelPlural:'تقييمات', defaultProductDesc:'اختيار Souqify-bh — تم فحص الجودة، وسعر عادل بالدينار البحريني، وجاهز للشحن في جميع أنحاء البحرين.',
     removeBtn:'إزالة', payBenefitpayLabel:'رمز BenefitPay', payBenefitpayDesc:'امسح رمز QR في تطبيق BenefitPay، ثم أرسل لقطة الشاشة عبر واتساب للتأكيد.',
     payCodLabel:'الدفع عند الاستلام', payCodDesc:'ادفع نقدًا عند وصول طلبك.',
     payCardLabel:'بطاقة ائتمان / خصم', payCardDesc:'ادفع أونلاين بأمان باستخدام بطاقتك.',
-    payBenefitpayCardLabel:'BenefitPay أو بطاقة', payBenefitpayCardDesc:'ادفع أونلاين عبر BenefitPay أو بطاقة ائتمان/خصم.',
-    catItemSingular:'منتج واحد', catItemPlural:'{n} منتجات',
     paySoonBadge:'قريبًا', placeOrderBtnBenefitpay:'المتابعة عبر BenefitPay QR',
-    maintTitle:'الدفع الإلكتروني غير متاح حاليًا',
-    maintText:'لا تزال بوابة الدفع قيد الربط، لذا لا يمكن إتمام الدفع الإلكتروني الآن. يمكنك إتمام طلبك بثقة والدفع نقدًا عند الاستلام فور وصول المنتج إليك.',
+    maintTitle:'طريقة الدفع هذه تحت الصيانة',
+    maintText:'لا تقلق — يمكنك المتابعة بثقة عبر الدفع عند الاستلام، وادفع نقدًا أو عبر Benefit عند وصول طلبك.',
     maintCodBtn:'المتابعة بالدفع عند الاستلام',
     preparingBenefitpay:'جارِ تجهيز BenefitPay QR', placingOrder:'جارِ تأكيد الطلب',
-    noProductsLoaded:'تعذر تحميل المنتجات الآن. يرجى تحديث الصفحة بعد قليل.',
+    noProductsLoaded:'تعذر تحميل المنتجات الآن — يرجى تحديث الصفحة بعد قليل.',
     bnHome:'الرئيسية', bnDeals:'العروض', bnDealsPercent:'خصومات%', bnProfile:'حسابي', dealsChipLabel:'العروض',
     pdpAccDescription:'الوصف', pdpAccFeatures:'الميزات', pdpAccMoreDetails:'تفاصيل إضافية',
     pdpDetailCategory:'الفئة', pdpDetailDelivery:'التوصيل', pdpDetailPayment:'الدفع', pdpDetailReturns:'الإرجاع',
@@ -2816,17 +2760,12 @@ function buildCategoryChips(){
 }
 function buildCategoryCards(){
   const cats = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
-  document.getElementById('categoryCardGrid').innerHTML = cats.map(c => {
-    const count = PRODUCTS.filter(p => p.category === c).length;
-    const countLabel = count === 1 ? T('catItemSingular') : T('catItemPlural').replace('{n}', count);
-    return `
+  document.getElementById('categoryCardGrid').innerHTML = cats.map(c => `
     <div class="cat-card" onclick="setCategory('${c.replace(/'/g,"\\'")}'); document.getElementById('shop').scrollIntoView({behavior:'smooth'});">
       <div class="ic">${categoryIconHtml(c)}</div>
       <div class="n">${catLabel(c)}</div>
-      <div class="cat-count">${countLabel}</div>
     </div>
-  `;
-  }).join('');
+  `).join('');
 }
 function buildTopCategoryStrip(){
   const strip = document.getElementById('topCatStrip');
@@ -3165,7 +3104,6 @@ function openProduct(id){
   document.getElementById('pdpCat').textContent = catLabel(p.category);
   document.getElementById('pdpName').textContent = pName(p);
   document.getElementById('pdpPrice').innerHTML = priceHtml(p, 'pdp');
-  document.getElementById('pdpStickyPrice').innerHTML = priceHtml(p, 'pdp');
   const fullDesc = pDesc(p) || T('defaultProductDesc');
   document.getElementById('pdpDesc').textContent = fullDesc;
   const shortDescEl = document.getElementById('pdpShortDesc');
@@ -3194,7 +3132,7 @@ function openProduct(id){
   const moreDetailsText = pMoreDetails(p);
   const defaultDetailsHtml = `<ul>
       <li><b data-i18n="pdpDetailCategory">Category</b>: ${escapeHtmlClient(catLabel(p.category))}</li>
-      <li><b data-i18n="pdpDetailDelivery">Delivery</b>: <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span> · <span data-i18n="pdpTrustDelivery2">one day delivery</span></li>
+      <li><b data-i18n="pdpDetailDelivery">Delivery</b>: <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span> — <span data-i18n="pdpTrustDelivery2">one day delivery</span></li>
       <li><b data-i18n="pdpDetailPayment">Payment</b>: <span data-i18n="pdpTrustCod">Cash on delivery available</span>, <span data-i18n="pdpTrustBenefitpay">BenefitPay via WhatsApp confirmation</span></li>
       <li><b data-i18n="pdpDetailReturns">Returns</b>: <a href="return-refund-policy.html" style="color:var(--blush-ink);font-weight:700;" data-i18n="footerReturns">Returns &amp; refunds</a></li>
     </ul>`;
@@ -3227,7 +3165,6 @@ function openProduct(id){
   else{ stockEl.textContent = T('outOfStock'); stockEl.className = 'pdp-stock low'; }
   document.getElementById('pdpAddBtn').disabled = p.stock <= 0;
   document.getElementById('pdpBuyBtn').disabled = p.stock <= 0;
-  document.getElementById('pdpStickyAddBtn').disabled = p.stock <= 0;
 
   document.getElementById('pdpBadges').innerHTML = [
     p.featured ? `<span class="card-badge featured" style="position:static;">${T('featuredBadge')}</span>` : '',
@@ -3249,8 +3186,6 @@ function openProduct(id){
   translateProductsIfNeeded([p]);
 
   document.getElementById('pdpOverlay').classList.add('show');
-  document.body.classList.add('pdp-open');
-  document.getElementById('pdpStickyBar').classList.remove('show');
   lockBodyScroll();
   window.scrollTo({top:0});
   if(location.hash !== `#/product/${id}`) history.pushState({pdp:id}, '', `#/product/${id}`);
@@ -3461,7 +3396,7 @@ async function loadReviews(productId){
       PDP_PRODUCT.reviewCount = count;
       document.getElementById('pdpStars').innerHTML = count
         ? `${renderStars(avg)} <span style="font-size:12.5px;color:var(--ink-soft);">${avg.toFixed(1)} (${count} review${count===1?'':'s'})</span>`
-        : `<span style="font-size:12.5px;color:var(--ink-soft);">No reviews yet, be the first</span>`;
+        : `<span style="font-size:12.5px;color:var(--ink-soft);">No reviews yet — be the first</span>`;
     }
     const p = PRODUCTS.find(p => p.id === productId);
     if(p){ p.avgRating = avg; p.reviewCount = count; }
@@ -3478,7 +3413,7 @@ function updateReviewsSummary(){
 }
 function renderReviewList(){
   const wrap = document.getElementById('reviewsList');
-  if(!REVIEWS.length){ wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">No reviews yet. Be the first to share your thoughts.</p>'; return; }
+  if(!REVIEWS.length){ wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:14px;">No reviews yet — be the first to share your thoughts.</p>'; return; }
   const sort = document.getElementById('reviewsSort').value;
   const sorted = REVIEWS.slice().sort((a,b) => {
     if(sort === 'highest') return Number(b.rating) - Number(a.rating);
@@ -3610,8 +3545,6 @@ async function submitReview(){
 
 function closeProduct(){
   document.getElementById('pdpOverlay').classList.remove('show');
-  document.body.classList.remove('pdp-open');
-  document.getElementById('pdpStickyBar').classList.remove('show');
   unlockBodyScroll();
   PDP_PRODUCT = null;
   if(location.hash.startsWith('#/product/')) history.pushState({}, '', location.pathname + location.search);
@@ -3661,20 +3594,19 @@ function renderCart(){
 function openCart(){ document.getElementById('overlay').classList.add('show'); document.getElementById('drawer').classList.add('show'); lockBodyScroll(); }
 function closeCart(){ document.getElementById('overlay').classList.remove('show'); document.getElementById('drawer').classList.remove('show'); unlockBodyScroll(); }
 
-let PAYMENT_GATEWAY_ENABLED = false;
+let PAYMENT_CARD_ENABLED = false;
+let PAYMENT_BENEFITPAY_ENABLED = false;
 function getPaymentMethods(){
   const list = [];
-  list.push({ id:'benefitpay_card', get label(){ return T('payBenefitpayCardLabel'); }, get desc(){ return T('payBenefitpayCardDesc'); }, available: PAYMENT_GATEWAY_ENABLED });
+  if(PAYMENT_CARD_ENABLED) list.push({ id:'card', get label(){ return T('payCardLabel'); }, get desc(){ return T('payCardDesc'); }, available:true });
+  if(PAYMENT_BENEFITPAY_ENABLED) list.push({ id:'benefitpay', get label(){ return T('payBenefitpayLabel'); }, get desc(){ return T('payBenefitpayDesc'); }, available:true });
   list.push({ id:'cod', get label(){ return T('payCodLabel'); }, get desc(){ return T('payCodDesc'); }, available:true });
   return list;
 }
 function applyPaymentSettings(settings){
   const s = settings || {};
-  // Single combined toggle. Kept backward-compatible with the older separate
-  // card/BenefitPay flags so nothing breaks if the backend still sends those.
-  PAYMENT_GATEWAY_ENABLED = s.paymentGatewayEnabled === true || s.paymentGatewayEnabled === 'TRUE'
-    || s.paymentCardEnabled === true || s.paymentCardEnabled === 'TRUE'
-    || s.paymentBenefitpayEnabled === true || s.paymentBenefitpayEnabled === 'TRUE';
+  PAYMENT_CARD_ENABLED = s.paymentCardEnabled === true || s.paymentCardEnabled === 'TRUE';
+  PAYMENT_BENEFITPAY_ENABLED = s.paymentBenefitpayEnabled === true || s.paymentBenefitpayEnabled === 'TRUE';
   safeCall(buildPayOptions);
 }
 function buildPayOptions(){
@@ -3743,7 +3675,7 @@ async function applyPromoCode(){
     APPLIED_PROMO = { code: data.code, discount: data.discount };
     document.getElementById('promoInputRow').style.display = 'none';
     document.getElementById('promoAppliedRow').style.display = 'flex';
-    document.getElementById('promoAppliedText').textContent = `${data.code}: ${Number(data.discount).toFixed(3)} BHD ${T('promoDiscountSuffix')}`;
+    document.getElementById('promoAppliedText').textContent = `${data.code} — ${Number(data.discount).toFixed(3)} BHD ${T('promoDiscountSuffix')}`;
     document.getElementById('promoBanner').classList.remove('show');
     renderPromoHint();
     updateCheckoutTotalDisplay();
@@ -3824,7 +3756,7 @@ function renderPromoHint(){
   const isPercent = offer.discountType === 'percent';
   const discountLabel = isPercent ? `${Number(offer.discountValue)}%` : `${Number(offer.discountValue).toFixed(3)} BHD`;
   document.getElementById('promoHintText').textContent =
-    `✓ You can apply code ${offer.code} for ${discountLabel} off on carts above ${minOrder.toFixed(3)} BHD`;
+    `✓ You can apply code ${offer.code} for ${discountLabel} off — cart above ${minOrder.toFixed(3)} BHD`;
   hintRow.style.display = 'flex';
 }
 function applyBestPromoQuick(){
@@ -3958,7 +3890,7 @@ async function loadCheckoutAddresses(){
     picker.innerHTML = ADDRESSES.map(a => `
       <div class="saved-addr-opt" data-id="${a.id}" onclick="pickCheckoutAddress('${a.id}')">
         <div class="sa-label">${a.label || 'Address'} ${isTrue(a.isDefault) ? '· Default' : ''}</div>
-        <div class="sa-text">${a.fullName || ''} · ${a.phone || ''}<br>${a.address || ''}</div>
+        <div class="sa-text">${a.fullName || ''} — ${a.phone || ''}<br>${a.address || ''}</div>
       </div>
     `).join('') + `
       <div class="saved-addr-opt" data-id="" onclick="pickCheckoutAddress('')">
@@ -4074,7 +4006,7 @@ async function placeOrder(){
       const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(orderPayload) });
       const data = await res.json();
       if(data && data.ok === false){
-        alert(data.error || 'Sorry, we could not place your order. Please try again.');
+        alert(data.error || 'Sorry, we could not place your order — please try again.');
         loadProducts(); // refresh stock numbers so the cart/badges reflect what's really left
         return;
       }
@@ -4092,7 +4024,7 @@ async function placeOrder(){
     if(actualPromoDiscount > 0) savingsBits.push(`${actualPromoDiscount.toFixed(3)} BHD off with your promo code`);
     if(actualWalletUsed > 0) savingsBits.push(`${actualWalletUsed.toFixed(3)} BHD paid from your Souqify-bh wallet`);
     document.getElementById('confirmText').textContent = savingsBits.length
-      ? `Order ${orderId}: ${savingsBits.join(', ')}, ${cashDue.toFixed(3)} BHD to pay in cash on delivery. We'll contact you to confirm delivery timing.`
+      ? `Order ${orderId} — ${savingsBits.join(', ')}, ${cashDue.toFixed(3)} BHD to pay in cash on delivery. We'll contact you to confirm delivery timing.`
       : `Order ${orderId} for ${cartTotal().toFixed(3)} BHD will be paid in cash on delivery. We'll contact you to confirm delivery timing.`;
     document.getElementById('confirmWaBtn').style.display = 'none';
     document.getElementById('confirmWaQueryLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi! I have a question about my order ' + orderId + '.')}`;
@@ -4116,7 +4048,7 @@ let qrCurrentAmount = '0.000';
 function showBenefitPayQr(orderId, total){
   document.getElementById('checkoutStepQR').style.display='block';
   qrCurrentAmount = total.toFixed(3);
-  document.getElementById('qrOrderLine').textContent = `Reference ${orderId}. Complete the BenefitPay payment below, then tap "Payment done" to place your order.`;
+  document.getElementById('qrOrderLine').textContent = `Reference ${orderId} — complete the BenefitPay payment below, then tap "Payment done" to place your order.`;
   document.getElementById('qrAmount').textContent = `${qrCurrentAmount} BHD`;
   document.getElementById('qrImage').src = CONFIG.BENEFITPAY_QR_IMAGE;
 
@@ -4143,7 +4075,7 @@ async function onQrPaidClick(){
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(pendingOrderPayload) });
     const data = await res.json();
     if(data && data.ok === false){
-      alert(data.error || 'Sorry, we could not place your order. Please try again.');
+      alert(data.error || 'Sorry, we could not place your order — please try again.');
       loadProducts();
       isSubmittingQrPayment = false;
       btn.disabled = false;
@@ -4165,7 +4097,7 @@ async function onQrPaidClick(){
 
   document.getElementById('checkoutStepQR').style.display='none';
   document.getElementById('checkoutStep2').style.display='block';
-  document.getElementById('confirmTitle').textContent = 'Order placed: payment verification pending';
+  document.getElementById('confirmTitle').textContent = 'Order placed — payment verification pending';
   document.getElementById('confirmText').innerHTML =
     `Order ${orderId} for ${qrCurrentAmount} BHD is placed. It will be confirmed once our team verifies your BenefitPay payment screenshot on WhatsApp.<br><br>` +
     `If we're unable to verify it, we'll message you on the WhatsApp number you provided, and the order will be cancelled from our side after following up with you.`;
@@ -4192,67 +4124,9 @@ function copyQrAmount(){
   }).catch(() => {});
 }
 
-const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-function setHeaderHeightVar(){
-  const h = document.getElementById('siteHeader');
-  if(h) document.documentElement.style.setProperty('--header-h', h.offsetHeight + 'px');
-}
-window.addEventListener('resize', setHeaderHeightVar);
-setHeaderHeightVar();
-
-let scrollTicking = false;
-function handleScrollEffects(){
-  const y = window.scrollY;
-  document.getElementById('siteHeader').classList.toggle('scrolled', y > 8);
-
-  // Top progress bar: how far down the whole page the reader has scrolled.
-  const doc = document.documentElement;
-  const scrollable = doc.scrollHeight - doc.clientHeight;
-  const progressEl = document.getElementById('scrollProgress');
-  if(progressEl) progressEl.style.width = scrollable > 0 ? Math.min(100, (y / scrollable) * 100) + '%' : '0%';
-
-  // Sticky category/search bar: add a shadow once it's pinned under the header.
-  const toolbar = document.getElementById('shopToolbarInner');
-  if(toolbar){
-    const headerH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 0;
-    toolbar.classList.toggle('stuck', toolbar.getBoundingClientRect().top <= headerH + 1);
-  }
-
-  // Subtle hero parallax, skipped entirely for reduced-motion users.
-  if(!REDUCE_MOTION){
-    const heroFull = document.querySelector('.hero-full');
-    if(heroFull){
-      const rect = heroFull.getBoundingClientRect();
-      if(rect.bottom > 0 && rect.top < window.innerHeight){
-        const shift = Math.round(rect.top * -0.08);
-        document.querySelectorAll('.hs-slide').forEach(img => {
-          img.style.transform = `scale(1.12) translateY(${shift}px)`;
-        });
-      }
-    }
-  }
-
-  scrollTicking = false;
-}
 window.addEventListener('scroll', () => {
-  if(!scrollTicking){
-    requestAnimationFrame(handleScrollEffects);
-    scrollTicking = true;
-  }
-}, { passive:true });
-handleScrollEffects();
-
-// Sticky mobile "Add to cart" bar on the PDP: shows once the primary CTA
-// row scrolls out of view, so the purchase action stays reachable.
-const pdpActionsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    const bar = document.getElementById('pdpStickyBar');
-    if(bar) bar.classList.toggle('show', document.body.classList.contains('pdp-open') && !entry.isIntersecting);
-  });
-}, { threshold:0 });
-const pdpActionsEl = document.querySelector('.pdp-actions');
-if(pdpActionsEl) pdpActionsObserver.observe(pdpActionsEl);
+  document.getElementById('siteHeader').classList.toggle('scrolled', window.scrollY > 8);
+});
 
 function toggleMobileMenu(){
   document.getElementById('menuToggle').classList.toggle('open');
@@ -4356,7 +4230,7 @@ async function loadNotifPanel(){
       const discountLabel = isPercent ? `${Number(c.discountValue)}%` : `${Number(c.discountValue).toFixed(3)} BHD`;
       const minOrder = Number(c.minOrderValue || 0);
       const sub = minOrder > 0
-        ? `Spend ${minOrder.toFixed(3)} BHD, get ${discountLabel} off with code ${c.code}`
+        ? `Spend ${minOrder.toFixed(3)} BHD, get ${discountLabel} off — code ${c.code}`
         : `Get ${discountLabel} off with code ${c.code}`;
       return `<div class="notif-item" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'});toggleNotifPanel();">
         <div class="t">🎁 Special offer</div>
