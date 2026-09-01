@@ -791,6 +791,11 @@
   .pdp-gallery-main{background:#fff;border-radius:20px;border:1px solid var(--line);overflow:hidden;aspect-ratio:1/1;position:relative;cursor:zoom-in;}
   .pdp-gallery-main img{width:100%;height:100%;object-fit:cover;}
   .pdp-zoom-hint{position:absolute;bottom:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(28,28,30,0.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;}
+  .pdp-gallery-actions{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:2;}
+  html[dir="rtl"] .pdp-gallery-actions{right:auto;left:12px;}
+  .pdp-icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.92);border:1px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;box-shadow:0 4px 14px rgba(28,28,30,0.12);transition:transform .15s ease;}
+  .pdp-icon-btn:hover{transform:scale(1.07);}
+  .pdp-icon-btn.active{background:#FDE7E7;border-color:var(--blush-deep);}
 
   /* ---------- image preview / zoom lightbox ---------- */
   .img-zoom-overlay{position:fixed;inset:0;background:rgba(10,10,10,0.94);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;touch-action:none;}
@@ -800,6 +805,12 @@
   .img-zoom-stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none;}
   .img-zoom-stage img{max-width:92vw;max-height:88vh;object-fit:contain;user-select:none;-webkit-user-drag:none;transition:transform .05s linear;will-change:transform;}
   @media (max-width:640px){ .img-zoom-hint-bar{font-size:11px;top:16px;} }
+  .img-zoom-nav{position:fixed;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.12);color:#fff;border:none;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;}
+  .img-zoom-nav:hover{background:rgba(255,255,255,0.22);}
+  .img-zoom-nav.prev{left:14px;}
+  .img-zoom-nav.next{right:14px;}
+  .img-zoom-counter{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.75);font-size:12px;z-index:2;}
+  @media (max-width:640px){ .img-zoom-nav{width:38px;height:38px;font-size:17px;} .img-zoom-nav.prev{left:8px;} .img-zoom-nav.next{right:8px;} }
   .pdp-thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
   .pdp-thumb{width:70px;height:70px;border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#fff;flex-shrink:0;}
   .pdp-thumb img{width:100%;height:100%;object-fit:cover;}
@@ -1109,6 +1120,7 @@
 
 <div class="acct-menu" id="acctMenu">
   <a href="javascript:void(0)" onclick="openMyOrders('orders')" data-i18n="acctOrders">📦 My orders</a>
+  <a href="javascript:void(0)" onclick="openMyOrders('wishlist')" data-i18n="acctWishlist">❤️ My wishlist</a>
   <a href="javascript:void(0)" onclick="openMyOrders('referrals')" class="acct-menu-item-sub" id="acctReferEarnLink">
     <span class="ams-icon">🎁</span>
     <span class="ams-text">
@@ -1415,9 +1427,12 @@
 <div class="img-zoom-overlay" id="imgZoomOverlay">
   <button class="close-x img-zoom-close" onclick="closeImageZoom()">✕</button>
   <div class="img-zoom-hint-bar" id="imgZoomHintBar">Pinch or scroll to zoom · Drag to pan · Double-tap to reset</div>
+  <button class="img-zoom-nav prev" id="imgZoomPrev" onclick="event.stopPropagation();zoomPrevImage()" aria-label="Previous image">‹</button>
   <div class="img-zoom-stage" id="imgZoomStage">
     <img id="imgZoomImg" src="" alt="">
   </div>
+  <button class="img-zoom-nav next" id="imgZoomNext" onclick="event.stopPropagation();zoomNextImage()" aria-label="Next image">›</button>
+  <div class="img-zoom-counter" id="imgZoomCounter"></div>
 </div>
 
 <div class="modal-overlay" id="paymentMaintOverlay">
@@ -1506,6 +1521,7 @@
       <button class="acct-tab" id="tabBtnOrders" onclick="switchAcctTab('orders')" data-i18n="tabOrders">Orders</button>
       <button class="acct-tab" id="tabBtnAddresses" onclick="switchAcctTab('addresses')" data-i18n="tabAddresses">Addresses</button>
       <button class="acct-tab" id="tabBtnReferrals" onclick="switchAcctTab('referrals')" data-i18n="tabReferrals">Wallet</button>
+      <button class="acct-tab" id="tabBtnWishlist" onclick="switchAcctTab('wishlist')" data-i18n="tabWishlist">Wishlist</button>
       <button class="acct-tab" id="tabBtnProfile" onclick="switchAcctTab('profile')" data-i18n="tabProfile">Profile</button>
     </div>
 
@@ -1552,6 +1568,10 @@
       </div>
     </div>
 
+    <div class="acct-panel" id="tabWishlist">
+      <div id="wishlistGrid" class="grid" style="margin-top:4px;"></div>
+    </div>
+
     <div class="acct-panel" id="tabProfile">
       <div class="field"><label>Full name</label><input type="text" id="profName"></div>
       <div class="field"><label>Mobile number</label><input type="text" id="profPhone"></div>
@@ -1577,6 +1597,10 @@
         <div class="pdp-gallery-main" id="pdpGalleryMain" onclick="openImageZoom()">
           <img id="pdpMainImg" src="" alt="">
           <div class="pdp-zoom-hint">🔍</div>
+          <div class="pdp-gallery-actions" onclick="event.stopPropagation()">
+            <button class="pdp-icon-btn" id="pdpWishBtn" onclick="togglePdpWishlist()" aria-label="Add to wishlist" title="Add to wishlist">🤍</button>
+            <button class="pdp-icon-btn" id="pdpShareBtn" onclick="pdpShareProduct()" aria-label="Share" title="Share">📤</button>
+          </div>
         </div>
         <div class="pdp-thumbs" id="pdpThumbs"></div>
       </div>
@@ -1775,6 +1799,17 @@ function canReviewProduct(productId){
   return CUSTOMER_ORDERS.some(o => o.orderStatus === 'delivered' && parseOrderItems(o).some(i => i.id === productId));
 }
 if(CUSTOMER) loadCustomerOrdersForReviews();
+let WISHLIST_IDS = new Set();
+async function loadWishlistIds(){
+  if(!CUSTOMER){ WISHLIST_IDS = new Set(); return; }
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listWishlist', customerId: CUSTOMER.id }) });
+    const data = await res.json();
+    WISHLIST_IDS = new Set((data.productIds || []).map(String));
+  }catch(err){ /* keep whatever we had — a stale heart state is harmless */ }
+  updatePdpWishBtn();
+}
+if(CUSTOMER) loadWishlistIds();
 let activeCategory = 'All';
 let maxPriceFilter = null;
 let minDiscountFilter = null;
@@ -1814,8 +1849,10 @@ function doLogout(){
     CUSTOMER = null;
     GUEST_MODE = false;
     CUSTOMER_ORDERS = [];
+    WISHLIST_IDS = new Set();
     localStorage.removeItem('gm_customer');
     updateAcctButton();
+    updatePdpWishBtn();
   }
 }
 document.addEventListener('click', (e) => {
@@ -1829,16 +1866,18 @@ function openMyOrders(tab){
   document.getElementById('ordersOverlay').classList.add('show');
   lockBodyScroll();
   switchAcctTab(tab || 'orders');
+  updateDealsFabVisibility();
 }
-function closeMyOrders(){ document.getElementById('ordersOverlay').classList.remove('show'); unlockBodyScroll(); }
+function closeMyOrders(){ document.getElementById('ordersOverlay').classList.remove('show'); unlockBodyScroll(); updateDealsFabVisibility(); }
 function switchAcctTab(tab){
-  ['orders','addresses','referrals','profile'].forEach(t => {
+  ['orders','addresses','referrals','wishlist','profile'].forEach(t => {
     document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
     document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
   });
   if(tab === 'orders') loadMyOrders();
   if(tab === 'addresses') loadAddresses();
   if(tab === 'referrals') loadWalletTab();
+  if(tab === 'wishlist') loadWishlistTab();
   if(tab === 'profile') loadProfile();
 }
 async function loadWalletTab(){
@@ -2263,6 +2302,7 @@ function onAuthSuccess(customer){
   localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
   updateAcctButton();
   closeAuth();
+  loadWishlistIds();
   loadCustomerOrdersForReviews().then(() => {
     if(pendingAfterAuth === 'checkout'){
       pendingAfterAuth = null;
@@ -2314,7 +2354,7 @@ const I18N = {
   en: {
     navShop:'Shop', navCategories:'Categories', navReviews:'Reviews', navAbout:'About', navLogin:'Login', navCart:'Cart',
     heroEyebrowDefault:'ORDER ONLINE, GET IT DELIVERED EASILY',
-    acctOrders:'📦 My orders', acctAddresses:'🏠 Saved addresses', acctProfile:'⚙️ Profile', acctLogout:'↩ Log out',
+    acctOrders:'📦 My orders', acctWishlist:'❤️ My wishlist', acctAddresses:'🏠 Saved addresses', acctProfile:'⚙️ Profile', acctLogout:'↩ Log out',
     acctReferEarn:'Refer & earn', acctReferEarnSub:'Earn 0.200 BHD per successful registration',
     eyebrowHandpicked:'Handpicked', headFeatured:'Featured this week', subFeatured:'A short list we personally rate, swipe through.',
     eyebrowCrowd:'Crowd favorites', headBestsellers:'Best sellers', subBestsellers:'What Bahrain keeps adding to cart.',
@@ -2354,7 +2394,8 @@ const I18N = {
     codPopupTitle:'Shop with zero risk!',
     codPopupText:"No advance payment needed, ever! 🚫💳 Order anything you like today, and pay 100% Cash on Delivery 💵 only when it's in your hands 📦✅. Simple, safe, and completely risk-free shopping with Souqify-bh! 🛍️💚",
     codPopupOkay:'Okay, got it! 👍',
-    myAccount:'My account', tabOrders:'Orders', tabAddresses:'Addresses', tabProfile:'Profile', loadingOrders:'Loading your orders…', addAddress:'+ Add a new address',
+    myAccount:'My account', tabOrders:'Orders', tabAddresses:'Addresses', tabWishlist:'Wishlist', tabProfile:'Profile', loadingOrders:'Loading your orders…', addAddress:'+ Add a new address',
+    wishAddLabel:'Add to wishlist', wishRemoveLabel:'Remove from wishlist', wishLoginPrompt:'Log in to see your wishlist.', wishLoading:'Loading your wishlist…', wishLoadError:'Could not load your wishlist.', wishEmpty:'Your wishlist is empty — tap the heart on any product to save it here.', shareProductText:'Check this out on Souqify-bh',
     tabReferrals:'Wallet', walletBalanceLabel:'Souqify-bh wallet balance', walletUseAtCheckout:'Use it to pay for part of any order at checkout.',
     referralShareTitle:'Invite friends, earn BHD', referralShareSub:'Share your code, and when a friend registers with it, you both get 0.200 BHD in your wallet.',
     copyBtn:'Copy', shareBtnLabel:'Share', referralCodeCopied:'Referral code copied!',
@@ -2393,7 +2434,7 @@ const I18N = {
   ar: {
     navShop:'المتجر', navCategories:'الفئات', navReviews:'التقييمات', navAbout:'من نحن', navLogin:'تسجيل الدخول', navCart:'السلة',
     heroEyebrowDefault:'اطلب أونلاين، واحصل عليه بسهولة',
-    acctOrders:'📦 طلباتي', acctAddresses:'🏠 العناوين المحفوظة', acctProfile:'⚙️ الملف الشخصي', acctLogout:'↩ تسجيل الخروج',
+    acctOrders:'📦 طلباتي', acctWishlist:'❤️ قائمة رغباتي', acctAddresses:'🏠 العناوين المحفوظة', acctProfile:'⚙️ الملف الشخصي', acctLogout:'↩ تسجيل الخروج',
     acctReferEarn:'ادعُ واربح', acctReferEarnSub:'اربح 0.200 دينار عن كل تسجيل ناجح',
     eyebrowHandpicked:'مختارات خاصة', headFeatured:'مميزات هذا الأسبوع', subFeatured:'قائمة قصيرة نرشحها لكم بأنفسنا.',
     eyebrowCrowd:'الأكثر طلبًا', headBestsellers:'الأكثر مبيعًا', subBestsellers:'ما يضيفه أهل البحرين إلى سلتهم باستمرار.',
@@ -2433,7 +2474,8 @@ const I18N = {
     codPopupTitle:'تسوّق بدون أي مخاطرة!',
     codPopupText:'لا حاجة لأي دفع مسبق أبدًا! 🚫💳 اطلب ما تريد اليوم وادفع 100% نقدًا عند الاستلام 💵 فقط عندما يصل طلبك إلى يدك 📦✅. تسوّق بسيط وآمن وخالٍ من المخاطر تمامًا مع Souqify-bh! 🛍️💚',
     codPopupOkay:'حسنًا، فهمت! 👍',
-    myAccount:'حسابي', tabOrders:'الطلبات', tabAddresses:'العناوين', tabProfile:'الملف الشخصي', loadingOrders:'جارِ تحميل طلباتك…', addAddress:'+ إضافة عنوان جديد',
+    myAccount:'حسابي', tabOrders:'الطلبات', tabAddresses:'العناوين', tabWishlist:'قائمة الرغبات', tabProfile:'الملف الشخصي', loadingOrders:'جارِ تحميل طلباتك…', addAddress:'+ إضافة عنوان جديد',
+    wishAddLabel:'أضف إلى قائمة الرغبات', wishRemoveLabel:'إزالة من قائمة الرغبات', wishLoginPrompt:'سجّل الدخول لرؤية قائمة رغباتك.', wishLoading:'جارِ تحميل قائمة رغباتك…', wishLoadError:'تعذّر تحميل قائمة رغباتك.', wishEmpty:'قائمة رغباتك فارغة — اضغط على القلب في أي منتج لحفظه هنا.', shareProductText:'ألق نظرة على هذا في Souqify-bh',
     tabReferrals:'المحفظة', walletBalanceLabel:'رصيد محفظة Souqify-bh', walletUseAtCheckout:'استخدمه لدفع جزء من أي طلب عند الدفع.',
     referralShareTitle:'ادعُ أصدقاءك واربح دنانير', referralShareSub:'شارك رمزك، وعندما يسجّل صديق باستخدامه، يحصل كلاكما على 0.200 دينار في محفظتكما.',
     copyBtn:'نسخ', shareBtnLabel:'مشاركة', referralCodeCopied:'تم نسخ رمز الإحالة!',
@@ -2873,6 +2915,16 @@ function setBottomNavActive(id){
   const btn = document.getElementById(id);
   if(btn) btn.classList.add('active');
 }
+// The round "Deals%" nav button only makes sense on the homepage — hide it
+// whenever the product page or the account/profile overlay is open, and
+// bring it back once the person is back on the homepage.
+function updateDealsFabVisibility(){
+  const btn = document.getElementById('bnDealsBtn');
+  if(!btn) return;
+  const pdpOpen = document.getElementById('pdpOverlay').classList.contains('show');
+  const acctOpen = document.getElementById('ordersOverlay').classList.contains('show');
+  btn.style.display = (pdpOpen || acctOpen) ? 'none' : '';
+}
 
 function cardBadgesHtml(p){
   const pct = discountPct(p);
@@ -3221,6 +3273,8 @@ function openProduct(id){
   lockBodyScroll();
   window.scrollTo({top:0});
   if(location.hash !== `#/product/${id}`) history.pushState({pdp:id}, '', `#/product/${id}`);
+  updateDealsFabVisibility();
+  updatePdpWishBtn();
 }
 function pickPdpColor(c){
   PDP_SELECTED_COLOR = c;
@@ -3247,8 +3301,10 @@ function startPdpPromoRotation(){
   PDP_PROMO_TIMER = setInterval(pdpPromoNext, 3500);
 }
 
+let PDP_IMG_INDEX = 0;
 function setPdpImage(i){
   if(!PDP_PRODUCT) return;
+  PDP_IMG_INDEX = i;
   document.getElementById('pdpMainImg').src = PDP_PRODUCT.images[i] || PDP_PRODUCT.images[0];
   document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.toggle('active', Number(t.dataset.i)===i));
 }
@@ -3259,17 +3315,36 @@ let ZOOM_POINTERS = new Map();
 let ZOOM_PINCH_START_DIST = 0, ZOOM_PINCH_START_SCALE = 1;
 let ZOOM_DRAGGING = false, ZOOM_DRAG_START = {x:0,y:0}, ZOOM_PAN_START = {x:0,y:0};
 const ZOOM_MIN = 1, ZOOM_MAX = 4, ZOOM_DOUBLE_TAP = 2.5;
+let ZOOM_IMG_INDEX = 0;
 
 function openImageZoom(){
-  const srcImg = document.getElementById('pdpMainImg');
-  if(!srcImg || !srcImg.src) return;
-  const zoomImg = document.getElementById('imgZoomImg');
-  zoomImg.src = srcImg.src;
-  zoomImg.alt = srcImg.alt || '';
-  resetZoomTransform();
+  if(!PDP_PRODUCT || !PDP_PRODUCT.images || !PDP_PRODUCT.images.length) return;
+  ZOOM_IMG_INDEX = PDP_IMG_INDEX;
+  setZoomImage(ZOOM_IMG_INDEX);
   document.getElementById('imgZoomOverlay').classList.add('show');
   lockBodyScroll();
 }
+function setZoomImage(i){
+  const imgs = (PDP_PRODUCT && PDP_PRODUCT.images) || [];
+  if(!imgs.length) return;
+  ZOOM_IMG_INDEX = ((i % imgs.length) + imgs.length) % imgs.length;
+  const zoomImg = document.getElementById('imgZoomImg');
+  zoomImg.src = imgs[ZOOM_IMG_INDEX];
+  zoomImg.alt = PDP_PRODUCT ? pName(PDP_PRODUCT) : '';
+  resetZoomTransform();
+  const multi = imgs.length > 1;
+  const prevBtn = document.getElementById('imgZoomPrev');
+  const nextBtn = document.getElementById('imgZoomNext');
+  const counter = document.getElementById('imgZoomCounter');
+  if(prevBtn) prevBtn.style.display = multi ? 'flex' : 'none';
+  if(nextBtn) nextBtn.style.display = multi ? 'flex' : 'none';
+  if(counter) counter.textContent = multi ? `${ZOOM_IMG_INDEX + 1} / ${imgs.length}` : '';
+  // keep the underlying gallery + thumbnail strip in sync with whatever
+  // image the person ends up looking at in the zoom view
+  setPdpImage(ZOOM_IMG_INDEX);
+}
+function zoomPrevImage(){ setZoomImage(ZOOM_IMG_INDEX - 1); }
+function zoomNextImage(){ setZoomImage(ZOOM_IMG_INDEX + 1); }
 function closeImageZoom(){
   document.getElementById('imgZoomOverlay').classList.remove('show');
   ZOOM_POINTERS.clear();
@@ -3371,11 +3446,84 @@ function pdpBuyNow(){
   closeProduct();
   openCheckout();
 }
+async function pdpShareProduct(){
+  if(!PDP_PRODUCT) return;
+  // This URL points at the Apps Script backend, not the SPA directly — it
+  // serves a tiny HTML page with this product's own og:image/og:title/
+  // og:description ("Free delivery in Bahrain" + price + short blurb) so
+  // WhatsApp, Messages, Instagram etc. show a real product preview card,
+  // then immediately redirects into the actual storefront product page.
+  const shareUrl = `${CONFIG.API_URL}?action=shareProduct&id=${encodeURIComponent(PDP_PRODUCT.id)}`;
+  const shortBit = pShortDesc(PDP_PRODUCT) || '';
+  const priceBit = `${Number(PDP_PRODUCT.price || 0).toFixed(3)} BHD`;
+  const text = `${pName(PDP_PRODUCT)} — 🚚 ${T('freeDeliveryBadge')} • ${priceBit}${shortBit ? ' • ' + shortBit : ''}`;
+  if(navigator.share){
+    try{
+      await navigator.share({ title: pName(PDP_PRODUCT), text, url: shareUrl });
+      return;
+    }catch(err){
+      if(err && err.name === 'AbortError') return;
+    }
+  }
+  window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + shareUrl)}`, '_blank');
+}
 
 function renderRelated(p){
   const related = PRODUCTS.filter(x => x.id !== p.id && x.category === p.category).slice(0,8);
   const fallback = related.length ? related : PRODUCTS.filter(x => x.id !== p.id).slice(0,8);
   document.getElementById('pdpRelated').innerHTML = fallback.map(x => productCardHtml(x)).join('');
+}
+
+/* ================= wishlist ================= */
+function updatePdpWishBtn(){
+  const btn = document.getElementById('pdpWishBtn');
+  if(!btn || !PDP_PRODUCT) return;
+  const saved = WISHLIST_IDS.has(String(PDP_PRODUCT.id));
+  btn.classList.toggle('active', saved);
+  btn.textContent = saved ? '❤️' : '🤍';
+  btn.setAttribute('aria-label', saved ? T('wishRemoveLabel') : T('wishAddLabel'));
+  btn.title = saved ? T('wishRemoveLabel') : T('wishAddLabel');
+}
+async function togglePdpWishlist(){
+  if(!PDP_PRODUCT) return;
+  if(!CUSTOMER){
+    pendingAfterAuth = null;
+    openAuth('login');
+    return;
+  }
+  const btn = document.getElementById('pdpWishBtn');
+  const wasSaved = WISHLIST_IDS.has(String(PDP_PRODUCT.id));
+  // optimistic UI update, corrected below if the request fails
+  if(wasSaved) WISHLIST_IDS.delete(String(PDP_PRODUCT.id)); else WISHLIST_IDS.add(String(PDP_PRODUCT.id));
+  updatePdpWishBtn();
+  if(btn) popButton(btn);
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'toggleWishlist', customerId: CUSTOMER.id, productId: PDP_PRODUCT.id }) });
+    const data = await res.json();
+    if(data.ok){
+      if(data.inWishlist) WISHLIST_IDS.add(String(PDP_PRODUCT.id)); else WISHLIST_IDS.delete(String(PDP_PRODUCT.id));
+    } else {
+      if(wasSaved) WISHLIST_IDS.add(String(PDP_PRODUCT.id)); else WISHLIST_IDS.delete(String(PDP_PRODUCT.id));
+    }
+  }catch(err){
+    if(wasSaved) WISHLIST_IDS.add(String(PDP_PRODUCT.id)); else WISHLIST_IDS.delete(String(PDP_PRODUCT.id));
+  }
+  updatePdpWishBtn();
+}
+async function loadWishlistTab(){
+  const grid = document.getElementById('wishlistGrid');
+  if(!CUSTOMER){ grid.innerHTML = `<p style="color:var(--ink-soft);font-size:14px;">${T('wishLoginPrompt')}</p>`; return; }
+  grid.innerHTML = `<p style="color:var(--ink-soft);font-size:14px;">${T('wishLoading')}</p>`;
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listWishlist', customerId: CUSTOMER.id }) });
+    const data = await res.json();
+    if(!data.ok){ grid.innerHTML = `<p style="color:var(--ink-soft);font-size:14px;">${T('wishLoadError')}</p>`; return; }
+    WISHLIST_IDS = new Set((data.productIds || []).map(String));
+    const products = data.products || [];
+    if(!products.length){ grid.innerHTML = `<p style="color:var(--ink-soft);font-size:14px;">${T('wishEmpty')}</p>`; return; }
+    grid.innerHTML = products.map(x => productCardHtml(x)).join('');
+    translateProductsIfNeeded(products);
+  }catch(err){ grid.innerHTML = `<p style="color:var(--ink-soft);font-size:14px;">${T('wishLoadError')}</p>`; }
 }
 
 /* ================= product reviews ================= */
@@ -3585,6 +3733,7 @@ function closeProduct(){
   unlockBodyScroll();
   PDP_PRODUCT = null;
   if(location.hash.startsWith('#/product/')) history.pushState({}, '', location.pathname + location.search);
+  updateDealsFabVisibility();
 }
 
 function handleRouteFromHash(){
@@ -4356,6 +4505,10 @@ function observeReveal(){
 
 window.addEventListener('keydown', (e) => {
   if(e.key === 'Escape' && document.getElementById('imgZoomOverlay').classList.contains('show')) { closeImageZoom(); return; }
+  if(document.getElementById('imgZoomOverlay').classList.contains('show')){
+    if(e.key === 'ArrowLeft'){ zoomPrevImage(); return; }
+    if(e.key === 'ArrowRight'){ zoomNextImage(); return; }
+  }
   if(e.key === 'Escape' && document.getElementById('pdpOverlay').classList.contains('show')) closeProduct();
   if(e.key === 'Escape' && document.getElementById('ordersOverlay').classList.contains('show')) closeMyOrders();
 });
