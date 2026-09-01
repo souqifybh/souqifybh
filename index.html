@@ -2915,15 +2915,17 @@ function setBottomNavActive(id){
   const btn = document.getElementById(id);
   if(btn) btn.classList.add('active');
 }
-// The round "Deals%" nav button only makes sense on the homepage — hide it
-// whenever the product page or the account/profile overlay is open, and
-// bring it back once the person is back on the homepage.
+// The bottom Home/Deals/Profile bar only makes sense on the homepage —
+// hide the whole bar whenever the product page is open (it was floating
+// on top of the product page before), and bring it back once the person
+// is back on the homepage. The homepage itself is untouched.
 function updateDealsFabVisibility(){
+  const nav = document.getElementById('bottomNav');
   const btn = document.getElementById('bnDealsBtn');
-  if(!btn) return;
   const pdpOpen = document.getElementById('pdpOverlay').classList.contains('show');
   const acctOpen = document.getElementById('ordersOverlay').classList.contains('show');
-  btn.style.display = (pdpOpen || acctOpen) ? 'none' : '';
+  if(nav) nav.style.display = pdpOpen ? 'none' : '';
+  if(btn) btn.style.display = (pdpOpen || acctOpen) ? 'none' : '';
 }
 
 function cardBadgesHtml(p){
