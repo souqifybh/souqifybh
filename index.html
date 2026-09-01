@@ -793,9 +793,10 @@
   .pdp-zoom-hint{position:absolute;bottom:12px;right:12px;width:36px;height:36px;border-radius:50%;background:rgba(28,28,30,0.55);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;pointer-events:none;}
   .pdp-gallery-actions{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:8px;z-index:2;}
   html[dir="rtl"] .pdp-gallery-actions{right:auto;left:12px;}
-  .pdp-icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.92);border:1px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;box-shadow:0 4px 14px rgba(28,28,30,0.12);transition:transform .15s ease;}
+  .pdp-icon-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.55);backdrop-filter:blur(2px);border:1px solid var(--line);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;box-shadow:0 4px 14px rgba(28,28,30,0.12);transition:transform .15s ease,background .15s ease,border-color .15s ease,color .15s ease;}
   .pdp-icon-btn:hover{transform:scale(1.07);}
-  .pdp-icon-btn.active{background:#FDE7E7;border-color:var(--blush-deep);}
+  .pdp-icon-btn svg{width:18px;height:18px;display:block;}
+  .pdp-icon-btn.active{background:rgba(253,231,231,0.65);border-color:var(--blush-deep);color:var(--blush-deep);}
 
   /* ---------- image preview / zoom lightbox ---------- */
   .img-zoom-overlay{position:fixed;inset:0;background:rgba(10,10,10,0.94);z-index:900;display:none;flex-direction:column;align-items:center;justify-content:center;touch-action:none;}
@@ -1598,8 +1599,8 @@
           <img id="pdpMainImg" src="" alt="">
           <div class="pdp-zoom-hint">🔍</div>
           <div class="pdp-gallery-actions" onclick="event.stopPropagation()">
-            <button class="pdp-icon-btn" id="pdpWishBtn" onclick="togglePdpWishlist()" aria-label="Add to wishlist" title="Add to wishlist">🤍</button>
-            <button class="pdp-icon-btn" id="pdpShareBtn" onclick="pdpShareProduct()" aria-label="Share" title="Share">📤</button>
+            <button class="pdp-icon-btn" id="pdpWishBtn" onclick="togglePdpWishlist()" aria-label="Add to wishlist" title="Add to wishlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54Z"/></svg></button>
+            <button class="pdp-icon-btn" id="pdpShareBtn" onclick="pdpShareProduct()" aria-label="Share" title="Share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="8 7 17 7 17 16"/></svg></button>
           </div>
         </div>
         <div class="pdp-thumbs" id="pdpThumbs"></div>
@@ -2404,7 +2405,7 @@ const I18N = {
     promoDiscountSuffix:'off', promoEnterCode:'Please enter a code.', promoLoginRequired:'Please log in to your account to use a promo code.',
     promoInvalid:'This code is not valid.', promoNetworkError:'Could not reach the server. Please try again.',
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
-    addBtn:'Add', freeDeliveryBadge:'Free Delivery in Bahrain', chipAll:'All', catGeneral:'General',
+    addBtn:'Add', freeDeliveryBadge:'Free Delivery in Bahrain', codBadge:'Cash on Delivery', chipAll:'All', catGeneral:'General',
     saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet. Try another search.', viewAllResults:'View all matching products',
     productsAvailable:'{n} products available now', productAvailable:'1 product available now',
     inStock:'✓ In stock', outOfStock:'✕ Out of stock', onlyLeftStock:'⚠ Only {n} left in stock', saveLabel:'Save',
@@ -2484,7 +2485,7 @@ const I18N = {
     promoDiscountSuffix:'خصم', promoEnterCode:'يرجى إدخال رمز.', promoLoginRequired:'يرجى تسجيل الدخول إلى حسابك لاستخدام رمز ترويجي.',
     promoInvalid:'هذا الرمز غير صالح.', promoNetworkError:'تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى.',
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
-    addBtn:'أضف', freeDeliveryBadge:'توصيل مجاني في البحرين', chipAll:'الكل', catGeneral:'عام',
+    addBtn:'أضف', freeDeliveryBadge:'توصيل مجاني في البحرين', codBadge:'الدفع عند الاستلام', chipAll:'الكل', catGeneral:'عام',
     saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة. جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
     productsAvailable:'{n} منتج متوفر الآن', productAvailable:'منتج واحد متوفر الآن',
     inStock:'✓ متوفر', outOfStock:'✕ غير متوفر', onlyLeftStock:'⚠ {n} فقط متبقي في المخزون', saveLabel:'وفّر',
@@ -3450,15 +3451,14 @@ function pdpBuyNow(){
 }
 async function pdpShareProduct(){
   if(!PDP_PRODUCT) return;
-  // This URL points at the Apps Script backend, not the SPA directly — it
-  // serves a tiny HTML page with this product's own og:image/og:title/
-  // og:description ("Free delivery in Bahrain" + price + short blurb) so
-  // WhatsApp, Messages, Instagram etc. show a real product preview card,
-  // then immediately redirects into the actual storefront product page.
-  const shareUrl = `${CONFIG.API_URL}?action=shareProduct&id=${encodeURIComponent(PDP_PRODUCT.id)}`;
+  // Share the storefront's own product URL directly — this is the exact
+  // page currently open (same origin + path the user is on), so it always
+  // lands correctly on this product, and it reads as a normal short site
+  // link instead of the long script.google.com Apps Script address.
+  const shareUrl = `${location.origin}${location.pathname}#/product/${encodeURIComponent(PDP_PRODUCT.id)}`;
   const shortBit = pShortDesc(PDP_PRODUCT) || '';
   const priceBit = `${Number(PDP_PRODUCT.price || 0).toFixed(3)} BHD`;
-  const text = `${pName(PDP_PRODUCT)} — 🚚 ${T('freeDeliveryBadge')} • ${priceBit}${shortBit ? ' • ' + shortBit : ''}`;
+  const text = `${pName(PDP_PRODUCT)}${shortBit ? ' — ' + shortBit : ''}\n💰 ${priceBit}\n🚚 ${T('freeDeliveryBadge')} • 💵 ${T('codBadge')}`;
   if(navigator.share){
     try{
       await navigator.share({ title: pName(PDP_PRODUCT), text, url: shareUrl });
@@ -3467,7 +3467,7 @@ async function pdpShareProduct(){
       if(err && err.name === 'AbortError') return;
     }
   }
-  window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + shareUrl)}`, '_blank');
+  window.open(`https://wa.me/?text=${encodeURIComponent(text + '\n' + shareUrl)}`, '_blank');
 }
 
 function renderRelated(p){
@@ -3482,7 +3482,9 @@ function updatePdpWishBtn(){
   if(!btn || !PDP_PRODUCT) return;
   const saved = WISHLIST_IDS.has(String(PDP_PRODUCT.id));
   btn.classList.toggle('active', saved);
-  btn.textContent = saved ? '❤️' : '🤍';
+  btn.innerHTML = saved
+    ? '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54Z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54Z"/></svg>';
   btn.setAttribute('aria-label', saved ? T('wishRemoveLabel') : T('wishAddLabel'));
   btn.title = saved ? T('wishRemoveLabel') : T('wishAddLabel');
 }
