@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gift to Bahrain — Souqify-bh</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#46501B">
+<meta name="description" content="Send a gift hamper to your loved ones in Bahrain — pay in INR from India, or in BHD from Bahrain.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Jost:wght@300;400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+  :root{
+    --blush:#A5BA4A; --blush-deep:#46501B; --blush-ink:#181B09;
+    --ink:#1C1C1E; --ink-soft:#6B6B70; --paper:#FFFFFF; --paper-soft:#FDF7F7;
+    --line:#EFE4E4; --radius:16px; --shadow-sm:0 2px 10px rgba(28,28,30,0.06);
+    --shadow-md:0 14px 40px rgba(28,28,30,0.10); --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.display{font-family:'Sora',sans-serif;letter-spacing:-0.01em;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+  button{font-family:inherit;cursor:pointer;}
+
+  header{position:sticky;top:0;z-index:200;background:rgba(255,255,255,0.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1180px;margin:0 auto;gap:14px;flex-wrap:wrap;}
+  .logo{display:flex;align-items:center;gap:9px;text-decoration:none;font-weight:800;font-family:'Sora';font-size:16px;}
+  .back-link{font-size:13.5px;font-weight:700;color:var(--ink-soft);text-decoration:none;}
+  .back-link:hover{color:var(--ink);}
+  .cur-toggle{display:flex;background:var(--paper-soft);border-radius:20px;padding:4px;border:1px solid var(--line);}
+  .cur-toggle button{border:none;background:none;padding:7px 16px;border-radius:16px;font-weight:800;font-size:13px;color:var(--ink-soft);}
+  .cur-toggle button.active{background:var(--blush-deep);color:#fff;}
+  .cart-btn{position:relative;background:var(--blush-deep);color:#fff;border:none;border-radius:20px;padding:9px 16px;font-weight:700;font-size:13.5px;}
+  .cart-count{position:absolute;top:-6px;right:-6px;background:#fff;color:var(--blush-deep);border-radius:50%;width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+
+  .hero{background:linear-gradient(135deg, var(--blush), var(--blush-deep));border-radius:0 0 28px 28px;padding:36px 24px 44px;text-align:center;color:#fff;}
+  .hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;background:rgba(255,255,255,0.18);padding:7px 16px;border-radius:20px;margin-bottom:14px;}
+  .hero h1{font-size:clamp(26px,4vw,38px);margin:0 0 10px;font-weight:800;}
+  .hero p{margin:0 auto;max-width:560px;font-size:14.5px;color:rgba(255,255,255,0.92);}
+
+  .section{padding:40px 24px;}
+  .section h2{font-size:18px;margin:0 0 20px;font-weight:800;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+  .card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(28,28,30,0.07);display:flex;flex-direction:column;transition:transform .25s var(--ease), box-shadow .25s var(--ease);cursor:pointer;}
+  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
+  .card .imgwrap{aspect-ratio:1/1;background:var(--paper-soft);overflow:hidden;position:relative;}
+  .card .imgwrap img{width:100%;height:100%;object-fit:cover;}
+  .card-badge{position:absolute;top:10px;left:10px;font-size:10.5px;font-weight:800;text-transform:uppercase;padding:4px 9px;border-radius:20px;background:var(--blush-deep);color:#fff;}
+  .card .body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .card .cat{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--blush-ink);font-weight:700;}
+  .card .name{font-weight:700;font-size:14.5px;line-height:1.3;}
+  .price-row{margin-top:auto;display:flex;align-items:baseline;gap:8px;padding-top:8px;}
+  .price-tag{font-family:'Sora';font-weight:700;font-size:16px;}
+  .price-tag .was{color:var(--ink-soft);text-decoration:line-through;font-size:12px;font-weight:600;margin-right:6px;}
+  .add-btn{margin-top:8px;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px;font-weight:700;font-size:13px;}
+  .empty-state{text-align:center;color:var(--ink-soft);padding:60px 20px;}
+
+  /* ---- overlay/drawer shell shared by product modal, cart, checkout ---- */
+  .overlay{position:fixed;inset:0;background:rgba(20,20,20,0.5);display:none;z-index:500;}
+  .overlay.open{display:block;}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(420px,100%);background:#fff;z-index:501;transform:translateX(100%);transition:transform .3s var(--ease);display:flex;flex-direction:column;}
+  .drawer.open{transform:translateX(0);}
+  .drawer-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--line);}
+  .drawer-head h3{margin:0;font-size:16px;}
+  .drawer-body{flex:1;overflow-y:auto;padding:16px 20px;}
+  .drawer-foot{padding:16px 20px;border-top:1px solid var(--line);}
+  .close-x{background:none;border:none;font-size:20px;color:var(--ink-soft);}
+
+  .modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;z-index:501;width:min(640px,92vw);max-height:88vh;overflow-y:auto;display:none;}
+  .modal.open{display:block;}
+  .modal-inner{padding:24px;}
+
+  .cart-line{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .cart-line img{width:56px;height:56px;object-fit:cover;border-radius:10px;background:var(--paper-soft);}
+  .cart-line .meta{flex:1;}
+  .cart-line .qty-row{display:flex;align-items:center;gap:8px;margin-top:6px;}
+  .qty-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--line);background:#fff;font-weight:700;}
+  .remove-link{font-size:12px;color:#B34141;background:none;border:none;padding:0;text-decoration:underline;}
+
+  label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:14px 0 6px;}
+  input[type=text],input[type=email],input[type=tel],input[type=url],textarea,select{
+    width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:13.5px;background:#fff;
+  }
+  textarea{min-height:70px;resize:vertical;}
+  .radio-row{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+  .radio-opt{display:flex;align-items:flex-start;gap:8px;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:13.5px;}
+  .radio-opt.checked{border-color:var(--blush-deep);background:var(--paper-soft);}
+  .primary-btn{width:100%;background:var(--blush-deep);color:#fff;border:none;border-radius:12px;padding:13px;font-weight:800;font-size:14.5px;margin-top:14px;}
+  .primary-btn:disabled{opacity:0.5;}
+  .ghost-btn{width:100%;background:none;border:1.5px solid var(--line);border-radius:12px;padding:11px;font-weight:700;font-size:13.5px;margin-top:8px;}
+  .totals-row{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;}
+  .totals-row.grand{font-weight:800;font-size:16px;border-top:1px solid var(--line);margin-top:6px;padding-top:10px;}
+  .err-msg{color:#B34141;font-size:12.5px;min-height:16px;margin-top:6px;}
+  .info-box{background:var(--paper-soft);border-radius:12px;padding:12px 14px;font-size:12.5px;color:var(--ink-soft);margin-top:10px;line-height:1.5;}
+  .countdown{font-family:'Sora';font-weight:800;font-size:22px;text-align:center;color:#B34141;margin:10px 0;}
+  .step-badge{display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;color:var(--blush-deep);background:var(--paper-soft);padding:3px 10px;border-radius:20px;margin-bottom:8px;}
+  .qr-box{text-align:center;margin:14px 0;}
+  .qr-box img{width:180px;height:180px;object-fit:contain;margin:0 auto 10px;border:1px solid var(--line);border-radius:12px;padding:8px;}
+  .whatsapp-btn{width:100%;background:#25D366;color:#fff;border:none;border-radius:12px;padding:13px;font-weight:800;font-size:14.5px;margin-top:10px;}
+  .gallery-main{aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:var(--paper-soft);margin-bottom:10px;}
+  .gallery-main img{width:100%;height:100%;object-fit:cover;}
+  .gallery-thumbs{display:flex;gap:8px;}
+  .gallery-thumbs img{width:56px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;}
+  .gallery-thumbs img.active{border-color:var(--blush-deep);}
+  .confirm-icon{font-size:44px;text-align:center;margin-bottom:6px;}
+  footer{background:var(--ink);color:#d9d5d5;padding:36px 24px 22px;margin-top:20px;}
+  .foot-bottom{max-width:1180px;margin:0 auto;font-size:12px;color:#8f8b8b;text-align:center;}
+</style>
+</head>
+<body>
+<header>
+  <nav>
+    <a class="logo" href="index.html">🎁 Gift to Bahrain</a>
+    <a class="back-link" href="index.html">← Back to shop</a>
+    <div style="display:flex;gap:10px;align-items:center;margin-left:auto;">
+      <div class="cur-toggle" id="curToggle">
+        <button id="curBtnINR" class="active" onclick="setCurrency('INR')">₹ INR</button>
+        <button id="curBtnBHD" onclick="setCurrency('BHD')">BHD</button>
+      </div>
+      <button class="cart-btn" onclick="openCart()">🛒 Cart<span class="cart-count" id="cartCount">0</span></button>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">🇮🇳 → 🇧🇭 Cross-border gifting</span>
+    <h1>Surprise your loved ones in Bahrain</h1>
+    <p>Pick a gift hamper, pay in Indian Rupees from India (or in BHD if you're in Bahrain), and we hand-deliver it with the surprise style you choose.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2 id="giftCount">Loading gift hampers…</h2>
+    <div class="grid" id="giftGrid"></div>
+    <div class="empty-state" id="giftEmpty" style="display:none;">No gift hampers are set up yet — please check back soon.</div>
+  </div>
+</section>
+
+<footer><div class="foot-bottom">© 2026 Souqify-bh · Gift to Bahrain · Payments in INR via Razorpay, or in BHD via BenefitPay/IBAN.</div></footer>
+
+<!-- ================= shared overlay ================= -->
+<div class="overlay" id="overlay" onclick="closeAllOverlays()"></div>
+
+<!-- ================= product quick-view modal ================= -->
+<div class="modal" id="productModal">
+  <div class="modal-inner">
+    <button class="close-x" style="float:right;" onclick="closeAllOverlays()">✕</button>
+    <div id="productModalBody"></div>
+  </div>
+</div>
+
+<!-- ================= cart drawer ================= -->
+<div class="drawer" id="cartDrawer">
+  <div class="drawer-head"><h3>Your gift cart</h3><button class="close-x" onclick="closeAllOverlays()">✕</button></div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot">
+    <div class="totals-row grand"><span>Total</span><span id="cartTotal">—</span></div>
+    <button class="primary-btn" id="cartCheckoutBtn" onclick="openCheckout()">Proceed to gift checkout</button>
+  </div>
+</div>
+
+<!-- ================= checkout modal ================= -->
+<div class="modal" id="checkoutModal">
+  <div class="modal-inner">
+    <button class="close-x" style="float:right;" onclick="closeAllOverlays()">✕</button>
+    <div id="checkoutBody"></div>
+  </div>
+</div>
+
+<script>
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0nP0mfTHx3AGvMOrsqwsBvTZm-9RL4iJ947YJEVViOgx-YFUJNc9zo1/exec'
+};
+const WHATSAPP_NUMBER = '97335184023';
+
+let ALL_GIFT_PRODUCTS = [];
+let CURRENCY = 'INR';
+let CART = JSON.parse(localStorage.getItem('giftCartBH') || '[]');
+let ACTIVE_ORDER = null;      // { orderId, currency, expiresAt, razorpayOrderId }
+let COUNTDOWN_TIMER = null;
+let SETTINGS_CACHE = {};
+
+/* ---------------- helpers ---------------- */
+function escapeHtml(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function getImages(p){
+  if(Array.isArray(p.images) && p.images.filter(Boolean).length) return p.images.filter(Boolean);
+  return ['https://placehold.co/700x700/FDF7F7/8A3B3B?text=Souqify-bh'];
+}
+function isGift(p){ return p.giftEnabled === true || p.giftEnabled === 'TRUE' || p.giftEnabled === 'true'; }
+function isActive(p){ return !(p.active === false || p.active === 'FALSE' || p.active === 'false'); }
+
+function priceOf(p){ return CURRENCY === 'INR' ? Number(p.priceINR || 0) : Number(p.price || 0); }
+function compareOf(p){ return CURRENCY === 'INR' ? Number(p.compareAtPriceINR || 0) : Number(p.compareAtPrice || 0); }
+function fmtMoney(n){
+  n = Number(n || 0);
+  return CURRENCY === 'INR' ? ('₹' + n.toLocaleString('en-IN')) : (n.toFixed(3) + ' BHD');
+}
+function saveCart(){ localStorage.setItem('giftCartBH', JSON.stringify(CART)); updateCartCount(); }
+function updateCartCount(){
+  const n = CART.reduce((s,i) => s + i.qty, 0);
+  document.getElementById('cartCount').textContent = n;
+}
+
+function setCurrency(c){
+  CURRENCY = c;
+  document.getElementById('curBtnINR').classList.toggle('active', c === 'INR');
+  document.getElementById('curBtnBHD').classList.toggle('active', c === 'BHD');
+  renderGrid();
+  if(document.getElementById('cartDrawer').classList.contains('open')) renderCart();
+}
+
+/* ---------------- load + render product grid ---------------- */
+async function loadGiftProducts(){
+  let list = [];
+  try{
+    const res = await fetch(`products.json?v=${Math.floor(Date.now()/3600000)}`);
+    if(res.ok){ const data = await res.json(); list = Array.isArray(data) ? data : (data.products || []); }
+  }catch(e){}
+  if(!list.length){
+    try{
+      const res2 = await fetch(`${CONFIG.API_URL}?action=listProducts`);
+      const data2 = await res2.json();
+      list = data2.products || [];
+    }catch(e2){}
+  }
+  ALL_GIFT_PRODUCTS = list.filter(p => isGift(p) && isActive(p));
+  renderGrid();
+  loadSettings();
+}
+
+function renderGrid(){
+  const grid = document.getElementById('giftGrid');
+  const empty = document.getElementById('giftEmpty');
+  const count = document.getElementById('giftCount');
+  if(!ALL_GIFT_PRODUCTS.length){
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    count.textContent = 'No gift hampers available';
+    return;
+  }
+  empty.style.display = 'none';
+  count.textContent = `${ALL_GIFT_PRODUCTS.length} gift hamper${ALL_GIFT_PRODUCTS.length===1?'':'s'} available`;
+  grid.innerHTML = ALL_GIFT_PRODUCTS.map(p => {
+    const price = priceOf(p), compare = compareOf(p);
+    const pct = compare > price ? Math.round((1 - price/compare) * 100) : 0;
+    return `
+    <div class="card" onclick="openProduct('${p.id}')">
+      ${pct ? `<div class="imgwrap"><span class="card-badge">${pct}% OFF</span><img src="${getImages(p)[0]}" alt="${escapeHtml(p.name)}" loading="lazy"></div>`
+            : `<div class="imgwrap"><img src="${getImages(p)[0]}" alt="${escapeHtml(p.name)}" loading="lazy"></div>`}
+      <div class="body">
+        <div class="cat">${escapeHtml(p.category || 'Gift hamper')}</div>
+        <div class="name">${escapeHtml(p.name)}</div>
+        <div class="price-row">
+          <div class="price-tag">${compare > price ? `<span class="was">${fmtMoney(compare)}</span>` : ''}${fmtMoney(price)}</div>
+        </div>
+        <button class="add-btn" onclick="event.stopPropagation();quickAdd('${p.id}')">Add to gift cart</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function quickAdd(id){
+  const existing = CART.find(i => i.id === id);
+  if(existing) existing.qty += 1; else CART.push({ id, qty: 1 });
+  saveCart();
+  openCart();
+}
+
+/* ---------------- product quick-view ---------------- */
+function openProduct(id){
+  const p = ALL_GIFT_PRODUCTS.find(x => x.id === id);
+  if(!p) return;
+  const imgs = getImages(p);
+  const price = priceOf(p), compare = compareOf(p);
+  document.getElementById('productModalBody').innerHTML = `
+    <span class="step-badge">${escapeHtml(p.category || 'Gift hamper')}</span>
+    <div class="gallery-main"><img id="pmMainImg" src="${imgs[0]}" alt=""></div>
+    ${imgs.length > 1 ? `<div class="gallery-thumbs">${imgs.map((im,i) => `<img src="${im}" class="${i===0?'active':''}" onclick="document.getElementById('pmMainImg').src='${im}';this.parentElement.querySelectorAll('img').forEach(t=>t.classList.remove('active'));this.classList.add('active');">`).join('')}</div>` : ''}
+    <h2 style="margin:14px 0 6px;">${escapeHtml(p.name)}</h2>
+    <div class="price-tag" style="font-size:22px;">${compare > price ? `<span class="was">${fmtMoney(compare)}</span>` : ''}${fmtMoney(price)}</div>
+    <p style="color:var(--ink-soft);font-size:13.5px;line-height:1.6;white-space:pre-line;margin-top:10px;">${escapeHtml(p.description || '')}</p>
+    <button class="primary-btn" onclick="quickAdd('${p.id}');closeAllOverlays();">Add to gift cart</button>
+  `;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('productModal').classList.add('open');
+}
+
+/* ---------------- cart drawer ---------------- */
+function openCart(){
+  renderCart();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('cartDrawer').classList.add('open');
+}
+function renderCart(){
+  const body = document.getElementById('cartBody');
+  if(!CART.length){
+    body.innerHTML = '<p style="color:var(--ink-soft);">Your gift cart is empty.</p>';
+    document.getElementById('cartTotal').textContent = fmtMoney(0);
+    document.getElementById('cartCheckoutBtn').disabled = true;
+    return;
+  }
+  document.getElementById('cartCheckoutBtn').disabled = false;
+  let total = 0;
+  body.innerHTML = CART.map(item => {
+    const p = ALL_GIFT_PRODUCTS.find(x => x.id === item.id);
+    if(!p) return '';
+    const price = priceOf(p);
+    total += price * item.qty;
+    return `
+      <div class="cart-line">
+        <img src="${getImages(p)[0]}" alt="">
+        <div class="meta">
+          <div style="font-weight:700;font-size:13.5px;">${escapeHtml(p.name)}</div>
+          <div style="font-size:12.5px;color:var(--ink-soft);">${fmtMoney(price)} each</div>
+          <div class="qty-row">
+            <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+            <span>${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+            <button class="remove-link" onclick="removeItem('${item.id}')">Remove</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('cartTotal').textContent = fmtMoney(total);
+}
+function changeQty(id, delta){
+  const item = CART.find(i => i.id === id);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) CART = CART.filter(i => i.id !== id);
+  saveCart(); renderCart();
+}
+function removeItem(id){ CART = CART.filter(i => i.id !== id); saveCart(); renderCart(); }
+function cartTotalValue(){
+  return CART.reduce((s,item) => {
+    const p = ALL_GIFT_PRODUCTS.find(x => x.id === item.id);
+    return s + (p ? priceOf(p) * item.qty : 0);
+  }, 0);
+}
+
+/* ---------------- overlay management ---------------- */
+function closeAllOverlays(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('productModal').classList.remove('open');
+  document.getElementById('checkoutModal').classList.remove('open');
+}
+
+/* ---------------- settings (BenefitPay IBAN/QR) ---------------- */
+async function loadSettings(){
+  try{
+    const res = await fetch(`${CONFIG.API_URL}?action=getSettings`);
+    const data = await res.json();
+    if(data.ok) SETTINGS_CACHE = data.settings || {};
+  }catch(e){}
+}
+
+/* ================= CHECKOUT ================= */
+function openCheckout(){
+  if(!CART.length) return;
+  closeAllOverlays();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('checkoutModal').classList.add('open');
+  renderCheckoutDetailsStep();
+}
+
+function renderCheckoutDetailsStep(){
+  const total = cartTotalValue();
+  document.getElementById('checkoutBody').innerHTML = `
+    <span class="step-badge">Step 1 of 2 · Gift details</span>
+    <h2 style="margin:0 0 12px;">Who's this gift for?</h2>
+
+    <label>Your name (sender)</label><input type="text" id="ckSenderName">
+    <label>Your email <span style="font-weight:500;color:var(--ink-soft);">(for the order confirmation)</span></label><input type="email" id="ckSenderEmail">
+    <label>Your phone</label><input type="tel" id="ckSenderPhone">
+
+    <hr style="border:none;border-top:1px solid var(--line);margin:18px 0;">
+
+    <label>Gift for (recipient's name)</label><input type="text" id="ckRecipientName">
+    <label>Recipient's phone <span style="font-weight:500;color:var(--ink-soft);">(so our delivery rider can reach them)</span></label><input type="tel" id="ckRecipientPhone">
+    <label>Recipient's full address in Bahrain</label><textarea id="ckRecipientAddress"></textarea>
+    <label>Google Maps link <span style="font-weight:500;color:var(--ink-soft);">(optional, but helps our rider a lot)</span></label><input type="url" id="ckRecipientMap" placeholder="https://maps.google.com/...">
+
+    <label>How should we deliver it?</label>
+    <div class="radio-row" id="deliveryOptions">
+      <label class="radio-opt checked"><input type="radio" name="deliveryMethod" value="normal" checked onchange="onDeliveryMethodChange()"><div><b>Normal delivery</b><br><span style="color:var(--ink-soft);">Our rider delivers it straightforwardly, like a regular order.</span></div></label>
+      <label class="radio-opt"><input type="radio" name="deliveryMethod" value="surprise" onchange="onDeliveryMethodChange()"><div><b>Surprise like a stranger, then reveal</b><br><span style="color:var(--ink-soft);">Our rider delivers it as if it's from an unknown sender, then reveals it's from you.</span></div></label>
+      <label class="radio-opt"><input type="radio" name="deliveryMethod" value="custom_script" onchange="onDeliveryMethodChange()"><div><b>Custom script</b><br><span style="color:var(--ink-soft);">Tell us exactly how you'd like the surprise to go — no length limit.</span></div></label>
+    </div>
+    <div id="customScriptBox" style="display:none;">
+      <label>Describe exactly how you'd like this delivered/revealed</label>
+      <textarea id="ckCustomScript" style="min-height:120px;" placeholder="e.g. Ring the bell twice, say it's from &quot;Bahrain Flower Co&quot;, wait for them to open it before mentioning who it's really from..."></textarea>
+    </div>
+
+    <div class="totals-row grand" style="margin-top:16px;"><span>Order total</span><span>${fmtMoney(total)}</span></div>
+    <div id="ckDetailsErr" class="err-msg"></div>
+    <button class="primary-btn" onclick="submitCheckoutDetails()">Continue to payment</button>
+  `;
+}
+
+function onDeliveryMethodChange(){
+  document.querySelectorAll('#deliveryOptions .radio-opt').forEach(el => {
+    el.classList.toggle('checked', el.querySelector('input').checked);
+  });
+  const method = document.querySelector('input[name=deliveryMethod]:checked').value;
+  document.getElementById('customScriptBox').style.display = (method === 'custom_script') ? 'block' : 'none';
+}
+
+async function submitCheckoutDetails(){
+  const senderName = document.getElementById('ckSenderName').value.trim();
+  const senderEmail = document.getElementById('ckSenderEmail').value.trim();
+  const senderPhone = document.getElementById('ckSenderPhone').value.trim();
+  const recipientName = document.getElementById('ckRecipientName').value.trim();
+  const recipientPhone = document.getElementById('ckRecipientPhone').value.trim();
+  const recipientAddress = document.getElementById('ckRecipientAddress').value.trim();
+  const recipientLocationLink = document.getElementById('ckRecipientMap').value.trim();
+  const deliveryMethod = document.querySelector('input[name=deliveryMethod]:checked').value;
+  const customScript = document.getElementById('ckCustomScript') ? document.getElementById('ckCustomScript').value.trim() : '';
+
+  const errBox = document.getElementById('ckDetailsErr');
+  if(!senderName || !senderEmail || !senderPhone){ errBox.textContent = 'Please fill in your name, email and phone.'; return; }
+  if(!recipientName || !recipientPhone || !recipientAddress){ errBox.textContent = "Please fill in the recipient's name, phone and address."; return; }
+  if(deliveryMethod === 'custom_script' && !customScript){ errBox.textContent = 'Please describe how you want the surprise delivered.'; return; }
+  errBox.textContent = '';
+
+  const items = CART.map(item => {
+    const p = ALL_GIFT_PRODUCTS.find(x => x.id === item.id);
+    return { id: item.id, name: p ? p.name : item.id, qty: item.qty, price: p ? priceOf(p) : 0 };
+  });
+  const total = cartTotalValue();
+
+  const payload = {
+    action: 'createGiftOrder',
+    customerName: senderName, customerEmail: senderEmail, phone: senderPhone,
+    recipientName, recipientPhone, recipientAddress, recipientLocationLink,
+    deliveryMethod, customScript,
+    currency: CURRENCY, items, total
+  };
+
+  document.getElementById('checkoutBody').innerHTML = '<p style="text-align:center;padding:40px 0;">Creating your order…</p>';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
+    const data = await res.json();
+    if(!data.ok){ renderCheckoutDetailsStep(); document.getElementById('ckDetailsErr').textContent = data.error || 'Could not create the order.'; return; }
+    ACTIVE_ORDER = { orderId: data.orderId, currency: data.currency, expiresAt: data.expiresAt, total,
+      recipientName, deliveryMethod };
+    if(CURRENCY === 'INR') renderRazorpayStep();
+    else renderBenefitPayStep();
+  }catch(e){
+    renderCheckoutDetailsStep();
+    document.getElementById('ckDetailsErr').textContent = 'Network error — please try again.';
+  }
+}
+
+/* -------- INR / Razorpay step, with 5-minute countdown -------- */
+function renderRazorpayStep(){
+  clearInterval(COUNTDOWN_TIMER);
+  document.getElementById('checkoutBody').innerHTML = `
+    <span class="step-badge">Step 2 of 2 · Payment</span>
+    <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_ORDER.total)} securely</h2>
+    <p style="color:var(--ink-soft);font-size:13px;">Order ${escapeHtml(ACTIVE_ORDER.orderId)} — complete payment before the timer runs out, or the order is cancelled automatically.</p>
+    <div class="countdown" id="countdownDisplay">05:00</div>
+    <button class="primary-btn" id="payNowBtn" onclick="startRazorpayPayment()">Pay now with Razorpay</button>
+    <div id="paymentFailBox" style="display:none;">
+      <div class="info-box" style="color:#B34141;background:#FCEEEE;">Your payment wasn't completed. Please complete your order with payment before the timer runs out.</div>
+      <button class="ghost-btn" onclick="startRazorpayPayment()">Retry payment</button>
+    </div>
+    <div id="expiredBox" style="display:none;">
+      <div class="info-box" style="color:#B34141;background:#FCEEEE;">Time's up — this order was cancelled automatically. Please start again.</div>
+      <button class="ghost-btn" onclick="closeAllOverlays();">Close</button>
+    </div>
+  `;
+  startCountdown();
+}
+
+function startCountdown(){
+  const expiresAt = new Date(ACTIVE_ORDER.expiresAt).getTime();
+  COUNTDOWN_TIMER = setInterval(() => {
+    const msLeft = expiresAt - Date.now();
+    if(msLeft <= 0){
+      clearInterval(COUNTDOWN_TIMER);
+      onOrderExpired();
+      return;
+    }
+    const totalSec = Math.floor(msLeft / 1000);
+    const mm = String(Math.floor(totalSec/60)).padStart(2,'0');
+    const ss = String(totalSec % 60).padStart(2,'0');
+    const el = document.getElementById('countdownDisplay');
+    if(el) el.textContent = `${mm}:${ss}`;
+  }, 500);
+}
+
+async function onOrderExpired(){
+  try{ await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'cancelGiftOrder', orderId: ACTIVE_ORDER.orderId }) }); }catch(e){}
+  document.getElementById('payNowBtn').style.display = 'none';
+  document.getElementById('paymentFailBox').style.display = 'none';
+  document.getElementById('expiredBox').style.display = 'block';
+}
+
+async function startRazorpayPayment(){
+  document.getElementById('paymentFailBox').style.display = 'none';
+  document.getElementById('payNowBtn').textContent = 'Opening payment…';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'createRazorpayOrder', orderId: ACTIVE_ORDER.orderId }) });
+    const data = await res.json();
+    document.getElementById('payNowBtn').textContent = 'Pay now with Razorpay';
+    if(!data.ok){
+      if(data.error === 'expired'){ onOrderExpired(); return; }
+      document.getElementById('paymentFailBox').style.display = 'block';
+      document.getElementById('paymentFailBox').querySelector('.info-box').textContent = data.error || 'Could not start payment.';
+      return;
+    }
+    const rzp = new Razorpay({
+      key: data.keyId,
+      amount: data.amount,
+      currency: data.currency,
+      name: data.name,
+      order_id: data.razorpayOrderId,
+      handler: async function(response){
+        const verifyRes = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+          action: 'verifyRazorpayPayment', orderId: ACTIVE_ORDER.orderId,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature
+        })});
+        const verifyData = await verifyRes.json();
+        clearInterval(COUNTDOWN_TIMER);
+        if(verifyData.ok) renderConfirmation();
+        else { document.getElementById('paymentFailBox').style.display = 'block'; }
+      },
+      modal: {
+        ondismiss: function(){ document.getElementById('paymentFailBox').style.display = 'block'; }
+      }
+    });
+    rzp.on('payment.failed', function(){ document.getElementById('paymentFailBox').style.display = 'block'; });
+    rzp.open();
+  }catch(e){
+    document.getElementById('payNowBtn').textContent = 'Pay now with Razorpay';
+    document.getElementById('paymentFailBox').style.display = 'block';
+  }
+}
+
+/* -------- BHD / BenefitPay + IBAN step -------- */
+function renderBenefitPayStep(){
+  const iban = SETTINGS_CACHE.benefitpayIban || 'BH00 SOUQ 0000 0000 0000 00';
+  const name = SETTINGS_CACHE.benefitpayName || 'Souqify-bh W.L.L.';
+  const qr = SETTINGS_CACHE.benefitpayQrUrl || 'assets/benefitpay-qr.png';
+  const waText = encodeURIComponent(
+    `Hi Souqify-bh, I've paid for gift order ${ACTIVE_ORDER.orderId} (${fmtMoney(ACTIVE_ORDER.total)}) for ${ACTIVE_ORDER.recipientName}. Please verify and confirm my order.`
+  );
+  document.getElementById('checkoutBody').innerHTML = `
+    <span class="step-badge">Step 2 of 2 · Payment</span>
+    <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_ORDER.total)} via BenefitPay / IBAN</h2>
+    <p style="color:var(--ink-soft);font-size:13px;">Order ${escapeHtml(ACTIVE_ORDER.orderId)}. Scan the QR or transfer to the IBAN below, then confirm on WhatsApp — we'll verify and confirm your order manually.</p>
+    <div class="qr-box">
+      <img src="${qr}" alt="BenefitPay QR">
+      <div style="font-weight:700;">${escapeHtml(name)}</div>
+      <div style="font-family:monospace;font-size:13px;">${escapeHtml(iban)}</div>
+    </div>
+    <a class="whatsapp-btn" style="display:block;text-align:center;text-decoration:none;" target="_blank"
+       href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" onclick="markBenefitPaySubmitted()">
+       ✅ I've paid — notify us on WhatsApp
+    </a>
+    <div class="info-box">Your order is reserved and will show as "awaiting verification" until we confirm your payment — usually within a few minutes during business hours.</div>
+  `;
+}
+
+async function markBenefitPaySubmitted(){
+  try{
+    await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'submitBenefitPayProof', orderId: ACTIVE_ORDER.orderId }) });
+  }catch(e){}
+  setTimeout(renderAwaitingVerification, 400);
+}
+
+function renderAwaitingVerification(){
+  CART = []; saveCart();
+  document.getElementById('checkoutBody').innerHTML = `
+    <div class="confirm-icon">🕒</div>
+    <h2 style="text-align:center;margin:0 0 8px;">Payment received — verifying…</h2>
+    <p style="text-align:center;color:var(--ink-soft);">
+      Order <b>${escapeHtml(ACTIVE_ORDER.orderId)}</b> is reserved for ${escapeHtml(ACTIVE_ORDER.recipientName)} in Bahrain.
+      We'll confirm it as soon as we verify your BenefitPay/IBAN payment (usually within minutes during business hours).
+    </p>
+    <button class="primary-btn" onclick="closeAllOverlays();location.reload();">Done</button>
+  `;
+}
+
+/* -------- confirmation -------- */
+function renderConfirmation(){
+  CART = []; saveCart();
+  document.getElementById('checkoutBody').innerHTML = `
+    <div class="confirm-icon">🎁✅</div>
+    <h2 style="text-align:center;margin:0 0 8px;">Thank you!</h2>
+    <p style="text-align:center;color:var(--ink-soft);">
+      Order <b>${escapeHtml(ACTIVE_ORDER.orderId)}</b> is confirmed. We'll take it from here and surprise
+      ${escapeHtml(ACTIVE_ORDER.recipientName)} in Bahrain.
+    </p>
+    <button class="primary-btn" onclick="closeAllOverlays();location.reload();">Done</button>
+  `;
+}
+
+updateCartCount();
+loadGiftProducts();
+</script>
+</body>
+</html>

@@ -224,6 +224,8 @@
       <div class="sb-link" data-tab="returns" onclick="switchTab('returns')"><span class="ic">↩️</span> Returns</div>
       <div class="sb-link" data-tab="customers" onclick="switchTab('customers')"><span class="ic">👤</span> Customers</div>
       <div class="sb-link" data-tab="marketing" onclick="switchTab('marketing')"><span class="ic">📣</span> Marketing</div>
+      <div class="sb-link" data-tab="giftbh" onclick="switchTab('giftbh')"><span class="ic">🎁</span> Gift to Bahrain</div>
+      <div class="sb-link" data-tab="giftorders" onclick="switchTab('giftorders')"><span class="ic">✈️</span> Gift Orders</div>
     </div>
     <div class="sb-spacer"></div>
     <div class="sb-foot"><div class="logout" onclick="logout()"><span class="ic">↩</span> Log out</div></div>
@@ -330,6 +332,76 @@
         <table>
           <thead><tr><th>Product</th><th>Price</th><th>Stock</th><th>Flags</th><th></th></tr></thead>
           <tbody id="productRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= GIFT TO BAHRAIN (NRI gift hampers) ================= -->
+    <div class="panel" id="panel-giftbh">
+      <div class="topbar">
+        <div><h1>Gift to Bahrain</h1><p>Products for the "Gift to Bahrain" hamper feature. Set a price in <b>both</b> INR and BHD — the customer picks a currency on the gift page. These products never show up in the normal catalogue.</p></div>
+      </div>
+
+      <div class="card">
+        <h2 id="giftFormTitle">Add a gift hamper product</h2>
+        <div class="row">
+          <div class="field"><label>Name</label><input id="gName" placeholder="e.g. Birthday Surprise Box"></div>
+          <div class="field"><label>Category</label><input id="gCategory" placeholder="e.g. Birthday, Anniversary, Flowers"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Price (INR) <span class="opt">— what the sender pays in India</span></label><input id="gPriceINR" type="number" step="1" placeholder="4500"></div>
+          <div class="field"><label>Compare-at price (INR) <span class="opt">— optional "was" price</span></label><input id="gCompareINR" type="number" step="1" placeholder="5900"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Price (BHD) <span class="opt">— what the sender pays if paying from Bahrain</span></label><input id="gPriceBHD" type="number" step="0.001" placeholder="18.500"></div>
+          <div class="field"><label>Compare-at price (BHD) <span class="opt">— optional "was" price</span></label><input id="gCompareBHD" type="number" step="0.001" placeholder="24.900"></div>
+        </div>
+        <div class="field full"><label>Description</label><textarea id="gDesc" placeholder="What's inside the hamper…"></textarea></div>
+        <div class="field full"><label>Stock</label><input id="gStock" type="number" value="20" style="max-width:160px;"></div>
+        <div class="field full">
+          <label>Images <span class="opt">— paste up to 5 image URLs, image 1 is the main photo</span></label>
+          <div class="row"><input id="gImg1" placeholder="Image 1 URL"><input id="gImg2" placeholder="Image 2 URL"></div>
+          <div class="row"><input id="gImg3" placeholder="Image 3 URL"><input id="gImg4" placeholder="Image 4 URL"></div>
+          <div class="row"><input id="gImg5" placeholder="Image 5 URL"><div class="field"></div></div>
+        </div>
+        <div class="toggle-row">
+          <label class="toggle-pill" id="gActivePill"><input type="checkbox" id="gActive" checked onchange="syncPill('gActive','gActivePill')"><span class="ic">✅</span> Active (visible on gift page)</label>
+        </div>
+        <input type="hidden" id="gId">
+        <button class="primary" onclick="saveGiftProduct()">Save gift product</button>
+        <button class="ghost" id="giftCancelEditBtn" onclick="resetGiftForm()" style="display:none;">Cancel edit</button>
+        <span class="muted" id="giftSaveMsg" style="margin-left:12px;"></span>
+      </div>
+
+      <div class="card">
+        <h2>Gift catalogue <span class="muted" id="giftCatalogueCount"></span></h2>
+        <table>
+          <thead><tr><th>Product</th><th>Price INR</th><th>Price BHD</th><th>Stock</th><th></th></tr></thead>
+          <tbody id="giftProductRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= GIFT ORDERS ================= -->
+    <div class="panel" id="panel-giftorders">
+      <div class="topbar">
+        <div><h1>Gift Orders</h1><p>Orders placed through the "Gift to Bahrain" page. INR orders are paid via Razorpay (verified automatically). BHD orders are paid via BenefitPay/IBAN and confirmed on WhatsApp — verify them here once you see the payment.</p></div>
+      </div>
+      <div class="card">
+        <div class="toolbar">
+          <input type="text" id="giftOrderSearch" placeholder="Search by sender, recipient, or order ID…" oninput="renderGiftOrderRows()">
+          <select id="giftOrderStatusFilter" onchange="renderGiftOrderRows()">
+            <option value="">All statuses</option>
+            <option value="pending">Pending payment</option>
+            <option value="awaiting_verification">Awaiting verification (BHD)</option>
+            <option value="paid">Paid</option>
+            <option value="confirmed">Confirmed</option>
+            <option value="cancelled">Cancelled / expired</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>Order</th><th>Sender</th><th>Recipient / delivery</th><th>Total</th><th>Currency</th><th>Payment</th><th>Status</th><th></th></tr></thead>
+          <tbody id="giftOrderRows"></tbody>
         </table>
       </div>
     </div>
@@ -1946,5 +2018,157 @@ if(savedPw){ document.getElementById('pwInput').value = savedPw; login(); }
     <button class="primary" onclick="adminAddReview()">Add review</button>
   </div>
 </div>
+
+<script>
+/* ======================================================================
+   GIFT TO BAHRAIN — admin panel (products + orders)
+   Reuses the existing CONFIG.API_URL / ADMIN_PASSWORD globals and the
+   existing addProduct / updateProduct / listAllProducts / listOrdersAdmin
+   backend actions (extended — see backend-Code.gs) rather than inventing
+   a parallel API.
+   ====================================================================== */
+let GIFT_PRODUCTS_CACHE = [];
+let GIFT_ORDERS_CACHE = [];
+
+function resetGiftForm(){
+  ['gId','gName','gCategory','gPriceINR','gCompareINR','gPriceBHD','gCompareBHD','gDesc','gImg1','gImg2','gImg3','gImg4','gImg5']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('gStock').value = 20;
+  document.getElementById('gActive').checked = true;
+  syncPill('gActive','gActivePill');
+  document.getElementById('giftFormTitle').textContent = 'Add a gift hamper product';
+  document.getElementById('giftCancelEditBtn').style.display = 'none';
+  document.getElementById('giftSaveMsg').textContent = '';
+}
+
+async function saveGiftProduct(){
+  const id = document.getElementById('gId').value;
+  const payload = {
+    action: id ? 'updateProduct' : 'addProduct',
+    password: ADMIN_PASSWORD,
+    id: id || undefined,
+    name: document.getElementById('gName').value.trim(),
+    category: document.getElementById('gCategory').value.trim(),
+    description: document.getElementById('gDesc').value,
+    price: Number(document.getElementById('gPriceBHD').value || 0),
+    compareAtPrice: document.getElementById('gCompareBHD').value ? Number(document.getElementById('gCompareBHD').value) : '',
+    priceINR: Number(document.getElementById('gPriceINR').value || 0),
+    compareAtPriceINR: document.getElementById('gCompareINR').value ? Number(document.getElementById('gCompareINR').value) : '',
+    stock: Number(document.getElementById('gStock').value || 0),
+    active: document.getElementById('gActive').checked,
+    giftEnabled: true,
+    images: [1,2,3,4,5].map(n => document.getElementById('gImg'+n).value.trim())
+  };
+  document.getElementById('giftSaveMsg').textContent = 'Saving…';
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
+  const data = await res.json();
+  document.getElementById('giftSaveMsg').textContent = data.ok ? 'Saved ✓' : (data.error || 'Could not save.');
+  if(data.ok){ resetGiftForm(); loadGiftProducts(); }
+}
+
+function editGiftProduct(id){
+  const p = GIFT_PRODUCTS_CACHE.find(x => x.id === id);
+  if(!p) return;
+  document.getElementById('gId').value = p.id;
+  document.getElementById('gName').value = p.name || '';
+  document.getElementById('gCategory').value = p.category || '';
+  document.getElementById('gDesc').value = p.description || '';
+  document.getElementById('gPriceINR').value = p.priceINR || '';
+  document.getElementById('gCompareINR').value = p.compareAtPriceINR || '';
+  document.getElementById('gPriceBHD').value = p.price || '';
+  document.getElementById('gCompareBHD').value = p.compareAtPrice || '';
+  document.getElementById('gStock').value = p.stock || 0;
+  document.getElementById('gActive').checked = !!(p.active === true || p.active === 'TRUE' || p.active === 'true');
+  syncPill('gActive','gActivePill');
+  const imgs = p.images || [];
+  [1,2,3,4,5].forEach(n => document.getElementById('gImg'+n).value = imgs[n-1] || '');
+  document.getElementById('giftFormTitle').textContent = 'Edit gift hamper product';
+  document.getElementById('giftCancelEditBtn').style.display = 'inline-block';
+  window.scrollTo(0,0);
+}
+
+async function deleteGiftProduct(id){
+  if(!confirm('Delete this gift product?')) return;
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'deleteProduct', password: ADMIN_PASSWORD, id }) });
+  loadGiftProducts();
+}
+
+function isGift(p){ return p.giftEnabled === true || p.giftEnabled === 'TRUE' || p.giftEnabled === 'true'; }
+
+async function loadGiftProducts(){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listAllProducts', password: ADMIN_PASSWORD }) });
+  const data = await res.json();
+  if(!data.ok) return;
+  GIFT_PRODUCTS_CACHE = (data.products || []).filter(isGift);
+  document.getElementById('giftCatalogueCount').textContent = `(${GIFT_PRODUCTS_CACHE.length})`;
+  document.getElementById('giftProductRows').innerHTML = GIFT_PRODUCTS_CACHE.map(p => `
+    <tr>
+      <td>${escapeHtmlAdmin(p.name)}</td>
+      <td>₹${Number(p.priceINR||0).toLocaleString('en-IN')}</td>
+      <td>${Number(p.price||0).toFixed(3)} BHD</td>
+      <td>${p.stock}</td>
+      <td><button class="ghost small" onclick="editGiftProduct('${p.id}')">Edit</button>
+          <button class="ghost small" onclick="deleteGiftProduct('${p.id}')">Delete</button></td>
+    </tr>`).join('') || '<tr><td colspan="5" class="muted">No gift products yet — add one above.</td></tr>';
+}
+
+function escapeHtmlAdmin(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadGiftOrders(){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listOrdersAdmin', password: ADMIN_PASSWORD }) });
+  const data = await res.json();
+  if(!data.ok) return;
+  GIFT_ORDERS_CACHE = (data.orders || []).filter(o => o.orderType === 'gift');
+  renderGiftOrderRows();
+}
+
+function renderGiftOrderRows(){
+  const q = (document.getElementById('giftOrderSearch').value || '').toLowerCase();
+  const statusFilter = document.getElementById('giftOrderStatusFilter').value;
+  const rows = GIFT_ORDERS_CACHE.filter(o => {
+    if(statusFilter && o.paymentStatus !== statusFilter) return false;
+    if(!q) return true;
+    return (o.customerName||'').toLowerCase().includes(q) || (o.recipientName||'').toLowerCase().includes(q) || (o.id||'').toLowerCase().includes(q);
+  });
+  document.getElementById('giftOrderRows').innerHTML = rows.map(o => `
+    <tr>
+      <td>${escapeHtmlAdmin(o.id)}<br><span class="muted">${o.timestamp ? new Date(o.timestamp).toLocaleString() : ''}</span></td>
+      <td>${escapeHtmlAdmin(o.customerName)}<br><span class="muted">${escapeHtmlAdmin(o.phone)}</span></td>
+      <td>${escapeHtmlAdmin(o.recipientName)}<br><span class="muted">${escapeHtmlAdmin(o.deliveryMethod)}</span>
+          ${o.recipientAddress ? `<br><span class="muted">${escapeHtmlAdmin(o.recipientAddress)}</span>` : ''}
+          ${o.recipientLocationLink ? `<br><a href="${escapeHtmlAdmin(o.recipientLocationLink)}" target="_blank">map link</a>` : ''}
+          ${o.customScript ? `<br><span class="muted">Script: ${escapeHtmlAdmin(o.customScript)}</span>` : ''}</td>
+      <td>${o.currency === 'INR' ? '₹' : ''}${Number(o.total||0).toLocaleString()}${o.currency === 'BHD' ? ' BHD' : ''}</td>
+      <td>${escapeHtmlAdmin(o.currency)}</td>
+      <td>${escapeHtmlAdmin(o.paymentMethod)}<br><b>${escapeHtmlAdmin(o.paymentStatus)}</b></td>
+      <td>${escapeHtmlAdmin(o.orderStatus)}</td>
+      <td>
+        ${o.paymentStatus === 'awaiting_verification' ? `<button class="primary small" onclick="verifyGiftOrder('${o.id}')">Verify payment</button>` : ''}
+        ${(o.paymentStatus !== 'paid' && o.orderStatus !== 'cancelled') ? `<button class="ghost small" onclick="cancelGiftOrder('${o.id}')">Cancel</button>` : ''}
+      </td>
+    </tr>`).join('') || '<tr><td colspan="8" class="muted">No gift orders yet.</td></tr>';
+}
+
+async function verifyGiftOrder(id){
+  if(!confirm('Confirm you have received this BenefitPay/IBAN payment?')) return;
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateOrderStatus', password: ADMIN_PASSWORD, id, paymentStatus:'paid', orderStatus:'confirmed' }) });
+  loadGiftOrders();
+}
+async function cancelGiftOrder(id){
+  if(!confirm('Cancel this gift order?')) return;
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateOrderStatus', password: ADMIN_PASSWORD, id, paymentStatus:'cancelled', orderStatus:'cancelled' }) });
+  loadGiftOrders();
+}
+
+// Hook into the tab switcher so data loads the first time each tab is opened.
+const _origSwitchTab = switchTab;
+switchTab = function(tab){
+  _origSwitchTab(tab);
+  if(tab === 'giftbh' && !GIFT_PRODUCTS_CACHE.length) loadGiftProducts();
+  if(tab === 'giftorders') loadGiftOrders();
+};
+</script>
 </body>
 </html>

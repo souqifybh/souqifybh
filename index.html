@@ -558,6 +558,13 @@
     .deals-home-banner{display:none;}
   }
 
+  /* ---------- Gift to Bahrain banner (links to gift-bahrain.html) ---------- */
+  .gift-home-banner{ background:linear-gradient(135deg, #C98A3E, #7A3B12); }
+  .gift-home-banner::after{ content:"🎁"; }
+  @media (max-width:640px){
+    .gift-home-banner{display:flex;}
+  }
+
   /* ---------- Announcement bar (site-wide, admin editable) ---------- */
   .announce-bar{display:none;background:var(--ink);color:#fff;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:0.01em;padding:9px 16px;}
   .announce-bar.show{display:block;}
@@ -1175,6 +1182,15 @@
   </div>
   <div class="rail-scroll rail-bleed reveal-stagger" id="featuredRail"></div>
 </section>
+
+<a class="deals-home-banner gift-home-banner reveal" href="gift-bahrain.html">
+  <div class="dhb-text">
+    <span class="dhb-eyebrow">🇮🇳→🇧🇭 <span data-i18n="giftBannerEyebrow">Gift to Bahrain</span></span>
+    <h3 data-i18n="giftBannerTitle">Surprise someone in Bahrain — pay in INR</h3>
+    <p data-i18n="giftBannerSub">Pick a hamper, choose the surprise style, we deliver in Bahrain</p>
+  </div>
+  <span class="dhb-cta" data-i18n="giftBannerCta">Send a gift →</span>
+</a>
 
 <section class="section section-tight" id="bestsellersSection" style="display:none;background:var(--paper-soft);">
   <div class="wrap">
