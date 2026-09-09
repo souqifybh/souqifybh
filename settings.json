@@ -13,6 +13,10 @@
     "heroProductId3": "P-1787211854015",
     "referEarnActive": false,
     "announcementActive": true,
-    "announcementText": "🔒 100% GENUINE PRODUCTS ✅CASH 💵ON DELIVERY 🚚"
+    "announcementText": "🔒 100% GENUINE PRODUCTS ✅CASH 💵ON DELIVERY 🚚",
+    "razorpayKeyId": "rzp_live_TXicGytbZcJELZ",
+    "benefitpayName": "",
+    "benefitpayIban": "",
+    "benefitpayQrUrl": ""
   }
 }
