@@ -346,7 +346,7 @@
         <h2 id="giftFormTitle">Add a gift hamper product</h2>
         <div class="row">
           <div class="field"><label>Name</label><input id="gName" placeholder="e.g. Birthday Surprise Box"></div>
-          <div class="field"><label>Category</label><input id="gCategory" placeholder="e.g. Birthday, Anniversary, Flowers"></div>
+          <div class="field"><label>Category <span class="opt">— hamper occasion (Birthday, Anniversary…) or box-item type (Clothing, Chocolates, Cakes, Perfumes, Watches…) depending on which toggle below you turn on</span></label><input id="gCategory" placeholder="e.g. Birthday, or Chocolates"></div>
         </div>
         <div class="row">
           <div class="field"><label>Price (INR) <span class="opt">— what the sender pays in India</span></label><input id="gPriceINR" type="number" step="1" placeholder="4500"></div>
@@ -366,7 +366,10 @@
         </div>
         <div class="toggle-row">
           <label class="toggle-pill" id="gActivePill"><input type="checkbox" id="gActive" checked onchange="syncPill('gActive','gActivePill')"><span class="ic">✅</span> Active (visible on gift page)</label>
+          <label class="toggle-pill" id="gGiftEnabledPill"><input type="checkbox" id="gGiftEnabled" checked onchange="syncPill('gGiftEnabled','gGiftEnabledPill')"><span class="ic">🎁</span> Ready-made hamper</label>
+          <label class="toggle-pill" id="gGiftBoxEnabledPill"><input type="checkbox" id="gGiftBoxEnabled" onchange="syncPill('gGiftBoxEnabled','gGiftBoxEnabledPill')"><span class="ic">🧩</span> Available in Customise Your Gift Box</label>
         </div>
+        <p class="muted" style="margin-top:-6px;">A product can be either, both, or neither — e.g. a box of chocolates can be its own hamper AND an add-on customers combine into a custom box.</p>
         <input type="hidden" id="gId">
         <button class="primary" onclick="saveGiftProduct()">Save gift product</button>
         <button class="ghost" id="giftCancelEditBtn" onclick="resetGiftForm()" style="display:none;">Cancel edit</button>
@@ -376,9 +379,35 @@
       <div class="card">
         <h2>Gift catalogue <span class="muted" id="giftCatalogueCount"></span></h2>
         <table>
-          <thead><tr><th>Product</th><th>Price INR</th><th>Price BHD</th><th>Stock</th><th></th></tr></thead>
+          <thead><tr><th>Product</th><th>Type</th><th>Price INR</th><th>Price BHD</th><th>Stock</th><th></th></tr></thead>
           <tbody id="giftProductRows"></tbody>
         </table>
+      </div>
+
+      <div class="card">
+        <h2>Gift box design notes <span class="muted">— shown as pickable options on the "Customise Your Gift Box" page</span></h2>
+        <p class="muted">Customers can choose one of these, or write their own short note instead. Add a few common wrapping/packaging styles here.</p>
+        <div id="designNotesList"></div>
+        <div class="row" style="margin-top:12px;align-items:flex-end;">
+          <div class="field" style="margin-bottom:0;"><label>New design note</label><input id="newDesignNoteText" placeholder="e.g. Wrap in red ribbon + handwritten card"></div>
+          <button class="primary" onclick="addDesignNote()" style="height:44px;">Add</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Gift page payment settings</h2>
+        <p class="muted">Razorpay charges INR orders automatically. BenefitPay/IBAN (BHD) orders are confirmed manually in the Gift Orders tab once you see the WhatsApp payment proof.</p>
+        <div class="row">
+          <div class="field"><label>Razorpay Key ID <span class="opt">— the public key, safe to store here</span></label><input id="gRazorpayKeyId" placeholder="rzp_live_xxxxxxxxxxxxxx"></div>
+          <div class="field"><label>BenefitPay account name</label><input id="gBenefitpayName" placeholder="Souqify-bh W.L.L."></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>BenefitPay IBAN</label><input id="gBenefitpayIban" placeholder="BH00 SOUQ 0000 0000 0000 00"></div>
+          <div class="field"><label>BenefitPay QR image URL</label><input id="gBenefitpayQrUrl" placeholder="https://souqify-bh.com/assets/benefitpay-qr.png"></div>
+        </div>
+        <p class="muted">⚠️ The Razorpay <b>Key Secret</b> is never entered here for security — set it once from the Apps Script editor. See the <code>setRazorpayKeySecret()</code> comment near the top of Code.gs.</p>
+        <button class="primary" onclick="saveGiftPaymentSettings()">Save</button>
+        <span class="muted" id="giftPaymentSaveMsg" style="margin-left:12px;"></span>
       </div>
     </div>
 
@@ -1601,6 +1630,12 @@ function applySettings(s){
     document.getElementById('mediaLayoutGrid').checked = layout === 'grid';
     syncPill('mediaLayoutCarousel','mediaLayoutCarouselPill');
     syncPill('mediaLayoutGrid','mediaLayoutGridPill');
+    document.getElementById('gRazorpayKeyId').value = s.razorpayKeyId || '';
+    document.getElementById('gBenefitpayName').value = s.benefitpayName || '';
+    document.getElementById('gBenefitpayIban').value = s.benefitpayIban || '';
+    document.getElementById('gBenefitpayQrUrl').value = s.benefitpayQrUrl || '';
+    try{ DESIGN_NOTES_CACHE = JSON.parse(s.giftBoxDesignNotes || '[]'); }catch(e){ DESIGN_NOTES_CACHE = []; }
+    renderDesignNotes();
   }catch(err){ /* settings sheet may not exist yet — defaults are fine */ }
 }
 function updateHeroPreview(){
@@ -2036,6 +2071,10 @@ function resetGiftForm(){
   document.getElementById('gStock').value = 20;
   document.getElementById('gActive').checked = true;
   syncPill('gActive','gActivePill');
+  document.getElementById('gGiftEnabled').checked = true;
+  syncPill('gGiftEnabled','gGiftEnabledPill');
+  document.getElementById('gGiftBoxEnabled').checked = false;
+  syncPill('gGiftBoxEnabled','gGiftBoxEnabledPill');
   document.getElementById('giftFormTitle').textContent = 'Add a gift hamper product';
   document.getElementById('giftCancelEditBtn').style.display = 'none';
   document.getElementById('giftSaveMsg').textContent = '';
@@ -2043,6 +2082,10 @@ function resetGiftForm(){
 
 async function saveGiftProduct(){
   const id = document.getElementById('gId').value;
+  if(!document.getElementById('gGiftEnabled').checked && !document.getElementById('gGiftBoxEnabled').checked){
+    document.getElementById('giftSaveMsg').textContent = 'Turn on at least one of "Ready-made hamper" or "Customise Your Gift Box" so it shows up somewhere.';
+    return;
+  }
   const payload = {
     action: id ? 'updateProduct' : 'addProduct',
     password: ADMIN_PASSWORD,
@@ -2056,7 +2099,8 @@ async function saveGiftProduct(){
     compareAtPriceINR: document.getElementById('gCompareINR').value ? Number(document.getElementById('gCompareINR').value) : '',
     stock: Number(document.getElementById('gStock').value || 0),
     active: document.getElementById('gActive').checked,
-    giftEnabled: true,
+    giftEnabled: document.getElementById('gGiftEnabled').checked,
+    giftBoxEnabled: document.getElementById('gGiftBoxEnabled').checked,
     images: [1,2,3,4,5].map(n => document.getElementById('gImg'+n).value.trim())
   };
   document.getElementById('giftSaveMsg').textContent = 'Saving…';
@@ -2080,6 +2124,10 @@ function editGiftProduct(id){
   document.getElementById('gStock').value = p.stock || 0;
   document.getElementById('gActive').checked = !!(p.active === true || p.active === 'TRUE' || p.active === 'true');
   syncPill('gActive','gActivePill');
+  document.getElementById('gGiftEnabled').checked = isGift(p);
+  syncPill('gGiftEnabled','gGiftEnabledPill');
+  document.getElementById('gGiftBoxEnabled').checked = isGiftBox(p);
+  syncPill('gGiftBoxEnabled','gGiftBoxEnabledPill');
   const imgs = p.images || [];
   [1,2,3,4,5].forEach(n => document.getElementById('gImg'+n).value = imgs[n-1] || '');
   document.getElementById('giftFormTitle').textContent = 'Edit gift hamper product';
@@ -2094,22 +2142,65 @@ async function deleteGiftProduct(id){
 }
 
 function isGift(p){ return p.giftEnabled === true || p.giftEnabled === 'TRUE' || p.giftEnabled === 'true'; }
+function isGiftBox(p){ return p.giftBoxEnabled === true || p.giftBoxEnabled === 'TRUE' || p.giftBoxEnabled === 'true'; }
 
 async function loadGiftProducts(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listAllProducts', password: ADMIN_PASSWORD }) });
   const data = await res.json();
   if(!data.ok) return;
-  GIFT_PRODUCTS_CACHE = (data.products || []).filter(isGift);
+  GIFT_PRODUCTS_CACHE = (data.products || []).filter(p => isGift(p) || isGiftBox(p));
   document.getElementById('giftCatalogueCount').textContent = `(${GIFT_PRODUCTS_CACHE.length})`;
   document.getElementById('giftProductRows').innerHTML = GIFT_PRODUCTS_CACHE.map(p => `
     <tr>
-      <td>${escapeHtmlAdmin(p.name)}</td>
+      <td>${escapeHtmlAdmin(p.name)}<br><span class="muted">${escapeHtmlAdmin(p.category)}</span></td>
+      <td>${isGift(p) ? '🎁 Hamper' : ''}${isGift(p) && isGiftBox(p) ? ' + ' : ''}${isGiftBox(p) ? '🧩 Box item' : ''}</td>
       <td>₹${Number(p.priceINR||0).toLocaleString('en-IN')}</td>
       <td>${Number(p.price||0).toFixed(3)} BHD</td>
       <td>${p.stock}</td>
       <td><button class="ghost small" onclick="editGiftProduct('${p.id}')">Edit</button>
           <button class="ghost small" onclick="deleteGiftProduct('${p.id}')">Delete</button></td>
-    </tr>`).join('') || '<tr><td colspan="5" class="muted">No gift products yet — add one above.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="6" class="muted">No gift products yet — add one above.</td></tr>';
+}
+
+/* -------- gift box design notes (stored as JSON in Settings) -------- */
+let DESIGN_NOTES_CACHE = [];
+function renderDesignNotes(){
+  document.getElementById('designNotesList').innerHTML = DESIGN_NOTES_CACHE.map((n,i) => `
+    <div class="row" style="align-items:center;margin-bottom:8px;">
+      <div style="flex:1;font-size:13.5px;">${escapeHtmlAdmin(n.text)}</div>
+      <button class="ghost small" onclick="deleteDesignNote(${i})">Delete</button>
+    </div>`).join('') || '<p class="muted">No design notes yet — add one below.</p>';
+}
+async function addDesignNote(){
+  const input = document.getElementById('newDesignNoteText');
+  const text = input.value.trim();
+  if(!text) return;
+  DESIGN_NOTES_CACHE.push({ id: 'dn-' + Date.now(), text });
+  input.value = '';
+  await saveDesignNotes();
+}
+async function deleteDesignNote(i){
+  DESIGN_NOTES_CACHE.splice(i, 1);
+  await saveDesignNotes();
+}
+async function saveDesignNotes(){
+  renderDesignNotes();
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings: { giftBoxDesignNotes: JSON.stringify(DESIGN_NOTES_CACHE) } }) });
+}
+
+/* -------- gift page payment settings (Razorpay Key ID + BenefitPay) -------- */
+async function saveGiftPaymentSettings(){
+  const settings = {
+    razorpayKeyId: document.getElementById('gRazorpayKeyId').value.trim(),
+    benefitpayName: document.getElementById('gBenefitpayName').value.trim(),
+    benefitpayIban: document.getElementById('gBenefitpayIban').value.trim(),
+    benefitpayQrUrl: document.getElementById('gBenefitpayQrUrl').value.trim()
+  };
+  const msg = document.getElementById('giftPaymentSaveMsg');
+  msg.textContent = 'Saving…';
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
+  msg.textContent = '✓ Saved — live on the gift page now.';
+  setTimeout(() => msg.textContent = '', 3000);
 }
 
 function escapeHtmlAdmin(s){
@@ -2139,7 +2230,9 @@ function renderGiftOrderRows(){
       <td>${escapeHtmlAdmin(o.recipientName)}<br><span class="muted">${escapeHtmlAdmin(o.deliveryMethod)}</span>
           ${o.recipientAddress ? `<br><span class="muted">${escapeHtmlAdmin(o.recipientAddress)}</span>` : ''}
           ${o.recipientLocationLink ? `<br><a href="${escapeHtmlAdmin(o.recipientLocationLink)}" target="_blank">map link</a>` : ''}
-          ${o.customScript ? `<br><span class="muted">Script: ${escapeHtmlAdmin(o.customScript)}</span>` : ''}</td>
+          ${o.customScript ? `<br><span class="muted">Script: ${escapeHtmlAdmin(o.customScript)}</span>` : ''}
+          ${o.designNote ? `<br><span class="muted">Design: ${escapeHtmlAdmin(o.designNote)}</span>` : ''}
+          ${o.customerNote ? `<br><span class="muted">Note: ${escapeHtmlAdmin(o.customerNote)}</span>` : ''}</td>
       <td>${o.currency === 'INR' ? '₹' : ''}${Number(o.total||0).toLocaleString()}${o.currency === 'BHD' ? ' BHD' : ''}</td>
       <td>${escapeHtmlAdmin(o.currency)}</td>
       <td>${escapeHtmlAdmin(o.paymentMethod)}<br><b>${escapeHtmlAdmin(o.paymentStatus)}</b></td>
