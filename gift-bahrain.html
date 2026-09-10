@@ -114,6 +114,15 @@
   .gallery-thumbs img{width:56px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;}
   .gallery-thumbs img.active{border-color:var(--blush-deep);}
   .confirm-icon{font-size:44px;text-align:center;margin-bottom:6px;}
+  .confirm-icon.celebrate{animation:popIn .6s var(--ease);}
+  @keyframes popIn{0%{transform:scale(0.4);opacity:0;}60%{transform:scale(1.15);opacity:1;}100%{transform:scale(1);opacity:1;}}
+  .sad-icon{font-size:44px;text-align:center;margin-bottom:6px;animation:shake .5s ease;}
+  @keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-6px);}80%{transform:translateX(6px);}}
+  .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:900;overflow:hidden;}
+  .confetti-piece{position:absolute;top:-40px;will-change:transform,opacity;animation:confetti-fall linear forwards;}
+  @keyframes confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(112vh) rotate(560deg);opacity:0.85;}}
+  .event-row{display:flex;gap:10px;}
+  .event-row > div{flex:1;}
   .chip{border:1.5px solid var(--line);background:#fff;border-radius:20px;padding:8px 16px;font-weight:700;font-size:13px;color:var(--ink-soft);}
   .chip.active{background:var(--blush-deep);border-color:var(--blush-deep);color:#fff;}
   .note-toggle{width:100%;text-align:left;background:var(--paper-soft);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;font-weight:700;font-size:14px;color:var(--ink);}
@@ -484,10 +493,27 @@ function openCheckout(){
   renderCheckoutDetailsStep();
 }
 
+function minGiftDeliveryDate(){
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 2);
+  return d;
+}
+function isoDate(d){
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function prettyDate(d){
+  return d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+
 function renderCheckoutDetailsStep(){
   const subtotal = cartTotalValue();
   const { platformFee, deliveryCharge } = feesFor();
   const total = subtotal + platformFee + deliveryCharge;
+  const minDate = minGiftDeliveryDate();
+  const minDateISO = isoDate(minDate);
+  const minDateLabel = prettyDate(minDate);
   document.getElementById('checkoutBody').innerHTML = `
     <span class="step-badge">Step 1 of 2 · Gift details</span>
     <h2 style="margin:0 0 12px;">Who's this gift for?</h2>
@@ -502,6 +528,40 @@ function renderCheckoutDetailsStep(){
     <label>Recipient's phone <span style="font-weight:500;color:var(--ink-soft);">(so our delivery rider can reach them)</span></label><input type="tel" id="ckRecipientPhone">
     <label>Recipient's full address in Bahrain</label><textarea id="ckRecipientAddress"></textarea>
     <label>Google Maps link <span style="font-weight:500;color:var(--ink-soft);">(optional, but helps our rider a lot)</span></label><input type="url" id="ckRecipientMap" placeholder="https://maps.google.com/...">
+
+    <label>🎉 What's the occasion?</label>
+    <select id="ckEventType" onchange="onEventTypeChange()">
+      <option value="Birthday">🎂 Birthday</option>
+      <option value="Anniversary">💍 Anniversary</option>
+      <option value="Wedding">👰 Wedding</option>
+      <option value="Graduation">🎓 Graduation</option>
+      <option value="Congratulations">🎉 Congratulations</option>
+      <option value="Just Because">💐 Just because</option>
+      <option value="Other">✨ Other</option>
+    </select>
+    <div id="ckEventOtherBox" style="display:none;">
+      <label>Tell us the occasion</label>
+      <input type="text" id="ckEventOther" placeholder="e.g. Housewarming, Get Well Soon">
+    </div>
+
+    <label>When should we deliver it?</label>
+    <div class="event-row">
+      <div>
+        <label style="margin-top:0;">Delivery date</label>
+        <input type="date" id="ckDeliveryDate" min="${minDateISO}">
+      </div>
+      <div>
+        <label style="margin-top:0;">Time slot</label>
+        <select id="ckDeliveryTime">
+          <option value="">Choose a time</option>
+          <option value="Morning (9am–12pm)">Morning (9am–12pm)</option>
+          <option value="Afternoon (12pm–4pm)">Afternoon (12pm–4pm)</option>
+          <option value="Evening (4pm–8pm)">Evening (4pm–8pm)</option>
+          <option value="Night (8pm–10pm)">Night (8pm–10pm)</option>
+        </select>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:-8px;margin-bottom:4px;">We need at least 2 days to prepare and hand-deliver your gift — the earliest date you can pick is ${minDateLabel}.</div>
 
     <label>How should we deliver it?</label>
     <div class="radio-row" id="deliveryOptions">
@@ -523,6 +583,11 @@ function renderCheckoutDetailsStep(){
   `;
 }
 
+function onEventTypeChange(){
+  const val = document.getElementById('ckEventType').value;
+  document.getElementById('ckEventOtherBox').style.display = (val === 'Other') ? 'block' : 'none';
+}
+
 function onDeliveryMethodChange(){
   document.querySelectorAll('#deliveryOptions .radio-opt').forEach(el => {
     el.classList.toggle('checked', el.querySelector('input').checked);
@@ -541,11 +606,25 @@ async function submitCheckoutDetails(){
   const recipientLocationLink = document.getElementById('ckRecipientMap').value.trim();
   const deliveryMethod = document.querySelector('input[name=deliveryMethod]:checked').value;
   const customScript = document.getElementById('ckCustomScript') ? document.getElementById('ckCustomScript').value.trim() : '';
+  const eventTypeSel = document.getElementById('ckEventType').value;
+  const eventTypeOther = document.getElementById('ckEventOther') ? document.getElementById('ckEventOther').value.trim() : '';
+  const eventType = eventTypeSel === 'Other' ? (eventTypeOther || 'Other') : eventTypeSel;
+  const deliveryDate = document.getElementById('ckDeliveryDate').value;
+  const deliveryTimeSlot = document.getElementById('ckDeliveryTime').value;
 
   const errBox = document.getElementById('ckDetailsErr');
   if(!senderName || !senderEmail || !senderPhone){ errBox.textContent = 'Please fill in your name, email and phone.'; return; }
   if(!recipientName || !recipientPhone || !recipientAddress){ errBox.textContent = "Please fill in the recipient's name, phone and address."; return; }
   if(deliveryMethod === 'custom_script' && !customScript){ errBox.textContent = 'Please describe how you want the surprise delivered.'; return; }
+  if(eventTypeSel === 'Other' && !eventTypeOther){ errBox.textContent = 'Please tell us the occasion.'; return; }
+  if(!deliveryDate){ errBox.textContent = 'Please choose a delivery date.'; return; }
+  const minDate = minGiftDeliveryDate();
+  const chosenDate = new Date(deliveryDate + 'T00:00:00');
+  if(isNaN(chosenDate.getTime()) || chosenDate < minDate){
+    errBox.textContent = `Please choose a delivery date on or after ${prettyDate(minDate)} — we need at least 2 days to prepare your gift.`;
+    return;
+  }
+  if(!deliveryTimeSlot){ errBox.textContent = 'Please choose a delivery time slot.'; return; }
   errBox.textContent = '';
 
   const items = CART.map(item => {
@@ -565,6 +644,7 @@ async function submitCheckoutDetails(){
     customerName: senderName, customerEmail: senderEmail, phone: senderPhone,
     recipientName, recipientPhone, recipientAddress, recipientLocationLink,
     deliveryMethod, customScript, customerNote, designNote,
+    eventType, deliveryDate, deliveryTimeSlot,
     currency: CURRENCY, items, total
   };
 
@@ -574,7 +654,7 @@ async function submitCheckoutDetails(){
     const data = await res.json();
     if(!data.ok){ renderCheckoutDetailsStep(); document.getElementById('ckDetailsErr').textContent = data.error || 'Could not create the order.'; return; }
     ACTIVE_ORDER = { orderId: data.orderId, currency: data.currency, expiresAt: data.expiresAt, total,
-      recipientName, deliveryMethod };
+      recipientName, deliveryMethod, eventType, deliveryDate, deliveryTimeSlot };
     if(CURRENCY === 'INR') renderRazorpayStep();
     else renderBenefitPayStep();
   }catch(e){
@@ -593,7 +673,9 @@ function renderRazorpayStep(){
     <div class="countdown" id="countdownDisplay">05:00</div>
     <button class="primary-btn" id="payNowBtn" onclick="startRazorpayPayment()">Pay now with Razorpay</button>
     <div id="paymentFailBox" style="display:none;">
-      <div class="info-box" style="color:#B34141;background:#FCEEEE;">Your payment wasn't completed. Please complete your order with payment before the timer runs out.</div>
+      <div class="sad-icon">😢</div>
+      <h3 style="text-align:center;margin:0 0 6px;">Oh nooo — that payment didn't go through!</h3>
+      <div class="info-box" style="color:#B34141;background:#FCEEEE;text-align:center;" id="paymentFailMsg"></div>
       <button class="ghost-btn" onclick="startRazorpayPayment()">Retry payment</button>
     </div>
     <div id="expiredBox" style="display:none;">
@@ -628,6 +710,27 @@ async function onOrderExpired(){
   document.getElementById('expiredBox').style.display = 'block';
 }
 
+// A catchy, event-aware retry message for the "payment didn't go through" box —
+// falls back to a generic line if we don't have the recipient/event yet.
+function paymentFailCopy(){
+  const name = (ACTIVE_ORDER && ACTIVE_ORDER.recipientName) || 'them';
+  const event = (ACTIVE_ORDER && ACTIVE_ORDER.eventType) || '';
+  if(event === 'Birthday') return `A hiccup won't stop us — let's retry and make this birthday of ${name} absolutely unforgettable!`;
+  if(event === 'Anniversary') return `Let's not let this slow us down — one more try and ${name}'s anniversary surprise is on its way!`;
+  if(event === 'Wedding') return `A day this special deserves another shot — let's get ${name}'s wedding gift through!`;
+  if(event === 'Graduation') return `So close! Let's retry and get this celebration for ${name} back on track.`;
+  if(event === 'Congratulations') return `Let's retry — ${name}'s celebration is still on!`;
+  return `Let's give it another try — we can still make this moment special for ${name}!`;
+}
+
+function showPaymentFail(customMsg){
+  const box = document.getElementById('paymentFailBox');
+  if(!box) return;
+  box.style.display = 'block';
+  const msgEl = document.getElementById('paymentFailMsg');
+  if(msgEl) msgEl.textContent = customMsg || paymentFailCopy();
+}
+
 async function startRazorpayPayment(){
   document.getElementById('paymentFailBox').style.display = 'none';
   document.getElementById('payNowBtn').textContent = 'Opening payment…';
@@ -637,8 +740,7 @@ async function startRazorpayPayment(){
     document.getElementById('payNowBtn').textContent = 'Pay now with Razorpay';
     if(!data.ok){
       if(data.error === 'expired'){ onOrderExpired(); return; }
-      document.getElementById('paymentFailBox').style.display = 'block';
-      document.getElementById('paymentFailBox').querySelector('.info-box').textContent = data.error || 'Could not start payment.';
+      showPaymentFail(data.error || paymentFailCopy());
       return;
     }
     const rzp = new Razorpay({
@@ -657,17 +759,17 @@ async function startRazorpayPayment(){
         const verifyData = await verifyRes.json();
         clearInterval(COUNTDOWN_TIMER);
         if(verifyData.ok) renderConfirmation();
-        else { document.getElementById('paymentFailBox').style.display = 'block'; }
+        else showPaymentFail();
       },
       modal: {
-        ondismiss: function(){ document.getElementById('paymentFailBox').style.display = 'block'; }
+        ondismiss: function(){ showPaymentFail(); }
       }
     });
-    rzp.on('payment.failed', function(){ document.getElementById('paymentFailBox').style.display = 'block'; });
+    rzp.on('payment.failed', function(){ showPaymentFail(); });
     rzp.open();
   }catch(e){
     document.getElementById('payNowBtn').textContent = 'Pay now with Razorpay';
-    document.getElementById('paymentFailBox').style.display = 'block';
+    showPaymentFail();
   }
 }
 
@@ -719,19 +821,55 @@ function renderAwaitingVerification(){
 }
 
 /* -------- confirmation -------- */
+// Event-specific celebration copy — falls back to a generic gift message
+// for anything not explicitly listed (or no event chosen).
+function eventCelebrationCopy(eventType, recipientName){
+  const name = recipientName || 'them';
+  const map = {
+    'Birthday': { emoji:'🎂🎉', title:`Let's make this birthday memorable!`, text:`Happy Birthday, ${name}! Your surprise is on its way and it's going to be unforgettable.` },
+    'Anniversary': { emoji:'💍🥂', title:`Cheers to more beautiful years together!`, text:`A little something to celebrate ${name}'s special anniversary — sealed with love.` },
+    'Wedding': { emoji:'👰🤵', title:`Wishing them a lifetime of happiness!`, text:`Your gift for ${name}'s big day is confirmed — congratulations to the happy couple!` },
+    'Graduation': { emoji:'🎓🎉', title:`Cheers to new beginnings!`, text:`A proud moment for ${name} — your gift is confirmed and on its way.` },
+    'Congratulations': { emoji:'🎉🙌', title:`What a moment to celebrate!`, text:`Your congratulations gift for ${name} is confirmed and on its way.` },
+    'Just Because': { emoji:'💐✨', title:`Sometimes the best surprises need no reason!`, text:`A little something special for ${name}, just because.` }
+  };
+  return map[eventType] || { emoji:'🎁🎉', title:`A surprise worth celebrating!`, text:`Your gift for ${name} is confirmed and on its way.` };
+}
+
+// Lightweight, dependency-free confetti — bursts a few dozen sweet/party
+// emoji across the screen and cleans itself up after the fall finishes.
+function triggerCelebration(){
+  const layer = document.createElement('div');
+  layer.className = 'confetti-layer';
+  document.body.appendChild(layer);
+  const pieces = ['🎉','🎊','🍬','🍫','🎈','✨','🍭','🧁'];
+  for(let i=0;i<44;i++){
+    const span = document.createElement('span');
+    span.className = 'confetti-piece';
+    span.textContent = pieces[Math.floor(Math.random()*pieces.length)];
+    span.style.left = Math.random()*100 + 'vw';
+    span.style.fontSize = (16 + Math.random()*16) + 'px';
+    span.style.animationDuration = (2.2 + Math.random()*1.6) + 's';
+    span.style.animationDelay = (Math.random()*0.5) + 's';
+    layer.appendChild(span);
+  }
+  setTimeout(() => layer.remove(), 4200);
+}
+
 function renderConfirmation(){
   CART = []; saveCart();
   document.getElementById('customerNoteText').value = '';
   document.getElementById('designNoteSelect').value = '';
+  const copy = eventCelebrationCopy(ACTIVE_ORDER.eventType, ACTIVE_ORDER.recipientName);
   document.getElementById('checkoutBody').innerHTML = `
-    <div class="confirm-icon">🎁✅</div>
-    <h2 style="text-align:center;margin:0 0 8px;">Thank you!</h2>
+    <div class="confirm-icon celebrate">${copy.emoji}</div>
+    <h2 style="text-align:center;margin:0 0 8px;">${escapeHtml(copy.title)}</h2>
     <p style="text-align:center;color:var(--ink-soft);">
-      Order <b>${escapeHtml(ACTIVE_ORDER.orderId)}</b> is confirmed. We'll take it from here and surprise
-      ${escapeHtml(ACTIVE_ORDER.recipientName)} in Bahrain.
+      Order <b>${escapeHtml(ACTIVE_ORDER.orderId)}</b> is confirmed. ${escapeHtml(copy.text)}
     </p>
     <button class="primary-btn" onclick="closeAllOverlays();location.reload();">Done</button>
   `;
+  triggerCelebration();
 }
 
 updateCartCount();
