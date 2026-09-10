@@ -260,7 +260,15 @@ function updateCartCount(){
 // Platform fee + delivery charge — set from the admin panel (Gift to Bahrain
 // tab), currency-specific since INR and BHD orders are priced separately.
 // Both default to 0 until the admin sets them.
-const MIN_ORDER = { INR: 1000, BHD: 5 };
+// Minimum gift order amount — set from the admin panel (Gift to Bahrain tab,
+// "Gift page order charges" card), per currency. Falls back to ₹1,000 / 5.000
+// BHD if the admin hasn't set a value yet.
+function minOrderFor(){
+  const raw = CURRENCY === 'INR' ? SETTINGS_CACHE.giftMinOrderINR : SETTINGS_CACHE.giftMinOrderBHD;
+  const n = Number(raw);
+  if(n > 0) return n;
+  return CURRENCY === 'INR' ? 1000 : 5;
+}
 function feesFor(){
   const platformFee = CURRENCY === 'INR' ? Number(SETTINGS_CACHE.giftPlatformFeeINR || 0) : Number(SETTINGS_CACHE.giftPlatformFeeBHD || 0);
   const deliveryCharge = CURRENCY === 'INR' ? Number(SETTINGS_CACHE.giftDeliveryChargeINR || 0) : Number(SETTINGS_CACHE.giftDeliveryChargeBHD || 0);
@@ -390,7 +398,7 @@ function openCart(){
 function renderCart(){
   const body = document.getElementById('cartBody');
   const minNote = document.getElementById('cartMinOrderNote');
-  const minText = `Minimum gift order: ${fmtMoney(MIN_ORDER[CURRENCY])}`;
+  const minText = `Minimum gift order: ${fmtMoney(minOrderFor())}`;
   if(!CART.length){
     body.innerHTML = '<p style="color:var(--ink-soft);">Your gift cart is empty.</p>';
     document.getElementById('cartSubtotal').textContent = fmtMoney(0);
@@ -428,7 +436,7 @@ function renderCart(){
   document.getElementById('cartPlatformFee').textContent = fmtMoney(platformFee);
   document.getElementById('cartDeliveryCharge').textContent = fmtMoney(deliveryCharge);
   document.getElementById('cartTotal').textContent = fmtMoney(subtotal + platformFee + deliveryCharge);
-  if(minNote) minNote.textContent = subtotal < MIN_ORDER[CURRENCY] ? `${minText} — add more items to check out.` : '';
+  if(minNote) minNote.textContent = subtotal < minOrderFor() ? `${minText} — add more items to check out.` : '';
 }
 function changeQty(id, delta){
   const item = CART.find(i => i.id === id);
@@ -482,7 +490,7 @@ function populateDesignNotes(){
 function openCheckout(){
   if(!CART.length) return;
   const subtotal = cartTotalValue();
-  const min = MIN_ORDER[CURRENCY];
+  const min = minOrderFor();
   if(subtotal < min){
     alert(`Minimum gift order amount is ${fmtMoney(min)}. Please add more items to your cart before checking out.`);
     return;
@@ -632,7 +640,7 @@ async function submitCheckoutDetails(){
     return { id: item.id, name: p ? p.name : item.id, qty: item.qty, price: p ? priceOf(p) : 0 };
   });
   const subtotal = cartTotalValue();
-  const min = MIN_ORDER[CURRENCY];
+  const min = minOrderFor();
   if(subtotal < min){ errBox.textContent = `Minimum gift order amount is ${fmtMoney(min)}.`; return; }
   const { platformFee, deliveryCharge } = feesFor();
   const total = subtotal + platformFee + deliveryCharge;
