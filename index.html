@@ -1178,7 +1178,6 @@
     <div class="section-head reveal" style="margin-bottom:26px;">
       <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowHandpicked">Handpicked</span></span>
       <h2 data-i18n="headFeatured">Featured this week</h2>
-      <p data-i18n="subFeatured">A short list we personally rate, swipe through.</p>
     </div>
   </div>
   <div class="rail-scroll rail-bleed reveal-stagger" id="featuredRail"></div>
@@ -1193,7 +1192,6 @@
     <div class="section-head reveal" style="margin-bottom:26px;">
       <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowCrowd">Crowd favorites</span></span>
       <h2 data-i18n="headBestsellers">Best sellers</h2>
-      <p data-i18n="subBestsellers">What Bahrain keeps adding to cart.</p>
     </div>
   </div>
   <div class="rail-scroll rail-bleed reveal-stagger" id="bestsellersRail"></div>
@@ -1204,7 +1202,6 @@
     <div class="section-head reveal">
       <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowShopByCat">Shop by category</span></span>
       <h2 data-i18n="headFindGadget">Find your next favorite gadget</h2>
-      <p data-i18n="subFindGadget"> browse what people in Bahrain are buying right now.</p>
     </div>
     <div class="cat-grid reveal-stagger" id="categoryCardGrid"></div>
   </div>
@@ -1215,7 +1212,6 @@
     <div class="section-head reveal">
       <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowCatalogue">Full catalogue</span></span>
       <h2 data-i18n="headAllProducts">All products</h2>
-      <p id="resultCount" data-i18n="loadingProducts">Loading products…</p>
     </div>
     <div class="toolbar-inner reveal">
       <div id="categoryChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
@@ -1268,7 +1264,6 @@
   <div class="wrap">
     <div class="newsletter reveal">
       <h2 data-i18n="newsletterHead">Get early access to new drops</h2>
-      <p data-i18n="newsletterSub">One short email a week: new gadgets, restocks, and Bahrain-only offers.</p>
       <div class="newsletter-form">
         <input type="email" placeholder="you@email.com" id="newsletterEmail">
         <button id="newsletterBtn" onclick="subscribeNewsletter()" data-i18n="newsletterBtn">Subscribe</button>
@@ -1319,6 +1314,9 @@
   <div class="drawer-head"><h3 data-i18n="cartTitle">Your cart</h3><button onclick="closeCart()">✕</button></div>
   <div class="drawer-body" id="cartItems"></div>
   <div class="drawer-foot">
+    <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartSubtotal">Sub total</span><span id="cartSubtotal">0.000 BHD</span></div>
+    <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartPlatformFee">Platform fees</span><span id="cartPlatformFee">0.000 BHD</span></div>
+    <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartDeliveryCharge">Delivery charge</span><span id="cartDeliveryCharge">0.000 BHD</span></div>
     <div class="total-row"><span data-i18n="cartTotal">Total</span><span id="cartTotal">0.000 BHD</span></div>
     <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled data-i18n="cartCheckout">Proceed to checkout</button>
   </div>
@@ -2381,7 +2379,7 @@ const I18N = {
     footerTagline:'Shop More. Pay Less.', footerShop:'Shop', footerAllProducts:'All products', footerDeals:'Deals', footerAboutUs:'About us',
     footerSupport:'Support', footerWhatsapp:'WhatsApp us', footerDeliveryPolicy:'Delivery policy', footerReturns:'Returns & refunds',
     footerPayments:'Payments', footerBenefitpay:'BenefitPay QR', footerCod:'Cash on delivery', footerPricesBhd:'Prices shown in BHD.',
-    cartTitle:'Your cart', cartTotal:'Total', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
+    cartTitle:'Your cart', cartTotal:'Total', cartSubtotal:'Sub total', cartPlatformFee:'Platform fees', cartDeliveryCharge:'Delivery charge', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
     checkoutTitle:'Checkout', guestBannerText:'Checking out as a guest.', guestBannerLogin:'Log in', guestBannerSuffix:'for faster checkout & order tracking.',
     fieldFullName:'Full name', fieldMobile:'Mobile number', fieldEmail:'Email', fieldDeliveryAddr:'Delivery address',
     fieldFlat:'Flat / Shop no.', fieldBuilding:'Building', fieldRoad:'Road', fieldBlock:'Block', fieldArea:'Area',
@@ -2461,7 +2459,7 @@ const I18N = {
     footerTagline:'الحل الكامل للأجهزة والإلكترونيات.', footerShop:'المتجر', footerAllProducts:'جميع المنتجات', footerDeals:'العروض', footerAboutUs:'من نحن',
     footerSupport:'الدعم', footerWhatsapp:'راسلنا عبر واتساب', footerDeliveryPolicy:'سياسة التوصيل', footerReturns:'الإرجاع والاسترداد',
     footerPayments:'طرق الدفع', footerBenefitpay:'رمز BenefitPay', footerCod:'الدفع عند الاستلام', footerPricesBhd:'الأسعار موضحة بالدينار البحريني.',
-    cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
+    cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartSubtotal:'المجموع الفرعي', cartPlatformFee:'رسوم المنصة', cartDeliveryCharge:'رسوم التوصيل', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
     checkoutTitle:'إتمام الطلب', guestBannerText:'أنت تتابع الشراء كضيف.', guestBannerLogin:'تسجيل الدخول', guestBannerSuffix:'لإتمام أسرع وتتبع الطلبات.',
     fieldFullName:'الاسم الكامل', fieldMobile:'رقم الجوال', fieldEmail:'البريد الإلكتروني', fieldDeliveryAddr:'عنوان التوصيل',
     fieldFlat:'رقم الشقة / المحل', fieldBuilding:'المبنى', fieldRoad:'الطريق', fieldBlock:'المجمع', fieldArea:'المنطقة',
@@ -2877,9 +2875,16 @@ function categoryIconHtml(cat){
 }
 function setCategory(c){ activeCategory = c; buildCategoryChips(); renderProducts(); }
 
+// Gift-to-Bahrain hamper / gift-box items are managed on a separate page
+// and shouldn't clutter the regular storefront catalogue.
+function isGiftOnlyProduct(p){
+  return p.giftEnabled === true || p.giftEnabled === 'TRUE' || p.giftEnabled === 'true' ||
+    p.giftBoxEnabled === true || p.giftBoxEnabled === 'TRUE' || p.giftBoxEnabled === 'true';
+}
 function renderProducts(){
   const q = document.getElementById('searchInput').value.toLowerCase();
   const filtered = PRODUCTS.filter(p =>
+    !isGiftOnlyProduct(p) &&
     (activeCategory === 'All' || p.category === activeCategory) &&
     (maxPriceFilter === null || p.price <= maxPriceFilter) &&
     (minDiscountFilter === null || discountPct(p) >= minDiscountFilter) &&
@@ -2887,7 +2892,6 @@ function renderProducts(){
   );
   const dealsChip = document.getElementById('dealsFilterChip');
   if(dealsChip) dealsChip.style.display = (maxPriceFilter !== null || minDiscountFilter !== null) ? 'inline-flex' : 'none';
-  document.getElementById('resultCount').textContent = T(filtered.length === 1 ? 'productAvailable' : 'productsAvailable').replace('{n}', filtered.length);
   const grid = document.getElementById('productGrid');
   if(!filtered.length){
     grid.innerHTML = `<div class="empty">${PRODUCTS.length ? T('noProductsMatch') : T('noProductsLoaded')}</div>`;
@@ -3172,6 +3176,20 @@ function saveCart(){
 }
 function cartTotal(){ return CART.reduce((s,i) => s + i.price*i.qty, 0); }
 function round3Local_(n){ return Math.round(Number(n||0) * 1000) / 1000; }
+
+// Platform fee / delivery charge — set from the admin panel (Homepage tab,
+// "Order charges" card). Both default to 0 until the admin sets them.
+let ORDER_CHARGES = { platformFee: 0, deliveryCharge: 0 };
+function applyOrderChargesSettings(settings){
+  const s = settings || {};
+  ORDER_CHARGES = {
+    platformFee: Number(s.platformFeeBHD || 0),
+    deliveryCharge: Number(s.deliveryChargeBHD || 0)
+  };
+  renderCart();
+  if(typeof updateCheckoutTotalDisplay === 'function') safeCall(updateCheckoutTotalDisplay);
+}
+function cartGrandTotal(){ return cartTotal() + ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge; }
 
 /* ================= Product detail page ================= */
 let PDP_PRODUCT = null;
@@ -3787,8 +3805,11 @@ function renderCart(){
       </div>
     </div>
   `).join('') : `<div class="empty">${T('cartEmpty')}</div>`;
-  document.getElementById('cartTotal').textContent = cartTotal().toFixed(3) + ' BHD';
-  document.getElementById('modalTotal').textContent = cartTotal().toFixed(3) + ' BHD';
+  document.getElementById('cartSubtotal').textContent = cartTotal().toFixed(3) + ' BHD';
+  document.getElementById('cartPlatformFee').textContent = ORDER_CHARGES.platformFee.toFixed(3) + ' BHD';
+  document.getElementById('cartDeliveryCharge').textContent = ORDER_CHARGES.deliveryCharge.toFixed(3) + ' BHD';
+  document.getElementById('cartTotal').textContent = cartGrandTotal().toFixed(3) + ' BHD';
+  document.getElementById('modalTotal').textContent = cartGrandTotal().toFixed(3) + ' BHD';
   document.getElementById('checkoutBtn').disabled = CART.length === 0;
   if(currentLang === 'ar') translateProductsIfNeeded(CART.map(i => ({name:i.name})));
 }
@@ -3855,7 +3876,8 @@ function getWalletAmountToUse(){
 function updateCheckoutTotalDisplay(){
   const promoDiscount = getPromoDiscountAmount();
   const walletUsed = getWalletAmountToUse();
-  const payable = Math.max(0, cartTotal() - promoDiscount - walletUsed);
+  const fees = ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge;
+  const payable = Math.max(0, cartTotal() - promoDiscount - walletUsed) + fees;
   const modalTotalEl = document.getElementById('modalTotal');
   if(!modalTotalEl) return;
   const parts = [];
@@ -3863,7 +3885,7 @@ function updateCheckoutTotalDisplay(){
   if(walletUsed > 0) parts.push(`${walletUsed.toFixed(3)} ${T('fromWalletSuffix')}`);
   modalTotalEl.textContent = parts.length
     ? `${payable.toFixed(3)} BHD (${parts.join(' + ')})`
-    : `${cartTotal().toFixed(3)} BHD`;
+    : `${cartGrandTotal().toFixed(3)} BHD`;
 }
 async function applyPromoCode(){
   const input = document.getElementById('promoCodeInput');
@@ -4194,11 +4216,12 @@ async function placeOrder(){
 
     const promoDiscountAmount = getPromoDiscountAmount();
     const walletAmountUsed = getWalletAmountToUse();
-    const payableTotal = Math.max(0, cartTotal() - promoDiscountAmount - walletAmountUsed);
+    const orderFees = ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge;
+    const payableTotal = Math.max(0, cartTotal() - promoDiscountAmount - walletAmountUsed) + orderFees;
 
     const orderPayload = {
       action:'placeOrder', customerName:name, customerEmail: email, phone, address,
-      items: CART, total: cartTotal(), paymentMethod: method, walletAmountUsed,
+      items: CART, total: cartGrandTotal(), paymentMethod: method, walletAmountUsed,
       promoCode: APPLIED_PROMO ? APPLIED_PROMO.code : ''
     };
 
@@ -4234,13 +4257,13 @@ async function placeOrder(){
     document.getElementById('checkoutStepQR').style.display='none';
     document.getElementById('checkoutStep2').style.display='block';
     document.getElementById('confirmTitle').textContent = 'Order confirmed';
-    const cashDue = Math.max(0, cartTotal() - actualWalletUsed - actualPromoDiscount);
+    const cashDue = Math.max(0, cartTotal() - actualWalletUsed - actualPromoDiscount) + orderFees;
     const savingsBits = [];
     if(actualPromoDiscount > 0) savingsBits.push(`${actualPromoDiscount.toFixed(3)} BHD off with your promo code`);
     if(actualWalletUsed > 0) savingsBits.push(`${actualWalletUsed.toFixed(3)} BHD paid from your Souqify-bh wallet`);
     document.getElementById('confirmText').textContent = savingsBits.length
       ? `Order ${orderId}: ${savingsBits.join(', ')}, ${cashDue.toFixed(3)} BHD to pay in cash on delivery. We'll contact you to confirm delivery timing.`
-      : `Order ${orderId} for ${cartTotal().toFixed(3)} BHD will be paid in cash on delivery. We'll contact you to confirm delivery timing.`;
+      : `Order ${orderId} for ${cartGrandTotal().toFixed(3)} BHD will be paid in cash on delivery. We'll contact you to confirm delivery timing.`;
     document.getElementById('confirmWaBtn').style.display = 'none';
     document.getElementById('confirmWaQueryLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi! I have a question about my order ' + orderId + '.')}`;
 
@@ -4779,6 +4802,7 @@ async function loadSettings(){
     applyReferEarnSettings(cached);
     applyMediaLayoutSetting(cached);
     applyPaymentSettings(cached);
+    applyOrderChargesSettings(cached);
   }
 
   // Instant path #2 (first-ever visit, nothing cached yet): the static
@@ -4796,6 +4820,7 @@ async function loadSettings(){
           applyReferEarnSettings(data2.settings);
           applyMediaLayoutSetting(data2.settings);
           applyPaymentSettings(data2.settings);
+          applyOrderChargesSettings(data2.settings);
           writeSettingsCache(data2.settings);
         }
       }
@@ -4814,6 +4839,7 @@ async function loadSettings(){
       applyReferEarnSettings(data.settings);
       applyMediaLayoutSetting(data.settings);
       applyPaymentSettings(data.settings);
+      applyOrderChargesSettings(data.settings);
       writeSettingsCache(data.settings);
     }
   }catch(err){ /* static file or cache is already showing — fine to skip this round */ }

@@ -409,6 +409,22 @@
         <button class="primary" onclick="saveGiftPaymentSettings()">Save</button>
         <span class="muted" id="giftPaymentSaveMsg" style="margin-left:12px;"></span>
       </div>
+
+      <div class="card">
+        <h2>Gift page order charges</h2>
+        <p class="muted" style="margin-bottom:12px;">Added on top of the gift cart subtotal at checkout. Set separately for INR (Razorpay) and BHD (BenefitPay/IBAN) orders — leave at 0 to charge nothing extra.</p>
+        <div class="row">
+          <div class="field"><label>Platform fee (INR)</label><input type="number" step="1" min="0" id="gPlatformFeeINR" placeholder="0"></div>
+          <div class="field"><label>Delivery charge (INR)</label><input type="number" step="1" min="0" id="gDeliveryFeeINR" placeholder="0"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Platform fee (BHD)</label><input type="number" step="0.001" min="0" id="gPlatformFeeBHD" placeholder="0.000"></div>
+          <div class="field"><label>Delivery charge (BHD)</label><input type="number" step="0.001" min="0" id="gDeliveryFeeBHD" placeholder="0.000"></div>
+        </div>
+        <p class="muted">Gift orders also require a minimum order amount to check out — fixed at ₹1,000 (INR) or 5.000 BHD in the storefront.</p>
+        <button class="primary" onclick="saveGiftOrderChargesSettings()">Save gift order charges</button>
+        <span class="muted" id="giftOrderChargesSaveMsg" style="margin-left:12px;"></span>
+      </div>
     </div>
 
     <!-- ================= GIFT ORDERS ================= -->
@@ -627,6 +643,18 @@
           </div>
           <button class="primary" onclick="savePaymentSettings()">Save payment settings</button>
           <span class="muted" id="paymentSaveMsg" style="margin-left:12px;"></span>
+        </div>
+      </div>
+      <div class="grid2" style="margin-top:20px;">
+        <div class="card">
+          <h2>Order charges</h2>
+          <p class="muted" style="margin-bottom:12px;">Added on top of the cart subtotal at checkout on the main store. Leave at 0 to charge nothing extra — you can change these any time.</p>
+          <div class="row">
+            <div class="field"><label>Platform fee (BHD)</label><input type="number" step="0.001" min="0" id="platformFeeBHD" placeholder="0.000"></div>
+            <div class="field"><label>Delivery charge (BHD)</label><input type="number" step="0.001" min="0" id="deliveryChargeBHD" placeholder="0.000"></div>
+          </div>
+          <button class="primary" onclick="saveOrderChargesSettings()">Save order charges</button>
+          <span class="muted" id="orderChargesSaveMsg" style="margin-left:12px;"></span>
         </div>
       </div>
     </div>
@@ -1640,6 +1668,12 @@ function applySettings(s){
     document.getElementById('gBenefitpayName').value = s.benefitpayName || '';
     document.getElementById('gBenefitpayIban').value = s.benefitpayIban || '';
     document.getElementById('gBenefitpayQrUrl').value = s.benefitpayQrUrl || '';
+    document.getElementById('platformFeeBHD').value = s.platformFeeBHD || '';
+    document.getElementById('deliveryChargeBHD').value = s.deliveryChargeBHD || '';
+    document.getElementById('gPlatformFeeINR').value = s.giftPlatformFeeINR || '';
+    document.getElementById('gDeliveryFeeINR').value = s.giftDeliveryChargeINR || '';
+    document.getElementById('gPlatformFeeBHD').value = s.giftPlatformFeeBHD || '';
+    document.getElementById('gDeliveryFeeBHD').value = s.giftDeliveryChargeBHD || '';
     try{ DESIGN_NOTES_CACHE = JSON.parse(s.giftBoxDesignNotes || '[]'); }catch(e){ DESIGN_NOTES_CACHE = []; }
     renderDesignNotes();
   }catch(err){ /* settings sheet may not exist yet — defaults are fine */ }
@@ -1707,6 +1741,19 @@ async function savePaymentSettings(){
     paymentBenefitpayEnabled: document.getElementById('paymentBenefitpayActive').checked
   };
   const msg = document.getElementById('paymentSaveMsg');
+  msg.textContent = 'Saving…';
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
+  msg.textContent = '✓ Saved — live on the site now.';
+  setTimeout(() => msg.textContent = '', 3500);
+}
+
+/* ---------------- order charges (platform fee / delivery charge) ---------------- */
+async function saveOrderChargesSettings(){
+  const settings = {
+    platformFeeBHD: Number(document.getElementById('platformFeeBHD').value || 0),
+    deliveryChargeBHD: Number(document.getElementById('deliveryChargeBHD').value || 0)
+  };
+  const msg = document.getElementById('orderChargesSaveMsg');
   msg.textContent = 'Saving…';
   await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
   msg.textContent = '✓ Saved — live on the site now.';
@@ -2203,6 +2250,21 @@ async function saveGiftPaymentSettings(){
     benefitpayQrUrl: document.getElementById('gBenefitpayQrUrl').value.trim()
   };
   const msg = document.getElementById('giftPaymentSaveMsg');
+  msg.textContent = 'Saving…';
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
+  msg.textContent = '✓ Saved — live on the gift page now.';
+  setTimeout(() => msg.textContent = '', 3000);
+}
+
+/* -------- gift page order charges (platform fee / delivery charge, per currency) -------- */
+async function saveGiftOrderChargesSettings(){
+  const settings = {
+    giftPlatformFeeINR: Number(document.getElementById('gPlatformFeeINR').value || 0),
+    giftDeliveryChargeINR: Number(document.getElementById('gDeliveryFeeINR').value || 0),
+    giftPlatformFeeBHD: Number(document.getElementById('gPlatformFeeBHD').value || 0),
+    giftDeliveryChargeBHD: Number(document.getElementById('gDeliveryFeeBHD').value || 0)
+  };
+  const msg = document.getElementById('giftOrderChargesSaveMsg');
   msg.textContent = 'Saving…';
   await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
   msg.textContent = '✓ Saved — live on the gift page now.';
