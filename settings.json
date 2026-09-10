@@ -17,6 +17,8 @@
     "razorpayKeyId": "rzp_live_TXicGytbZcJELZ",
     "benefitpayName": "",
     "benefitpayIban": "",
-    "benefitpayQrUrl": ""
+    "benefitpayQrUrl": "",
+    "giftMinOrderINR": 1,
+    "giftMinOrderBHD": 1
   }
 }
