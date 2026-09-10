@@ -1256,7 +1256,13 @@ async function loadOrders(){
   applyOrders(await res.json());
 }
 function applyOrders(data){
-  ORDERS = (data.orders || []).slice().reverse();
+  // Gift-to-Bahrain orders (orderType === 'gift') live on the same Orders
+  // sheet but can be priced in INR — they have their own tab (Gift Orders,
+  // below) which already renders them with the correct ₹/BHD symbol. Keep
+  // them out of this regular Orders tab and out of the dashboard revenue
+  // math (which assumes BHD), so an INR total never gets mislabeled "BHD"
+  // or silently added into the BHD revenue stat.
+  ORDERS = (data.orders || []).filter(o => o.orderType !== 'gift').slice().reverse();
   renderOrderRows();
 }
 function parseItems(o){ try{ return JSON.parse(o.items); }catch(e){ return []; } }
