@@ -45,15 +45,22 @@
   nav.gb-nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:14px 24px;max-width:1180px;margin:0 auto;gap:14px;}
   .gb-nav-right{justify-self:end;}
   @media (max-width:560px){
-    nav.gb-nav{grid-template-columns:1fr;justify-items:center;row-gap:10px;}
+    nav.gb-nav{grid-template-columns:1fr;justify-items:center;row-gap:8px;}
     .gb-nav-left-stacked{align-items:center;text-align:center;}
     .gb-nav-right{display:none;}
+    .gb-actions{width:100%;justify-content:space-between;gap:8px;}
   }
   .cur-toggle{display:flex;background:var(--paper-soft);border-radius:20px;padding:4px;border:1px solid var(--line);}
   .cur-toggle button{border:none;background:none;padding:7px 16px;border-radius:16px;font-weight:800;font-size:13px;color:var(--ink-soft);}
   .cur-toggle button.active{background:var(--blush-deep);color:#fff;}
   .cart-btn{position:relative;background:var(--blush-deep);color:#fff;border:none;border-radius:20px;padding:9px 16px;font-weight:700;font-size:13.5px;}
   .cart-count{position:absolute;top:-6px;right:-6px;background:#fff;color:var(--blush-deep);border-radius:50%;width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+  @media (max-width:560px){
+    .cur-toggle{padding:3px;}
+    .cur-toggle button{padding:5px 10px;font-size:11px;}
+    .cart-btn{padding:6px 12px;font-size:11.5px;}
+    .cart-count{width:16px;height:16px;font-size:9px;top:-5px;right:-5px;}
+  }
 
   .hero{background:linear-gradient(135deg, var(--blush), var(--blush-deep));border-radius:0 0 28px 28px;padding:36px 24px 44px;text-align:center;color:#fff;}
   .hero .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;background:rgba(255,255,255,0.18);padding:7px 16px;border-radius:20px;margin-bottom:14px;}
@@ -196,6 +203,9 @@
   .gpdp-desc{color:var(--ink-soft);font-size:13.5px;line-height:1.7;white-space:pre-line;margin:0 0 22px;}
   .gpdp-qty-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
   @media (max-width:760px){ .gpdp-grid{grid-template-columns:1fr;gap:24px;} }
+  .gpdp-related{max-width:1100px;margin:56px auto 0;padding-top:36px;border-top:1px solid var(--line);}
+  .gpdp-related h3{font-size:clamp(18px,2.6vw,22px);font-weight:800;margin:0 0 18px;}
+  @media (max-width:760px){ .gpdp-related{margin-top:36px;padding-top:26px;} }
 
   /* ---- giveaway entry popup ---- */
   .gwy-popup-icon{font-size:48px;text-align:center;margin-bottom:8px;animation:popIn .6s var(--ease);}
@@ -205,7 +215,6 @@
 <header>
   <nav class="gb-nav">
     <div class="gb-nav-left gb-nav-left-stacked">
-      <a class="back-link" href="index.html">← Back to shop</a>
       <a href="index.html" style="display:flex;align-items:center;text-decoration:none;">
         <div class="gb-mark brand-cart-icon" role="img" aria-label="Souqify-bh"></div>
         <span class="gb-word brand-wordmark" role="img" aria-label="Souqify-bh" style="margin-left:6px;"></span>
@@ -273,9 +282,6 @@
 <!-- ================= shared overlay ================= -->
 <div class="overlay" id="overlay" onclick="closeAllOverlays()"></div>
 
-<!-- ================= entrance pop toast ================= -->
-<div class="entrance-pop" id="entrancePop">🎁 Surprise someone in Bahrain today!</div>
-
 <!-- ================= full-page gift product view ================= -->
 <div class="gpdp-overlay" id="gpdpOverlay">
   <div class="gpdp-topbar">
@@ -304,6 +310,10 @@
         </div>
         <button class="primary-btn" id="gpdpActionBtn" onclick="gpdpPrimaryAction()">Add to gift cart</button>
       </div>
+    </div>
+    <div class="gpdp-related" id="gpdpRelated" style="display:none;">
+      <h3 id="gpdpRelatedTitle">You might also like</h3>
+      <div class="grid" id="gpdpRelatedGrid"></div>
     </div>
   </div>
 </div>
@@ -531,8 +541,26 @@ function openProduct(id){
   document.getElementById('gpdpQtyRow').style.display = 'flex';
   document.getElementById('gpdpQty').textContent = GPDP_QTY;
   document.getElementById('gpdpActionBtn').textContent = 'Add to gift cart';
+  renderGpdpRelated(p);
   document.getElementById('gpdpOverlay').classList.add('open');
   window.scrollTo(0,0);
+}
+// "You might also like" — same-category gift items first (hampers + box
+// items combined), topped up with other Gift to Bahrain products if the
+// category doesn't have enough on its own. Hidden entirely if nothing to show.
+function renderGpdpRelated(p){
+  const section = document.getElementById('gpdpRelated');
+  const grid = document.getElementById('gpdpRelatedGrid');
+  const title = document.getElementById('gpdpRelatedTitle');
+  const pool = [...ALL_GIFT_PRODUCTS, ...ALL_BOX_ITEMS].filter(x => x.id !== p.id);
+  if(!pool.length){ section.style.display = 'none'; return; }
+  const sameCat = pool.filter(x => (x.category || 'Gift') === (p.category || 'Gift'));
+  const rest = pool.filter(x => (x.category || 'Gift') !== (p.category || 'Gift'));
+  const picks = [...sameCat, ...rest].slice(0, 4);
+  if(!picks.length){ section.style.display = 'none'; return; }
+  title.textContent = sameCat.length ? `You might also like — ${p.category || 'Gift'}` : 'You might also like';
+  grid.innerHTML = picks.map(x => productCardHtml(x, ALL_BOX_ITEMS.includes(x) && !ALL_GIFT_PRODUCTS.includes(x) ? '+ Add to box' : 'Add to gift cart')).join('');
+  section.style.display = 'block';
 }
 function gpdpSetMainImage(el, src){
   document.getElementById('gpdpMainImg').src = src;
@@ -678,6 +706,7 @@ function openGiveawayDetails(){
   document.getElementById('gpdpThumbs').innerHTML = '';
   document.getElementById('gpdpQtyRow').style.display = 'none';
   document.getElementById('gpdpActionBtn').textContent = 'Enter giveaway';
+  document.getElementById('gpdpRelated').style.display = 'none';
   document.getElementById('gpdpOverlay').classList.add('open');
   window.scrollTo(0,0);
 }

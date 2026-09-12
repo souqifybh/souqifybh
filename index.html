@@ -586,6 +586,13 @@
   @keyframes ctaShimmer{0%{left:-60%;}100%{left:120%;}}
   @keyframes ctaBounce{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-8deg);}75%{transform:translateY(-1px) rotate(8deg);}}
   @media (prefers-reduced-motion: reduce){ .celebrate-cta, .celebrate-cta::after, .celebrate-cta .emo{animation:none!important;} }
+  @media (max-width:640px){
+    .celebrate-cta{
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      display:flex;align-items:center;justify-content:center;gap:6px;
+      padding:14px 10px;font-size:clamp(11px,3.6vw,14px);letter-spacing:0;
+    }
+  }
 
   /* ---------- Announcement bar (site-wide, admin editable) ---------- */
   .announce-bar{display:none;background:var(--ink);color:#fff;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:0.01em;padding:9px 16px;}
@@ -2865,12 +2872,12 @@ function handleReviewLinkFromQuery(){
 function buildCategoryChips(){
   const cats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
   const wrap = document.getElementById('categoryChips');
-  wrap.innerHTML = cats.map(c => `<button class="chip ${c===activeCategory?'active':''}" onclick="setCategory('${c.replace(/'/g,"\\'")}')">${c==='All' ? T('chipAll') : catLabel(c)}</button>`).join('');
+  wrap.innerHTML = cats.map(c => `<button class="chip ${c===activeCategory?'active':''}" onclick="goToCategory('${c.replace(/'/g,"\\'")}')">${c==='All' ? T('chipAll') : catLabel(c)}</button>`).join('');
 }
 function buildCategoryCards(){
   const cats = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
   document.getElementById('categoryCardGrid').innerHTML = cats.map(c => `
-    <div class="cat-card" onclick="setCategory('${c.replace(/'/g,"\\'")}'); document.getElementById('shop').scrollIntoView({behavior:'smooth'});">
+    <div class="cat-card" onclick="goToCategory('${c.replace(/'/g,"\\'")}');">
       <div class="ic">${categoryIconHtml(c)}</div>
       <div class="n">${catLabel(c)}</div>
       <div class="cta">${T('catShopNow')} <span class="arrow">→</span></div>
@@ -2883,7 +2890,7 @@ function buildTopCategoryStrip(){
   const cats = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
   if(!cats.length){ strip.innerHTML = ''; return; }
   strip.innerHTML = cats.map(c => `
-    <div class="top-cat-item" onclick="setCategory('${c.replace(/'/g,"\\'")}'); document.getElementById('shop').scrollIntoView({behavior:'smooth'});">
+    <div class="top-cat-item" onclick="goToCategory('${c.replace(/'/g,"\\'")}');">
       <div class="avatar">${categoryIconHtml(c)}</div>
       <div class="lbl">${catLabel(c)}</div>
     </div>
@@ -2899,6 +2906,17 @@ function categoryIconHtml(cat){
   return CATEGORY_ICONS[cat] || '✨';
 }
 function setCategory(c){ activeCategory = c; buildCategoryChips(); renderProducts(); }
+
+// "Hampers" only ever contains Gift-to-Bahrain items, which live on the
+// dedicated gift page (not the regular storefront catalogue) — so tapping
+// that category anywhere on the homepage should jump straight to the
+// Hampers section on gift-bahrain.html instead of filtering/sorting the
+// homepage shop grid (which would just come up empty).
+function goToCategory(c){
+  if(c === 'Hampers'){ window.location.href = 'gift-bahrain.html#hampersSection'; return; }
+  setCategory(c);
+  document.getElementById('shop').scrollIntoView({behavior:'smooth'});
+}
 
 // Gift-to-Bahrain hamper / gift-box items are managed on a separate page
 // and shouldn't clutter the regular storefront catalogue.
@@ -4616,7 +4634,7 @@ function hsSlideClick(i){
   // section filtered to that collection (same behaviour as tapping a
   // category card or the top category strip).
   const cat = i === 0 ? s.heroCategory : (i === 1 ? s.heroCategory2 : s.heroCategory3);
-  if(cat){ setCategory(cat); document.getElementById('shop').scrollIntoView({behavior:'smooth'}); }
+  if(cat){ goToCategory(cat); }
 }
 function applyHeroLanguage(){
   const s = LAST_SETTINGS;
