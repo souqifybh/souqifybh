@@ -586,9 +586,6 @@
   @keyframes ctaShimmer{0%{left:-60%;}100%{left:120%;}}
   @keyframes ctaBounce{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-8deg);}75%{transform:translateY(-1px) rotate(8deg);}}
   @media (prefers-reduced-motion: reduce){ .celebrate-cta, .celebrate-cta::after, .celebrate-cta .emo{animation:none!important;} }
-  .home-confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:900;overflow:hidden;}
-  .home-confetti-piece{position:absolute;top:-40px;will-change:transform,opacity;animation:home-confetti-fall linear forwards;}
-  @keyframes home-confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(112vh) rotate(560deg);opacity:0.85;}}
 
   /* ---------- Announcement bar (site-wide, admin editable) ---------- */
   .announce-bar{display:none;background:var(--ink);color:#fff;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:0.01em;padding:9px 16px;}
@@ -3178,26 +3175,12 @@ function popButton(el){
   el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
   setTimeout(()=>el.classList.remove('pop'), 350);
 }
-// Small celebratory confetti burst before sending the visitor to the Gift
-// to Bahrain page — the delay is just long enough for the burst to read,
-// then navigates like a normal link.
+// Sends the visitor straight to the Gift to Bahrain page — the celebratory
+// confetti burst now plays once they've landed there (see runEntrancePop in
+// gift-bahrain.html), not before they leave this page.
 function goToGiftBahrain(el){
   popButton(el);
-  const layer = document.createElement('div');
-  layer.className = 'home-confetti-layer';
-  document.body.appendChild(layer);
-  const pieces = ['🎉','🎊','🍬','🍫','🎈','✨','🍭','🧁'];
-  for(let i=0;i<40;i++){
-    const span = document.createElement('span');
-    span.className = 'home-confetti-piece';
-    span.textContent = pieces[Math.floor(Math.random()*pieces.length)];
-    span.style.left = Math.random()*100 + 'vw';
-    span.style.fontSize = (16 + Math.random()*16) + 'px';
-    span.style.animationDuration = (2.2 + Math.random()*1.6) + 's';
-    span.style.animationDelay = (Math.random()*0.3) + 's';
-    layer.appendChild(span);
-  }
-  setTimeout(() => { window.location.href = 'gift-bahrain.html'; }, 450);
+  window.location.href = 'gift-bahrain.html';
 }
 function changeQty(id, delta, color){
   color = color || null;
