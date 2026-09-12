@@ -130,6 +130,79 @@
   .section-sub{color:var(--ink-soft);font-size:13.5px;margin:-14px 0 18px;}
   footer{background:var(--ink);color:#d9d5d5;padding:36px 24px 22px;margin-top:20px;}
   .foot-bottom{max-width:1180px;margin:0 auto;font-size:12px;color:#8f8b8b;text-align:center;}
+
+  /* ---- celebratory full-width CTA button ---- */
+  .celebrate-wrap{padding:18px 24px 6px;}
+  .celebrate-cta{
+    display:block;width:100%;max-width:1180px;margin:0 auto;border:none;border-radius:18px;
+    padding:18px 20px;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;
+    background:linear-gradient(120deg,#E85D75,#F4A261,#A5BA4A,#46501B,#E85D75);
+    background-size:300% 100%;animation:ctaGradient 6s ease infinite, ctaPulse 1.8s ease-in-out infinite;
+    box-shadow:0 10px 26px rgba(70,80,27,0.35);position:relative;overflow:hidden;letter-spacing:0.01em;
+  }
+  .celebrate-cta::after{
+    content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;
+    background:linear-gradient(115deg,transparent,rgba(255,255,255,0.55),transparent);
+    animation:ctaShimmer 2.6s ease-in-out infinite;
+  }
+  .celebrate-cta .emo{display:inline-block;animation:ctaBounce 1s ease-in-out infinite;}
+  @keyframes ctaGradient{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
+  @keyframes ctaPulse{0%,100%{transform:scale(1);box-shadow:0 10px 26px rgba(70,80,27,0.35);}50%{transform:scale(1.015);box-shadow:0 14px 34px rgba(232,93,117,0.4);}}
+  @keyframes ctaShimmer{0%{left:-60%;}100%{left:120%;}}
+  @keyframes ctaBounce{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-8deg);}75%{transform:translateY(-1px) rotate(8deg);}}
+  @media (prefers-reduced-motion: reduce){ .celebrate-cta, .celebrate-cta::after, .celebrate-cta .emo{animation:none!important;} }
+
+  /* ---- giveaway banner section ---- */
+  .giveaway-section{padding:22px 24px 4px;}
+  .giveaway-card{
+    max-width:1180px;margin:0 auto;border-radius:22px;overflow:hidden;position:relative;
+    background:linear-gradient(135deg,#FFD166,#F4A261 55%,#E85D75);color:#2b1400;
+    box-shadow:0 16px 40px rgba(232,93,117,0.28);display:grid;grid-template-columns:1fr 1.3fr;gap:0;
+  }
+  .giveaway-card .gwy-img{aspect-ratio:1/1;background:rgba(255,255,255,0.25);overflow:hidden;}
+  .giveaway-card .gwy-img img{width:100%;height:100%;object-fit:cover;}
+  .giveaway-card .gwy-body{padding:26px 26px;display:flex;flex-direction:column;justify-content:center;gap:8px;}
+  .gwy-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.55);font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:0.06em;padding:6px 12px;border-radius:20px;width:fit-content;animation:ctaPulse 1.8s ease-in-out infinite;}
+  .giveaway-card h2{font-size:clamp(19px,2.6vw,26px);margin:4px 0 2px;}
+  .giveaway-card p.gwy-desc{font-size:13.5px;line-height:1.55;margin:0 0 4px;color:#3a1c00;}
+  .gwy-price-row{display:flex;align-items:baseline;gap:8px;margin:2px 0 4px;}
+  .gwy-price-row .amt{font-family:'Sora';font-weight:800;font-size:24px;}
+  .gwy-price-row .lbl{font-size:12px;font-weight:700;color:#3a1c00;}
+  .gwy-enter-btn{margin-top:6px;background:#181B09;color:#fff;border:none;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;width:fit-content;}
+  @media (max-width:640px){ .giveaway-card{grid-template-columns:1fr;} .giveaway-card .gwy-img{aspect-ratio:16/9;} }
+
+  /* ---- entrance pop overlay (first few seconds) ---- */
+  .entrance-pop{
+    position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-20px);opacity:0;
+    background:linear-gradient(120deg,#46501B,#A5BA4A);color:#fff;padding:12px 22px;border-radius:40px;
+    font-weight:800;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,0.25);z-index:950;
+    transition:opacity .5s var(--ease), transform .5s var(--ease);pointer-events:none;white-space:nowrap;
+  }
+  .entrance-pop.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* ---- full-page gift product view (gpdp) ---- */
+  .gpdp-overlay{position:fixed;inset:0;background:#fff;z-index:600;overflow-y:auto;display:none;}
+  .gpdp-overlay.open{display:block;}
+  .gpdp-topbar{position:sticky;top:0;z-index:5;background:rgba(255,255,255,0.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 24px;}
+  .gpdp-topbar-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
+  .gpdp-back{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;background:none;border:none;color:var(--ink);}
+  .gpdp-crumb{font-size:12.5px;color:var(--ink-soft);}
+  .gpdp-body{max-width:1180px;margin:0 auto;padding:32px 24px 80px;}
+  .gpdp-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;}
+  .gpdp-gallery-main{aspect-ratio:1/1;border-radius:18px;overflow:hidden;background:var(--paper-soft);border:1px solid var(--line);}
+  .gpdp-gallery-main img{width:100%;height:100%;object-fit:cover;}
+  .gpdp-thumbs{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+  .gpdp-thumbs img{width:62px;height:62px;object-fit:cover;border-radius:10px;cursor:pointer;border:2px solid transparent;}
+  .gpdp-thumbs img.active{border-color:var(--blush-deep);}
+  .gpdp-cat{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--blush-ink);}
+  .gpdp-info h1{font-size:clamp(22px,3vw,30px);margin:8px 0 12px;font-weight:800;}
+  .gpdp-price{font-family:'Sora';font-weight:800;font-size:26px;margin-bottom:14px;}
+  .gpdp-desc{color:var(--ink-soft);font-size:13.5px;line-height:1.7;white-space:pre-line;margin:0 0 22px;}
+  .gpdp-qty-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+  @media (max-width:760px){ .gpdp-grid{grid-template-columns:1fr;gap:24px;} }
+
+  /* ---- giveaway entry popup ---- */
+  .gwy-popup-icon{font-size:48px;text-align:center;margin-bottom:8px;animation:popIn .6s var(--ease);}
 </style>
 </head>
 <body>
@@ -151,7 +224,24 @@
   <img src="assets/webbanner.png" alt="Souqify — Surprise your loved ones in Bahrain" loading="eager">
 </div>
 
-<section class="section">
+<div class="celebrate-wrap">
+  <button class="celebrate-cta" onclick="celebrateCtaClick()"><span class="emo">🎉</span> Surprise &amp; Celebrate — Click Now <span class="emo">🎁</span></button>
+</div>
+
+<section class="giveaway-section" id="giveawaySection" style="display:none;">
+  <div class="giveaway-card" onclick="openGiveawayDetails()">
+    <div class="gwy-img"><img id="gwyCardImg" src="" alt="Giveaway hamper"></div>
+    <div class="gwy-body">
+      <span class="gwy-badge">🎉 Giveaway live</span>
+      <h2 id="gwyCardName">Birthday &amp; Anniversary Hamper Giveaway</h2>
+      <p class="gwy-desc" id="gwyCardDesc"></p>
+      <div class="gwy-price-row"><span class="lbl">Entry fee</span><span class="amt" id="gwyCardPrice">—</span></div>
+      <button class="gwy-enter-btn" onclick="event.stopPropagation();openGiveawayDetails()">See details &amp; enter</button>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="hampersSection">
   <div class="wrap">
     <h2>🎁 Gift Hampers</h2>
     <div class="grid" id="giftGrid"></div>
@@ -185,11 +275,52 @@
 <!-- ================= shared overlay ================= -->
 <div class="overlay" id="overlay" onclick="closeAllOverlays()"></div>
 
-<!-- ================= product quick-view modal ================= -->
-<div class="modal" id="productModal">
+<!-- ================= entrance pop toast ================= -->
+<div class="entrance-pop" id="entrancePop">🎁 Surprise someone in Bahrain today!</div>
+
+<!-- ================= full-page gift product view ================= -->
+<div class="gpdp-overlay" id="gpdpOverlay">
+  <div class="gpdp-topbar">
+    <div class="gpdp-topbar-inner">
+      <button class="gpdp-back" onclick="closeAllOverlays()">← Back to shop</button>
+      <span class="gpdp-crumb" id="gpdpCrumb"></span>
+    </div>
+  </div>
+  <div class="gpdp-body">
+    <div class="gpdp-grid">
+      <div>
+        <div class="gpdp-gallery-main"><img id="gpdpMainImg" src="" alt=""></div>
+        <div class="gpdp-thumbs" id="gpdpThumbs"></div>
+      </div>
+      <div class="gpdp-info">
+        <div class="gpdp-cat" id="gpdpCat"></div>
+        <h1 id="gpdpName"></h1>
+        <div class="gpdp-price" id="gpdpPrice"></div>
+        <p class="gpdp-desc" id="gpdpDesc"></p>
+        <div class="gpdp-qty-row" id="gpdpQtyRow">
+          <div class="qty-selector" style="display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:10px;padding:6px 12px;">
+            <button onclick="gpdpChangeQty(-1)" style="border:none;background:none;font-weight:800;font-size:16px;">−</button>
+            <span id="gpdpQty">1</span>
+            <button onclick="gpdpChangeQty(1)" style="border:none;background:none;font-weight:800;font-size:16px;">+</button>
+          </div>
+        </div>
+        <button class="primary-btn" id="gpdpActionBtn" onclick="gpdpPrimaryAction()">Add to gift cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= giveaway entry confirmation popup ================= -->
+<div class="modal" id="giveawayPopup">
   <div class="modal-inner">
-    <button class="close-x" style="float:right;" onclick="closeAllOverlays()">✕</button>
-    <div id="productModalBody"></div>
+    <button class="close-x" style="float:right;" onclick="closeAllOverlays();location.reload();">✕</button>
+    <div class="gwy-popup-icon">🎉</div>
+    <h2 style="text-align:center;margin:0 0 8px;">You're entered into the giveaway!</h2>
+    <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;line-height:1.6;">
+      Entry <b id="gwyPopupId"></b> is confirmed. If you're picked as our lucky winner, we'll reach out to you personally.
+      Meanwhile, you can also check out our affordable hamper sets to Bahrain — from anywhere, anytime.
+    </p>
+    <button class="primary-btn" onclick="closeAllOverlays();document.getElementById('hampersSection').scrollIntoView({behavior:'smooth'});">Browse hampers</button>
   </div>
 </div>
 
@@ -229,6 +360,13 @@ let CART = JSON.parse(localStorage.getItem('giftCartBH') || '[]');
 let ACTIVE_ORDER = null;      // { orderId, currency, expiresAt, razorpayOrderId }
 let COUNTDOWN_TIMER = null;
 let SETTINGS_CACHE = {};
+
+/* ---------------- giveaway + full-page product view state ---------------- */
+let ACTIVE_GIVEAWAY_ENTRY = null; // { entryId, currency, amount, expiresAt }
+let GWY_COUNTDOWN_TIMER = null;
+let GPDP_PRODUCT = null;
+let GPDP_QTY = 1;
+let GPDP_MODE = 'product'; // 'product' | 'giveaway'
 
 /* ---------------- helpers ---------------- */
 function escapeHtml(s){
@@ -285,6 +423,7 @@ function setCurrency(c){
   document.getElementById('curBtnBHD').classList.toggle('active', c === 'BHD');
   renderGrid();
   renderBoxGrid();
+  renderGiveawaySection();
   if(document.getElementById('cartDrawer').classList.contains('open')) renderCart();
 }
 
@@ -370,23 +509,55 @@ function quickAdd(id){
   openCart();
 }
 
-/* ---------------- product quick-view ---------------- */
+/* ---------------- full-page product view (like the main store's product page) ---------------- */
+// Opens a product in a full page (gallery + name + price + description
+// only, no features/more-details accordion) instead of a small popup —
+// same overlay is reused for the giveaway hamper via openGiveawayDetails().
 function openProduct(id){
   const p = findProduct(id);
   if(!p) return;
+  GPDP_MODE = 'product';
+  GPDP_PRODUCT = p;
+  GPDP_QTY = 1;
   const imgs = getImages(p);
   const price = priceOf(p), compare = compareOf(p);
-  document.getElementById('productModalBody').innerHTML = `
-    <span class="step-badge">${escapeHtml(p.category || 'Gift hamper')}</span>
-    <div class="gallery-main"><img id="pmMainImg" src="${imgs[0]}" alt=""></div>
-    ${imgs.length > 1 ? `<div class="gallery-thumbs">${imgs.map((im,i) => `<img src="${im}" class="${i===0?'active':''}" onclick="document.getElementById('pmMainImg').src='${im}';this.parentElement.querySelectorAll('img').forEach(t=>t.classList.remove('active'));this.classList.add('active');">`).join('')}</div>` : ''}
-    <h2 style="margin:14px 0 6px;">${escapeHtml(p.name)}</h2>
-    <div class="price-tag" style="font-size:22px;">${compare > price ? `<span class="was">${fmtMoney(compare)}</span>` : ''}${fmtMoney(price)}</div>
-    <p style="color:var(--ink-soft);font-size:13.5px;line-height:1.6;white-space:pre-line;margin-top:10px;">${escapeHtml(p.description || '')}</p>
-    <button class="primary-btn" onclick="quickAdd('${p.id}');closeAllOverlays();">Add to gift cart</button>
-  `;
-  document.getElementById('overlay').classList.add('open');
-  document.getElementById('productModal').classList.add('open');
+  document.getElementById('gpdpCrumb').textContent = `Gift to Bahrain / ${p.category || 'Gift'} / ${p.name}`;
+  document.getElementById('gpdpCat').textContent = p.category || 'Gift hamper';
+  document.getElementById('gpdpName').textContent = p.name;
+  document.getElementById('gpdpPrice').innerHTML = `${compare > price ? `<span class="was" style="display:block;color:var(--ink-soft);text-decoration:line-through;font-size:15px;">${fmtMoney(compare)}</span>` : ''}${fmtMoney(price)}`;
+  document.getElementById('gpdpDesc').textContent = p.description || '';
+  document.getElementById('gpdpMainImg').src = imgs[0];
+  document.getElementById('gpdpThumbs').innerHTML = imgs.length > 1
+    ? imgs.map((im,i) => `<img src="${im}" class="${i===0?'active':''}" onclick="gpdpSetMainImage(this,'${im}')">`).join('')
+    : '';
+  document.getElementById('gpdpQtyRow').style.display = 'flex';
+  document.getElementById('gpdpQty').textContent = GPDP_QTY;
+  document.getElementById('gpdpActionBtn').textContent = 'Add to gift cart';
+  document.getElementById('gpdpOverlay').classList.add('open');
+  window.scrollTo(0,0);
+}
+function gpdpSetMainImage(el, src){
+  document.getElementById('gpdpMainImg').src = src;
+  el.parentElement.querySelectorAll('img').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+function gpdpChangeQty(delta){
+  if(GPDP_MODE !== 'product') return; // giveaway entries are always qty 1
+  GPDP_QTY = Math.max(1, GPDP_QTY + delta);
+  document.getElementById('gpdpQty').textContent = GPDP_QTY;
+}
+function gpdpPrimaryAction(){
+  if(GPDP_MODE === 'giveaway'){
+    closeAllOverlays();
+    startGiveawayCheckout();
+    return;
+  }
+  if(!GPDP_PRODUCT) return;
+  const existing = CART.find(i => i.id === GPDP_PRODUCT.id);
+  if(existing) existing.qty += GPDP_QTY; else CART.push({ id: GPDP_PRODUCT.id, qty: GPDP_QTY });
+  saveCart();
+  closeAllOverlays();
+  openCart();
 }
 
 /* ---------------- cart drawer ---------------- */
@@ -457,8 +628,9 @@ function cartTotalValue(){
 function closeAllOverlays(){
   document.getElementById('overlay').classList.remove('open');
   document.getElementById('cartDrawer').classList.remove('open');
-  document.getElementById('productModal').classList.remove('open');
   document.getElementById('checkoutModal').classList.remove('open');
+  document.getElementById('gpdpOverlay').classList.remove('open');
+  document.getElementById('giveawayPopup').classList.remove('open');
 }
 
 /* ---------------- settings (BenefitPay IBAN/QR) ---------------- */
@@ -469,8 +641,47 @@ async function loadSettings(){
     if(data.ok) SETTINGS_CACHE = data.settings || {};
   }catch(e){}
   populateDesignNotes();
+  renderGiveawaySection();
   // Platform fee / delivery charge just loaded — refresh any totals already on screen.
   if(document.getElementById('cartDrawer').classList.contains('open')) renderCart();
+}
+
+/* ---------------- giveaway (admin-togglable) ---------------- */
+function isTrueVal(v){ return v === true || v === 'TRUE' || v === 'true' || v === 1 || v === '1'; }
+function giveawayPriceValue(){
+  const raw = CURRENCY === 'INR' ? SETTINGS_CACHE.giveawayPriceINR : SETTINGS_CACHE.giveawayPriceBHD;
+  const n = Number(raw);
+  if(n > 0) return n;
+  return CURRENCY === 'INR' ? 149 : 0.7;
+}
+function renderGiveawaySection(){
+  const section = document.getElementById('giveawaySection');
+  if(!isTrueVal(SETTINGS_CACHE.giveawayEnabled)){
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+  const name = SETTINGS_CACHE.giveawayHamperName || 'Birthday & Anniversary Hamper Giveaway';
+  document.getElementById('gwyCardName').textContent = name;
+  document.getElementById('gwyCardDesc').textContent = SETTINGS_CACHE.giveawayHamperDesc || 'Enter for a chance to win this hamper — one lucky winner is picked at random.';
+  document.getElementById('gwyCardImg').src = SETTINGS_CACHE.giveawayHamperImage || 'https://placehold.co/700x700/FDF7F7/8A3B3B?text=Giveaway';
+  document.getElementById('gwyCardPrice').textContent = fmtMoney(giveawayPriceValue());
+}
+function openGiveawayDetails(){
+  GPDP_MODE = 'giveaway';
+  GPDP_PRODUCT = null;
+  const imgs = [SETTINGS_CACHE.giveawayHamperImage || 'https://placehold.co/700x700/FDF7F7/8A3B3B?text=Giveaway'];
+  document.getElementById('gpdpCrumb').textContent = `Gift to Bahrain / Giveaway`;
+  document.getElementById('gpdpCat').textContent = 'Giveaway — one lucky winner';
+  document.getElementById('gpdpName').textContent = SETTINGS_CACHE.giveawayHamperName || 'Birthday & Anniversary Hamper Giveaway';
+  document.getElementById('gpdpPrice').innerHTML = `${fmtMoney(giveawayPriceValue())} <span style="font-size:13px;font-weight:600;color:var(--ink-soft);">entry fee</span>`;
+  document.getElementById('gpdpDesc').textContent = SETTINGS_CACHE.giveawayHamperDesc || '';
+  document.getElementById('gpdpMainImg').src = imgs[0];
+  document.getElementById('gpdpThumbs').innerHTML = '';
+  document.getElementById('gpdpQtyRow').style.display = 'none';
+  document.getElementById('gpdpActionBtn').textContent = 'Enter giveaway';
+  document.getElementById('gpdpOverlay').classList.add('open');
+  window.scrollTo(0,0);
 }
 
 /* ---------------- note session ---------------- */
@@ -879,6 +1090,264 @@ function renderConfirmation(){
   `;
   triggerCelebration();
 }
+
+/* ================= GIVEAWAY CHECKOUT ================= */
+// Mirrors the gift-order checkout flow above (details -> Razorpay/BenefitPay
+// -> confirmation) but for a single giveaway entry instead of a cart, and
+// with its own "Add give away" button label per request.
+function startGiveawayCheckout(){
+  closeAllOverlays();
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('checkoutModal').classList.add('open');
+  renderGiveawayDetailsStep();
+}
+
+function renderGiveawayDetailsStep(){
+  const minDate = minGiftDeliveryDate();
+  const minDateISO = isoDate(minDate);
+  const minDateLabel = prettyDate(minDate);
+  const price = giveawayPriceValue();
+  document.getElementById('checkoutBody').innerHTML = `
+    <span class="step-badge">Giveaway entry</span>
+    <h2 style="margin:0 0 6px;">Enter the giveaway</h2>
+    <p style="color:var(--ink-soft);font-size:13px;margin:0 0 6px;">One winner is picked at random from all paid entries. If you win, we deliver the hamper to the address below.</p>
+
+    <label>Your name</label><input type="text" id="gwSenderName">
+    <label>Your email <span style="font-weight:500;color:var(--ink-soft);">(so we can reach you if you win)</span></label><input type="email" id="gwSenderEmail">
+    <label>Your phone</label><input type="tel" id="gwSenderPhone">
+    <label>Delivery address in Bahrain <span style="font-weight:500;color:var(--ink-soft);">(used only if you win)</span></label><textarea id="gwAddress"></textarea>
+
+    <label>🎉 Occasion</label>
+    <select id="gwEventType">
+      <option value="Birthday">🎂 Birthday</option>
+      <option value="Anniversary">💍 Anniversary</option>
+    </select>
+
+    <label>Preferred delivery date</label>
+    <div class="event-row">
+      <div><label style="margin-top:0;">Date</label><input type="date" id="gwDeliveryDate" min="${minDateISO}"></div>
+      <div>
+        <label style="margin-top:0;">Time slot</label>
+        <select id="gwDeliveryTime">
+          <option value="">Choose a time</option>
+          <option value="Morning (9am–12pm)">Morning (9am–12pm)</option>
+          <option value="Afternoon (12pm–4pm)">Afternoon (12pm–4pm)</option>
+          <option value="Evening (4pm–8pm)">Evening (4pm–8pm)</option>
+          <option value="Night (8pm–10pm)">Night (8pm–10pm)</option>
+        </select>
+      </div>
+    </div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:-8px;margin-bottom:4px;">Only used if you're picked as the winner — the earliest date you can pick is ${minDateLabel}.</div>
+
+    <div class="totals-row grand" style="margin-top:16px;"><span>Giveaway entry fee</span><span>${fmtMoney(price)}</span></div>
+    <div id="gwDetailsErr" class="err-msg"></div>
+    <button class="primary-btn" onclick="submitGiveawayDetails()">Add give away</button>
+  `;
+}
+
+async function submitGiveawayDetails(){
+  const customerName = document.getElementById('gwSenderName').value.trim();
+  const customerEmail = document.getElementById('gwSenderEmail').value.trim();
+  const phone = document.getElementById('gwSenderPhone').value.trim();
+  const address = document.getElementById('gwAddress').value.trim();
+  const eventType = document.getElementById('gwEventType').value;
+  const deliveryDate = document.getElementById('gwDeliveryDate').value;
+  const deliveryTimeSlot = document.getElementById('gwDeliveryTime').value;
+  const errBox = document.getElementById('gwDetailsErr');
+
+  if(!customerName || !customerEmail || !phone){ errBox.textContent = 'Please fill in your name, email and phone.'; return; }
+  if(!address){ errBox.textContent = 'Please fill in your delivery address.'; return; }
+  if(!deliveryDate){ errBox.textContent = 'Please choose a preferred delivery date.'; return; }
+  const minDate = minGiftDeliveryDate();
+  const chosenDate = new Date(deliveryDate + 'T00:00:00');
+  if(isNaN(chosenDate.getTime()) || chosenDate < minDate){
+    errBox.textContent = `Please choose a date on or after ${prettyDate(minDate)}.`;
+    return;
+  }
+  if(!deliveryTimeSlot){ errBox.textContent = 'Please choose a delivery time slot.'; return; }
+  errBox.textContent = '';
+
+  const payload = {
+    action: 'createGiveawayEntry',
+    customerName, customerEmail, phone, address,
+    eventType, deliveryDate, deliveryTimeSlot, currency: CURRENCY
+  };
+  document.getElementById('checkoutBody').innerHTML = '<p style="text-align:center;padding:40px 0;">Creating your entry…</p>';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
+    const data = await res.json();
+    if(!data.ok){ renderGiveawayDetailsStep(); document.getElementById('gwDetailsErr').textContent = data.error || 'Could not create the entry.'; return; }
+    ACTIVE_GIVEAWAY_ENTRY = { entryId: data.entryId, currency: data.currency, amount: data.amount, expiresAt: data.expiresAt };
+    if(CURRENCY === 'INR') renderGiveawayRazorpayStep();
+    else renderGiveawayBenefitPayStep();
+  }catch(e){
+    renderGiveawayDetailsStep();
+    document.getElementById('gwDetailsErr').textContent = 'Network error — please try again.';
+  }
+}
+
+function renderGiveawayRazorpayStep(){
+  clearInterval(GWY_COUNTDOWN_TIMER);
+  document.getElementById('checkoutBody').innerHTML = `
+    <span class="step-badge">Step 2 of 2 · Payment</span>
+    <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)} to enter</h2>
+    <p style="color:var(--ink-soft);font-size:13px;">Entry ${escapeHtml(ACTIVE_GIVEAWAY_ENTRY.entryId)} — complete payment before the timer runs out.</p>
+    <div class="countdown" id="gwCountdownDisplay">05:00</div>
+    <button class="primary-btn" id="gwPayNowBtn" onclick="startGiveawayRazorpayPayment()">Add give away</button>
+    <div id="gwPaymentFailBox" style="display:none;">
+      <div class="sad-icon">😢</div>
+      <h3 style="text-align:center;margin:0 0 6px;">That payment didn't go through!</h3>
+      <div class="info-box" style="color:#B34141;background:#FCEEEE;text-align:center;">Let's give it another try.</div>
+      <button class="ghost-btn" onclick="startGiveawayRazorpayPayment()">Retry payment</button>
+    </div>
+    <div id="gwExpiredBox" style="display:none;">
+      <div class="info-box" style="color:#B34141;background:#FCEEEE;">Time's up — this entry was cancelled automatically. Please start again.</div>
+      <button class="ghost-btn" onclick="closeAllOverlays();">Close</button>
+    </div>
+  `;
+  startGiveawayCountdown();
+}
+function startGiveawayCountdown(){
+  const expiresAt = new Date(ACTIVE_GIVEAWAY_ENTRY.expiresAt).getTime();
+  GWY_COUNTDOWN_TIMER = setInterval(() => {
+    const msLeft = expiresAt - Date.now();
+    if(msLeft <= 0){
+      clearInterval(GWY_COUNTDOWN_TIMER);
+      onGiveawayExpired();
+      return;
+    }
+    const totalSec = Math.floor(msLeft / 1000);
+    const mm = String(Math.floor(totalSec/60)).padStart(2,'0');
+    const ss = String(totalSec % 60).padStart(2,'0');
+    const el = document.getElementById('gwCountdownDisplay');
+    if(el) el.textContent = `${mm}:${ss}`;
+  }, 500);
+}
+async function onGiveawayExpired(){
+  try{ await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'cancelGiveawayEntry', entryId: ACTIVE_GIVEAWAY_ENTRY.entryId }) }); }catch(e){}
+  const payBtn = document.getElementById('gwPayNowBtn');
+  if(payBtn) payBtn.style.display = 'none';
+  const failBox = document.getElementById('gwPaymentFailBox');
+  if(failBox) failBox.style.display = 'none';
+  const expBox = document.getElementById('gwExpiredBox');
+  if(expBox) expBox.style.display = 'block';
+}
+async function startGiveawayRazorpayPayment(){
+  document.getElementById('gwPaymentFailBox').style.display = 'none';
+  document.getElementById('gwPayNowBtn').textContent = 'Opening payment…';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'createGiveawayRazorpayOrder', entryId: ACTIVE_GIVEAWAY_ENTRY.entryId }) });
+    const data = await res.json();
+    document.getElementById('gwPayNowBtn').textContent = 'Add give away';
+    if(!data.ok){
+      if(data.error === 'expired'){ onGiveawayExpired(); return; }
+      document.getElementById('gwPaymentFailBox').style.display = 'block';
+      return;
+    }
+    const rzp = new Razorpay({
+      key: data.keyId,
+      amount: data.amount,
+      currency: data.currency,
+      name: data.name,
+      order_id: data.razorpayOrderId,
+      handler: async function(response){
+        const verifyRes = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+          action: 'verifyGiveawayPayment', entryId: ACTIVE_GIVEAWAY_ENTRY.entryId,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature
+        })});
+        const verifyData = await verifyRes.json();
+        clearInterval(GWY_COUNTDOWN_TIMER);
+        if(verifyData.ok) renderGiveawayEnteredPopup();
+        else document.getElementById('gwPaymentFailBox').style.display = 'block';
+      },
+      modal: { ondismiss: function(){ document.getElementById('gwPaymentFailBox').style.display = 'block'; } }
+    });
+    rzp.on('payment.failed', function(){ document.getElementById('gwPaymentFailBox').style.display = 'block'; });
+    rzp.open();
+  }catch(e){
+    document.getElementById('gwPayNowBtn').textContent = 'Add give away';
+    document.getElementById('gwPaymentFailBox').style.display = 'block';
+  }
+}
+
+function renderGiveawayBenefitPayStep(){
+  const iban = SETTINGS_CACHE.benefitpayIban || 'BH00 SOUQ 0000 0000 0000 00';
+  const name = SETTINGS_CACHE.benefitpayName || 'Souqify-bh W.L.L.';
+  const qr = SETTINGS_CACHE.benefitpayQrUrl || 'assets/benefitpay-qr.png';
+  const waText = encodeURIComponent(
+    `Hi Souqify-bh, I've paid for giveaway entry ${ACTIVE_GIVEAWAY_ENTRY.entryId} (${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)}). Please verify and confirm my entry.`
+  );
+  document.getElementById('checkoutBody').innerHTML = `
+    <span class="step-badge">Step 2 of 2 · Payment</span>
+    <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)} via BenefitPay / IBAN</h2>
+    <p style="color:var(--ink-soft);font-size:13px;">Entry ${escapeHtml(ACTIVE_GIVEAWAY_ENTRY.entryId)}. Scan the QR or transfer to the IBAN below, then confirm on WhatsApp.</p>
+    <div class="qr-box">
+      <img src="${qr}" alt="BenefitPay QR">
+      <div style="font-weight:700;">${escapeHtml(name)}</div>
+      <div style="font-family:monospace;font-size:13px;">${escapeHtml(iban)}</div>
+    </div>
+    <a class="whatsapp-btn" style="display:block;text-align:center;text-decoration:none;" target="_blank"
+       href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" onclick="markGiveawayBenefitPaySubmitted()">
+       ✅ I've paid — notify us on WhatsApp
+    </a>
+    <div class="info-box">Your entry is reserved and will show as "awaiting verification" until we confirm your payment.</div>
+  `;
+}
+async function markGiveawayBenefitPaySubmitted(){
+  try{
+    await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'submitGiveawayBenefitPayProof', entryId: ACTIVE_GIVEAWAY_ENTRY.entryId }) });
+  }catch(e){}
+  setTimeout(renderGiveawayEnteredPopup, 400);
+}
+
+function renderGiveawayEnteredPopup(){
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.getElementById('gwyPopupId').textContent = ACTIVE_GIVEAWAY_ENTRY.entryId;
+  document.getElementById('giveawayPopup').classList.add('open');
+  triggerCelebration();
+}
+
+/* ================= entrance pop + celebratory CTA ================= */
+// A short toast + confetti burst the moment the page loads, so first-time
+// visitors immediately notice this is a "gift" experience — separate from
+// the confetti fired on order/giveaway confirmation above.
+function playCelebrationChime(){
+  try{
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if(!Ctx) return;
+    const ctx = new Ctx();
+    const notes = [523.25, 659.25, 784.0]; // C5 E5 G5 — a bright little chime
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      const start = ctx.currentTime + i * 0.11;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.18, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.35);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.4);
+    });
+  }catch(e){ /* autoplay blocked or unsupported — silently skip */ }
+}
+function celebrateCtaClick(){
+  triggerCelebration();
+  playCelebrationChime(); // this click is a real user gesture, so sound is allowed here
+  document.getElementById('hampersSection').scrollIntoView({ behavior: 'smooth' });
+}
+function runEntrancePop(){
+  const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const toast = document.getElementById('entrancePop');
+  if(toast && !prefersReducedMotion) toast.classList.add('show');
+  if(!prefersReducedMotion) triggerCelebration();
+  playCelebrationChime(); // best-effort — most browsers block this before any click, that's fine
+  setTimeout(() => { if(toast) toast.classList.remove('show'); }, 5000);
+}
+runEntrancePop(); // script sits at the end of body, so the DOM above is already ready
 
 updateCartCount();
 loadGiftProducts();

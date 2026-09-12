@@ -226,6 +226,7 @@
       <div class="sb-link" data-tab="marketing" onclick="switchTab('marketing')"><span class="ic">📣</span> Marketing</div>
       <div class="sb-link" data-tab="giftbh" onclick="switchTab('giftbh')"><span class="ic">🎁</span> Gift to Bahrain</div>
       <div class="sb-link" data-tab="giftorders" onclick="switchTab('giftorders')"><span class="ic">✈️</span> Gift Orders</div>
+      <div class="sb-link" data-tab="giveaway" onclick="switchTab('giveaway')"><span class="ic">🎉</span> Giveaway</div>
     </div>
     <div class="sb-spacer"></div>
     <div class="sb-foot"><div class="logout" onclick="logout()"><span class="ic">↩</span> Log out</div></div>
@@ -457,6 +458,47 @@
         <table>
           <thead><tr><th>Order</th><th>Sender</th><th>Recipient / delivery</th><th>Total</th><th>Currency</th><th>Payment</th><th>Status</th><th></th></tr></thead>
           <tbody id="giftOrderRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= GIVEAWAY ================= -->
+    <div class="panel" id="panel-giveaway">
+      <div class="topbar">
+        <div><h1>Giveaway</h1><p>Run a "win a hamper" giveaway on the Gift to Bahrain page. Turn it on, describe the hamper and set an entry fee — the live page then shows this giveaway first, above the normal hampers.</p></div>
+      </div>
+
+      <div class="card">
+        <h2>Giveaway status</h2>
+        <div class="toggle-row">
+          <label class="toggle-pill" id="gwyEnabledPill"><input type="checkbox" id="gwyEnabled" onchange="syncPill('gwyEnabled','gwyEnabledPill')"><span class="ic">🎉</span> Giveaway is live on the gift page</label>
+        </div>
+        <p class="muted" style="margin-top:6px;">When off, the gift page looks exactly as it does today. When on, the hamper below and its entry fee are shown at the top of the page.</p>
+      </div>
+
+      <div class="card">
+        <h2>Giveaway hamper details</h2>
+        <div class="row">
+          <div class="field"><label>Hamper name</label><input id="gwyName" placeholder="e.g. Deluxe Birthday & Anniversary Hamper"></div>
+          <div class="field"><label>Image URL</label><input id="gwyImage" placeholder="https://..."></div>
+        </div>
+        <div class="field full"><label>Description</label><textarea id="gwyDesc" placeholder="What's inside the hamper…"></textarea></div>
+        <div class="row">
+          <div class="field"><label>Entry fee (INR)</label><input id="gwyPriceINR" type="number" step="1" placeholder="149"></div>
+          <div class="field"><label>Entry fee (BHD)</label><input id="gwyPriceBHD" type="number" step="0.001" placeholder="0.700"></div>
+        </div>
+        <button class="primary" onclick="saveGiveawaySettings()">Save giveaway settings</button>
+        <span class="muted" id="giveawaySaveMsg" style="margin-left:12px;"></span>
+      </div>
+
+      <div class="card">
+        <h2>Giveaway entries <span class="muted" id="giveawayEntryCount"></span></h2>
+        <div class="toolbar">
+          <button class="primary" onclick="pickGiveawayWinnerBtn()">🎲 Pick random winner</button>
+        </div>
+        <table>
+          <thead><tr><th>Entry</th><th>Customer</th><th>Delivery</th><th>Amount</th><th>Payment</th><th>Winner?</th><th></th></tr></thead>
+          <tbody id="giveawayRows"></tbody>
         </table>
       </div>
     </div>
@@ -919,6 +961,7 @@ function applyBootstrap(data){
   applyPromoCodes(data);
   applyMedia(data);
   applyReturns(data);
+  applyGiveaway(data);
   renderDashboard();
   renderPromoCodes(); // re-render now that ORDERS has definitely finished loading, for accurate redemption counts
 }
@@ -1688,7 +1731,84 @@ function applySettings(s){
     document.getElementById('gMinOrderBHD').value = s.giftMinOrderBHD || '';
     try{ DESIGN_NOTES_CACHE = JSON.parse(s.giftBoxDesignNotes || '[]'); }catch(e){ DESIGN_NOTES_CACHE = []; }
     renderDesignNotes();
+    document.getElementById('gwyEnabled').checked = s.giveawayEnabled === true || s.giveawayEnabled === 'TRUE';
+    syncPill('gwyEnabled','gwyEnabledPill');
+    document.getElementById('gwyName').value = s.giveawayHamperName || '';
+    document.getElementById('gwyDesc').value = s.giveawayHamperDesc || '';
+    document.getElementById('gwyImage').value = s.giveawayHamperImage || '';
+    document.getElementById('gwyPriceINR').value = s.giveawayPriceINR || '';
+    document.getElementById('gwyPriceBHD').value = s.giveawayPriceBHD || '';
   }catch(err){ /* settings sheet may not exist yet — defaults are fine */ }
+}
+
+/* -------- giveaway -------- */
+function applyGiveaway(data){
+  GIVEAWAY_ENTRIES_CACHE = data.giveawayEntries || [];
+  renderGiveawayRows();
+}
+async function saveGiveawaySettings(){
+  const settings = {
+    giveawayEnabled: document.getElementById('gwyEnabled').checked,
+    giveawayHamperName: document.getElementById('gwyName').value.trim(),
+    giveawayHamperDesc: document.getElementById('gwyDesc').value.trim(),
+    giveawayHamperImage: document.getElementById('gwyImage').value.trim(),
+    giveawayPriceINR: Number(document.getElementById('gwyPriceINR').value || 0),
+    giveawayPriceBHD: Number(document.getElementById('gwyPriceBHD').value || 0)
+  };
+  const msg = document.getElementById('giveawaySaveMsg');
+  msg.textContent = 'Saving…';
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings }) });
+  msg.textContent = '✓ Saved — live on the gift page now.';
+  setTimeout(() => msg.textContent = '', 3000);
+}
+async function loadGiveawayEntries(){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listGiveawayEntriesAdmin', password: ADMIN_PASSWORD }) });
+  const data = await res.json();
+  if(!data.ok) return;
+  GIVEAWAY_ENTRIES_CACHE = data.entries || [];
+  renderGiveawayRows();
+}
+function renderGiveawayRows(){
+  const countEl = document.getElementById('giveawayEntryCount');
+  if(countEl) countEl.textContent = GIVEAWAY_ENTRIES_CACHE.length ? `(${GIVEAWAY_ENTRIES_CACHE.length})` : '';
+  const rowsEl = document.getElementById('giveawayRows');
+  if(!rowsEl) return;
+  rowsEl.innerHTML = GIVEAWAY_ENTRIES_CACHE.map(e => `
+    <tr>
+      <td>${escapeHtmlAdmin(e.id)}<br><span class="muted">${e.timestamp ? new Date(e.timestamp).toLocaleString() : ''}</span></td>
+      <td>${escapeHtmlAdmin(e.customerName)}<br><span class="muted">${escapeHtmlAdmin(e.phone)} · ${escapeHtmlAdmin(e.customerEmail)}</span></td>
+      <td>${escapeHtmlAdmin(e.eventType)}<br><span class="muted">${escapeHtmlAdmin(e.deliveryDate)} · ${escapeHtmlAdmin(e.deliveryTimeSlot)}</span><br><span class="muted">${escapeHtmlAdmin(e.address)}</span></td>
+      <td>${e.currency === 'INR' ? '₹' : ''}${Number(e.amount||0).toLocaleString()}${e.currency === 'BHD' ? ' BHD' : ''}</td>
+      <td>${escapeHtmlAdmin(e.paymentMethod)}<br><b>${escapeHtmlAdmin(e.paymentStatus)}</b>
+          ${e.paymentStatus === 'awaiting_verification' ? `<br><button class="primary small" onclick="verifyGiveawayEntry('${e.id}')">Verify payment</button>` : ''}</td>
+      <td>${e.isWinner === true || e.isWinner === 'TRUE' ? '🏆 Winner' : ''}
+          ${e.isWinner === true || e.isWinner === 'TRUE' ? `<br><button class="ghost small" onclick="notifyGiveawayWinnerBtn('${e.id}')">Notify winner</button>` : ''}</td>
+      <td><button class="ghost small" onclick="deleteGiveawayEntryBtn('${e.id}')">Delete</button></td>
+    </tr>`).join('') || '<tr><td colspan="7" class="muted">No giveaway entries yet.</td></tr>';
+}
+async function verifyGiveawayEntry(id){
+  if(!confirm('Confirm you have received this BenefitPay/IBAN payment?')) return;
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateGiveawayEntry', password: ADMIN_PASSWORD, id, paymentStatus:'paid' }) });
+  loadGiveawayEntries();
+}
+async function pickGiveawayWinnerBtn(){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'pickGiveawayWinner', password: ADMIN_PASSWORD }) });
+  const data = await res.json();
+  if(!data.ok){ alert(data.error || 'Could not pick a winner.'); return; }
+  alert(`🎉 Winner picked: ${data.winnerName || data.winnerId} (${data.winnerId})`);
+  loadGiveawayEntries();
+}
+async function notifyGiveawayWinnerBtn(id){
+  if(!confirm('Send the "you won!" email to this entrant now?')) return;
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'notifyGiveawayWinner', password: ADMIN_PASSWORD, id }) });
+  const data = await res.json();
+  if(!data.ok){ alert(data.error || 'Could not send the email.'); return; }
+  alert('Winner notified.');
+}
+async function deleteGiveawayEntryBtn(id){
+  if(!confirm('Delete this giveaway entry?')) return;
+  await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'deleteGiveawayEntry', password: ADMIN_PASSWORD, id }) });
+  loadGiveawayEntries();
 }
 function updateHeroPreview(){
   document.getElementById('heroPreviewEyebrow').textContent = document.getElementById('heroEyebrow').value || 'Order online, get it delivered easily';
@@ -2129,6 +2249,7 @@ if(savedPw){ document.getElementById('pwInput').value = savedPw; login(); }
    ====================================================================== */
 let GIFT_PRODUCTS_CACHE = [];
 let GIFT_ORDERS_CACHE = [];
+let GIVEAWAY_ENTRIES_CACHE = [];
 
 function resetGiftForm(){
   ['gId','gName','gCategory','gPriceINR','gCompareINR','gPriceBHD','gCompareBHD','gDesc','gImg1','gImg2','gImg3','gImg4','gImg5']
@@ -2354,6 +2475,7 @@ switchTab = function(tab){
   _origSwitchTab(tab);
   if(tab === 'giftbh' && !GIFT_PRODUCTS_CACHE.length) loadGiftProducts();
   if(tab === 'giftorders') loadGiftOrders();
+  if(tab === 'giveaway') loadGiveawayEntries();
 };
 </script>
 </body>
