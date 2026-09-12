@@ -357,6 +357,7 @@
           <div class="field"><label>Price (BHD) <span class="opt">— what the sender pays if paying from Bahrain</span></label><input id="gPriceBHD" type="number" step="0.001" placeholder="18.500"></div>
           <div class="field"><label>Compare-at price (BHD) <span class="opt">— optional "was" price</span></label><input id="gCompareBHD" type="number" step="0.001" placeholder="24.900"></div>
         </div>
+        <div class="field full"><label>Short description <span class="opt">— optional, one or two lines shown right under the product name, on the gift card and gift product page</span></label><input id="gShortDesc" maxlength="160" placeholder="e.g. Premium chocolate cake, fresh flowers &amp; a birthday card"></div>
         <div class="field full"><label>Description</label><textarea id="gDesc" placeholder="What's inside the hamper…"></textarea></div>
         <div class="field full"><label>Stock</label><input id="gStock" type="number" value="20" style="max-width:160px;"></div>
         <div class="field full">
@@ -2252,7 +2253,7 @@ let GIFT_ORDERS_CACHE = [];
 let GIVEAWAY_ENTRIES_CACHE = [];
 
 function resetGiftForm(){
-  ['gId','gName','gCategory','gPriceINR','gCompareINR','gPriceBHD','gCompareBHD','gDesc','gImg1','gImg2','gImg3','gImg4','gImg5']
+  ['gId','gName','gCategory','gPriceINR','gCompareINR','gPriceBHD','gCompareBHD','gShortDesc','gDesc','gImg1','gImg2','gImg3','gImg4','gImg5']
     .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
   document.getElementById('gStock').value = 20;
   document.getElementById('gActive').checked = true;
@@ -2279,6 +2280,7 @@ async function saveGiftProduct(){
     name: document.getElementById('gName').value.trim(),
     category: document.getElementById('gCategory').value.trim(),
     description: document.getElementById('gDesc').value,
+    shortDescription: document.getElementById('gShortDesc').value.trim(),
     price: Number(document.getElementById('gPriceBHD').value || 0),
     compareAtPrice: document.getElementById('gCompareBHD').value ? Number(document.getElementById('gCompareBHD').value) : '',
     priceINR: Number(document.getElementById('gPriceINR').value || 0),
@@ -2303,6 +2305,7 @@ function editGiftProduct(id){
   document.getElementById('gName').value = p.name || '';
   document.getElementById('gCategory').value = p.category || '';
   document.getElementById('gDesc').value = p.description || '';
+  document.getElementById('gShortDesc').value = p.shortDescription || '';
   document.getElementById('gPriceINR').value = p.priceINR || '';
   document.getElementById('gCompareINR').value = p.compareAtPriceINR || '';
   document.getElementById('gPriceBHD').value = p.price || '';
