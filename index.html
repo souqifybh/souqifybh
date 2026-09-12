@@ -566,6 +566,30 @@
   .gift-home-banner-img img{ display:block; width:100%; height:auto; }
   .gift-home-banner-img:hover{ transform:translateY(-3px); box-shadow:0 18px 44px rgba(28,28,30,0.16); }
 
+  /* ---------- animated "Surprise & Celebrate" CTA, shown right below the gift banner ---------- */
+  .celebrate-wrap{max-width:1180px;margin:0 auto 28px;padding:0 24px;}
+  .celebrate-cta{
+    display:block;width:100%;text-decoration:none;text-align:center;border:none;border-radius:18px;
+    padding:18px 20px;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;cursor:pointer;
+    background:linear-gradient(120deg,#E85D75,#F4A261,#A5BA4A,#46501B,#E85D75);
+    background-size:300% 100%;animation:ctaGradient 6s ease infinite, ctaPulse 1.8s ease-in-out infinite;
+    box-shadow:0 10px 26px rgba(70,80,27,0.35);position:relative;overflow:hidden;letter-spacing:0.01em;
+  }
+  .celebrate-cta::after{
+    content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;
+    background:linear-gradient(115deg,transparent,rgba(255,255,255,0.55),transparent);
+    animation:ctaShimmer 2.6s ease-in-out infinite;
+  }
+  .celebrate-cta .emo{display:inline-block;animation:ctaBounce 1s ease-in-out infinite;}
+  @keyframes ctaGradient{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
+  @keyframes ctaPulse{0%,100%{transform:scale(1);box-shadow:0 10px 26px rgba(70,80,27,0.35);}50%{transform:scale(1.015);box-shadow:0 14px 34px rgba(232,93,117,0.4);}}
+  @keyframes ctaShimmer{0%{left:-60%;}100%{left:120%;}}
+  @keyframes ctaBounce{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-8deg);}75%{transform:translateY(-1px) rotate(8deg);}}
+  @media (prefers-reduced-motion: reduce){ .celebrate-cta, .celebrate-cta::after, .celebrate-cta .emo{animation:none!important;} }
+  .home-confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:900;overflow:hidden;}
+  .home-confetti-piece{position:absolute;top:-40px;will-change:transform,opacity;animation:home-confetti-fall linear forwards;}
+  @keyframes home-confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(112vh) rotate(560deg);opacity:0.85;}}
+
   /* ---------- Announcement bar (site-wide, admin editable) ---------- */
   .announce-bar{display:none;background:var(--ink);color:#fff;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:0.01em;padding:9px 16px;}
   .announce-bar.show{display:block;}
@@ -1186,6 +1210,10 @@
 <a class="gift-home-banner-img reveal" href="gift-bahrain.html" aria-label="Gift to Bahrain — Surprise your loved ones">
   <img src="assets/webbanner.png" alt="Souqify gift box — surprise your loved ones on special days" loading="lazy">
 </a>
+
+<div class="celebrate-wrap">
+  <button class="celebrate-cta" onclick="goToGiftBahrain(this)"><span class="emo">🎉</span> Surprise &amp; Celebrate — Click Now <span class="emo">🎁</span></button>
+</div>
 
 <section class="section section-tight" id="bestsellersSection" style="display:none;background:var(--paper-soft);">
   <div class="wrap">
@@ -3149,6 +3177,27 @@ function popButton(el){
   if(!el) return;
   el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
   setTimeout(()=>el.classList.remove('pop'), 350);
+}
+// Small celebratory confetti burst before sending the visitor to the Gift
+// to Bahrain page — the delay is just long enough for the burst to read,
+// then navigates like a normal link.
+function goToGiftBahrain(el){
+  popButton(el);
+  const layer = document.createElement('div');
+  layer.className = 'home-confetti-layer';
+  document.body.appendChild(layer);
+  const pieces = ['🎉','🎊','🍬','🍫','🎈','✨','🍭','🧁'];
+  for(let i=0;i<40;i++){
+    const span = document.createElement('span');
+    span.className = 'home-confetti-piece';
+    span.textContent = pieces[Math.floor(Math.random()*pieces.length)];
+    span.style.left = Math.random()*100 + 'vw';
+    span.style.fontSize = (16 + Math.random()*16) + 'px';
+    span.style.animationDuration = (2.2 + Math.random()*1.6) + 's';
+    span.style.animationDelay = (Math.random()*0.3) + 's';
+    layer.appendChild(span);
+  }
+  setTimeout(() => { window.location.href = 'gift-bahrain.html'; }, 450);
 }
 function changeQty(id, delta, color){
   color = color || null;

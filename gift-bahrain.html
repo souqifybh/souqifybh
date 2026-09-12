@@ -131,26 +131,8 @@
   footer{background:var(--ink);color:#d9d5d5;padding:36px 24px 22px;margin-top:20px;}
   .foot-bottom{max-width:1180px;margin:0 auto;font-size:12px;color:#8f8b8b;text-align:center;}
 
-  /* ---- celebratory full-width CTA button ---- */
-  .celebrate-wrap{padding:18px 24px 6px;}
-  .celebrate-cta{
-    display:block;width:100%;max-width:1180px;margin:0 auto;border:none;border-radius:18px;
-    padding:18px 20px;font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:#fff;
-    background:linear-gradient(120deg,#E85D75,#F4A261,#A5BA4A,#46501B,#E85D75);
-    background-size:300% 100%;animation:ctaGradient 6s ease infinite, ctaPulse 1.8s ease-in-out infinite;
-    box-shadow:0 10px 26px rgba(70,80,27,0.35);position:relative;overflow:hidden;letter-spacing:0.01em;
-  }
-  .celebrate-cta::after{
-    content:'';position:absolute;top:0;left:-60%;width:50%;height:100%;
-    background:linear-gradient(115deg,transparent,rgba(255,255,255,0.55),transparent);
-    animation:ctaShimmer 2.6s ease-in-out infinite;
-  }
-  .celebrate-cta .emo{display:inline-block;animation:ctaBounce 1s ease-in-out infinite;}
-  @keyframes ctaGradient{0%{background-position:0% 50%;}100%{background-position:300% 50%;}}
+  /* ---- shared "pulse" keyframe (used by the giveaway badge) ---- */
   @keyframes ctaPulse{0%,100%{transform:scale(1);box-shadow:0 10px 26px rgba(70,80,27,0.35);}50%{transform:scale(1.015);box-shadow:0 14px 34px rgba(232,93,117,0.4);}}
-  @keyframes ctaShimmer{0%{left:-60%;}100%{left:120%;}}
-  @keyframes ctaBounce{0%,100%{transform:translateY(0) rotate(0deg);}25%{transform:translateY(-3px) rotate(-8deg);}75%{transform:translateY(-1px) rotate(8deg);}}
-  @media (prefers-reduced-motion: reduce){ .celebrate-cta, .celebrate-cta::after, .celebrate-cta .emo{animation:none!important;} }
 
   /* ---- giveaway banner section ---- */
   .giveaway-section{padding:22px 24px 4px;}
@@ -222,10 +204,6 @@
 
 <div class="hero-banner">
   <img src="assets/webbanner.png" alt="Souqify — Surprise your loved ones in Bahrain" loading="eager">
-</div>
-
-<div class="celebrate-wrap">
-  <button class="celebrate-cta" onclick="celebrateCtaClick()"><span class="emo">🎉</span> Surprise &amp; Celebrate — Click Now <span class="emo">🎁</span></button>
 </div>
 
 <section class="giveaway-section" id="giveawaySection" style="display:none;">
@@ -1333,11 +1311,6 @@ function playCelebrationChime(){
       osc.stop(start + 0.4);
     });
   }catch(e){ /* autoplay blocked or unsupported — silently skip */ }
-}
-function celebrateCtaClick(){
-  triggerCelebration();
-  playCelebrationChime(); // this click is a real user gesture, so sound is allowed here
-  document.getElementById('hampersSection').scrollIntoView({ behavior: 'smooth' });
 }
 function runEntrancePop(){
   const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
