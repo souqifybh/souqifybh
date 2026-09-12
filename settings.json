@@ -19,6 +19,12 @@
     "benefitpayIban": "",
     "benefitpayQrUrl": "",
     "giftMinOrderINR": 1,
-    "giftMinOrderBHD": 1
+    "giftMinOrderBHD": 1,
+    "giveawayEnabled": true,
+    "giveawayHamperName": "Premium Birthday/Anniversary Hamper Giveaway",
+    "giveawayHamperDesc": "Make their special day truly unforgettable with a thoughtfully curated hamper, beautifully designed to celebrate love, joy, and cherished moments. ❤️\n\nIndulge them with a delightful Chocolate Truffle Cake, a luxurious Set of Chocolates, and a charming Bouquet to add sweetness and elegance to the celebration. Complete the surprise with a stylish Watch and a heartfelt Birthday or Anniversary Card a perfect blend of taste, elegance, and thoughtful gifting.\n\n🎀 Hamper Includes:\n🍫 Chocolate Truffle Cake\n🍬 Set of Chocolates\n💐 1 Beautiful Bouquet\n⌚ 1 Stylish Watch\n💌 Birthday / Anniversary Card\n\n✨ One premium hamper. Five beautiful surprises. Endless memories. ✨\n\n📍 Delivery available in Bahrain\n🎉 Perfect for birthdays & anniversaries",
+    "giveawayHamperImage": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png",
+    "giveawayPriceINR": 0,
+    "giveawayPriceBHD": 0
   }
 }

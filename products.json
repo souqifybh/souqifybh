@@ -437,5 +437,39 @@
     "colorsList": [],
     "avgRating": 0,
     "reviewCount": 0
+  },
+  {
+    "id": "P-1789229430960",
+    "name": "Premium Anniversary Gift Box",
+    "description": "Celebrate your special journey together with our Premium Anniversary Gift Box, thoughtfully curated to make the occasion truly memorable:\n\n🍫 Premium 500g Chocolate Cake – A rich and delicious chocolate cake, perfect for celebrating your beautiful milestone together.\n💐 Premium Bouquet – An elegant floral arrangement that adds a romantic and timeless touch to the celebration.\n💌 Anniversary Note Card – A beautifully designed card to express your love, wishes, and heartfelt anniversary message.\n\nA perfect blend of love, sweetness, and elegance — beautifully presented to celebrate your special bond.",
+    "price": 8.9,
+    "compareAtPrice": 11.9,
+    "image1": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789229338/ChatGPT_Image_Sep_12_2026_07_05_37_PM.png",
+    "image2": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209893/choco-truffle-cake0005choc-AA.jpg",
+    "image3": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789210009/IMG_0119.jpg",
+    "image4": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789229396/ChatGPT_Image_Sep_12_2026_07_09_40_PM.png",
+    "image5": "",
+    "category": "Hampers",
+    "stock": 20,
+    "active": true,
+    "featured": false,
+    "bestseller": false,
+    "colors": "",
+    "features": "",
+    "moreDetails": "",
+    "shortDescription": "Premium Chocolate Cake, Classy Bouquet and Lovely Anniversary Card",
+    "giftEnabled": true,
+    "priceINR": 2199,
+    "compareAtPriceINR": 2999,
+    "giftBoxEnabled": false,
+    "images": [
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789229338/ChatGPT_Image_Sep_12_2026_07_05_37_PM.png",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209893/choco-truffle-cake0005choc-AA.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789210009/IMG_0119.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789229396/ChatGPT_Image_Sep_12_2026_07_09_40_PM.png"
+    ],
+    "colorsList": [],
+    "avgRating": 0,
+    "reviewCount": 0
   }
 ]
