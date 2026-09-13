@@ -466,7 +466,7 @@
     <!-- ================= GIVEAWAY ================= -->
     <div class="panel" id="panel-giveaway">
       <div class="topbar">
-        <div><h1>Giveaway</h1><p>Run a "win a hamper" giveaway on the Gift to Bahrain page. Turn it on, describe the hamper and set an entry fee — the live page then shows this giveaway first, above the normal hampers.</p></div>
+        <div><h1>Giveaway</h1><p>Run a "win a hamper" giveaway on the Gift to Bahrain page. Entering is always <strong>100% free</strong> for customers — turn it on, describe the hamper and set what the <strong>winner</strong> pays to claim it. The live page then shows this giveaway first, above the normal hampers.</p></div>
       </div>
 
       <div class="card">
@@ -474,7 +474,7 @@
         <div class="toggle-row">
           <label class="toggle-pill" id="gwyEnabledPill"><input type="checkbox" id="gwyEnabled" onchange="syncPill('gwyEnabled','gwyEnabledPill')"><span class="ic">🎉</span> Giveaway is live on the gift page</label>
         </div>
-        <p class="muted" style="margin-top:6px;">When off, the gift page looks exactly as it does today. When on, the hamper below and its entry fee are shown at the top of the page.</p>
+        <p class="muted" style="margin-top:6px;">When off, the gift page looks exactly as it does today. When on, the hamper below is shown at the top of the page, free to enter.</p>
       </div>
 
       <div class="card">
@@ -483,22 +483,26 @@
           <div class="field"><label>Hamper name</label><input id="gwyName" placeholder="e.g. Deluxe Birthday & Anniversary Hamper"></div>
           <div class="field"><label>Image URL</label><input id="gwyImage" placeholder="https://..."></div>
         </div>
-        <div class="field full"><label>Description</label><textarea id="gwyDesc" placeholder="What's inside the hamper…"></textarea></div>
+        <p class="muted" style="margin:-4px 0 4px;">Tip: use a square (1:1) image — it's shown square on both desktop and mobile.</p>
+        <div class="field full"><label>Short description <span class="muted">(shown on the main gift page card — keep it to one line)</span></label><input id="gwyShortDesc" maxlength="120" placeholder="e.g. Win our signature hamper — entering is free!"></div>
+        <div class="field full"><label>Full description <span class="muted">(only shown after tapping "See details & enter")</span></label><textarea id="gwyDesc" placeholder="What's inside the hamper…"></textarea></div>
         <div class="row">
-          <div class="field"><label>Entry fee (INR)</label><input id="gwyPriceINR" type="number" step="1" placeholder="149"></div>
-          <div class="field"><label>Entry fee (BHD)</label><input id="gwyPriceBHD" type="number" step="0.001" placeholder="0.700"></div>
+          <div class="field"><label>Hamper price — winner pays (INR)</label><input id="gwyPriceINR" type="number" step="1" placeholder="149"></div>
+          <div class="field"><label>Hamper price — winner pays (BHD)</label><input id="gwyPriceBHD" type="number" step="0.001" placeholder="0.700"></div>
         </div>
+        <p class="muted" style="margin-top:-4px;">Entering itself is always free. This is only what the <strong>winner</strong> pays, once picked, to have the hamper delivered.</p>
         <button class="primary" onclick="saveGiveawaySettings()">Save giveaway settings</button>
         <span class="muted" id="giveawaySaveMsg" style="margin-left:12px;"></span>
       </div>
 
       <div class="card">
         <h2>Giveaway entries <span class="muted" id="giveawayEntryCount"></span></h2>
+        <p class="muted" style="margin-top:-6px;">Every entry below was free — nobody has paid anything yet. "Payment" only becomes relevant for whichever entry you pick as the winner below.</p>
         <div class="toolbar">
           <button class="primary" onclick="pickGiveawayWinnerBtn()">🎲 Pick random winner</button>
         </div>
         <table>
-          <thead><tr><th>Entry</th><th>Customer</th><th>Delivery</th><th>Amount</th><th>Payment</th><th>Winner?</th><th></th></tr></thead>
+          <thead><tr><th>Entry</th><th>Customer</th><th>Delivery</th><th>Hamper price</th><th>Winner payment</th><th>Winner?</th><th></th></tr></thead>
           <tbody id="giveawayRows"></tbody>
         </table>
       </div>
@@ -1735,6 +1739,7 @@ function applySettings(s){
     document.getElementById('gwyEnabled').checked = s.giveawayEnabled === true || s.giveawayEnabled === 'TRUE';
     syncPill('gwyEnabled','gwyEnabledPill');
     document.getElementById('gwyName').value = s.giveawayHamperName || '';
+    document.getElementById('gwyShortDesc').value = s.giveawayHamperShortDesc || '';
     document.getElementById('gwyDesc').value = s.giveawayHamperDesc || '';
     document.getElementById('gwyImage').value = s.giveawayHamperImage || '';
     document.getElementById('gwyPriceINR').value = s.giveawayPriceINR || '';
@@ -1751,6 +1756,7 @@ async function saveGiveawaySettings(){
   const settings = {
     giveawayEnabled: document.getElementById('gwyEnabled').checked,
     giveawayHamperName: document.getElementById('gwyName').value.trim(),
+    giveawayHamperShortDesc: document.getElementById('gwyShortDesc').value.trim(),
     giveawayHamperDesc: document.getElementById('gwyDesc').value.trim(),
     giveawayHamperImage: document.getElementById('gwyImage').value.trim(),
     giveawayPriceINR: Number(document.getElementById('gwyPriceINR').value || 0),
@@ -1774,37 +1780,48 @@ function renderGiveawayRows(){
   if(countEl) countEl.textContent = GIVEAWAY_ENTRIES_CACHE.length ? `(${GIVEAWAY_ENTRIES_CACHE.length})` : '';
   const rowsEl = document.getElementById('giveawayRows');
   if(!rowsEl) return;
-  rowsEl.innerHTML = GIVEAWAY_ENTRIES_CACHE.map(e => `
+  rowsEl.innerHTML = GIVEAWAY_ENTRIES_CACHE.map(e => {
+    const isWinner = e.isWinner === true || e.isWinner === 'TRUE';
+    const priceLabel = `${e.currency === 'INR' ? '₹' : ''}${Number(e.amount||0).toLocaleString()}${e.currency === 'BHD' ? ' BHD' : ''}`;
+    // Payment only means anything once this entry has been picked as the
+    // winner — every other entry was free to submit, so its payment column
+    // just says so instead of showing blank/pending fields that never apply.
+    const paymentCell = !isWinner
+      ? `<span class="muted">Free entry — no payment</span>`
+      : `${escapeHtmlAdmin(e.paymentMethod) || '<span class="muted">Not started</span>'}<br><b>${escapeHtmlAdmin(e.paymentStatus) || 'awaiting payment'}</b>
+         ${e.paymentStatus === 'awaiting_verification' ? `<br><button class="primary small" onclick="verifyGiveawayEntry('${e.id}')">Verify payment</button>` : ''}`;
+    return `
     <tr>
       <td>${escapeHtmlAdmin(e.id)}<br><span class="muted">${e.timestamp ? new Date(e.timestamp).toLocaleString() : ''}</span></td>
       <td>${escapeHtmlAdmin(e.customerName)}<br><span class="muted">${escapeHtmlAdmin(e.phone)} · ${escapeHtmlAdmin(e.customerEmail)}</span></td>
       <td>${escapeHtmlAdmin(e.eventType)}<br><span class="muted">${escapeHtmlAdmin(e.deliveryDate)} · ${escapeHtmlAdmin(e.deliveryTimeSlot)}</span><br><span class="muted">${escapeHtmlAdmin(e.address)}</span></td>
-      <td>${e.currency === 'INR' ? '₹' : ''}${Number(e.amount||0).toLocaleString()}${e.currency === 'BHD' ? ' BHD' : ''}</td>
-      <td>${escapeHtmlAdmin(e.paymentMethod)}<br><b>${escapeHtmlAdmin(e.paymentStatus)}</b>
-          ${e.paymentStatus === 'awaiting_verification' ? `<br><button class="primary small" onclick="verifyGiveawayEntry('${e.id}')">Verify payment</button>` : ''}</td>
-      <td>${e.isWinner === true || e.isWinner === 'TRUE' ? '🏆 Winner' : ''}
-          ${e.isWinner === true || e.isWinner === 'TRUE' ? `<br><button class="ghost small" onclick="notifyGiveawayWinnerBtn('${e.id}')">Notify winner</button>` : ''}</td>
+      <td>${priceLabel}</td>
+      <td>${paymentCell}</td>
+      <td>${isWinner ? '🏆 Winner' : ''}
+          ${isWinner ? `<br><button class="ghost small" onclick="notifyGiveawayWinnerBtn('${e.id}')">Notify winner${e.notifiedWinner === true || e.notifiedWinner === 'TRUE' ? ' again' : ''}</button>` : ''}</td>
       <td><button class="ghost small" onclick="deleteGiveawayEntryBtn('${e.id}')">Delete</button></td>
-    </tr>`).join('') || '<tr><td colspan="7" class="muted">No giveaway entries yet.</td></tr>';
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" class="muted">No giveaway entries yet — remember, entering is free, so this list is just everyone who has entered.</td></tr>';
 }
 async function verifyGiveawayEntry(id){
-  if(!confirm('Confirm you have received this BenefitPay/IBAN payment?')) return;
+  if(!confirm("Confirm you have received this winner's BenefitPay/IBAN payment for the hamper?")) return;
   await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateGiveawayEntry', password: ADMIN_PASSWORD, id, paymentStatus:'paid' }) });
   loadGiveawayEntries();
 }
 async function pickGiveawayWinnerBtn(){
+  if(!confirm('Pick one random winner from ALL entries (every entry is free, so all are eligible)?')) return;
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'pickGiveawayWinner', password: ADMIN_PASSWORD }) });
   const data = await res.json();
   if(!data.ok){ alert(data.error || 'Could not pick a winner.'); return; }
-  alert(`🎉 Winner picked: ${data.winnerName || data.winnerId} (${data.winnerId})`);
+  alert(`🎉 Winner picked: ${data.winnerName || data.winnerId} (${data.winnerId}). Click "Notify winner" on their row when you're ready to email them their payment link.`);
   loadGiveawayEntries();
 }
 async function notifyGiveawayWinnerBtn(id){
-  if(!confirm('Send the "you won!" email to this entrant now?')) return;
+  if(!confirm('Email this winner now with a link to pay for and claim their hamper?')) return;
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'notifyGiveawayWinner', password: ADMIN_PASSWORD, id }) });
   const data = await res.json();
   if(!data.ok){ alert(data.error || 'Could not send the email.'); return; }
-  alert('Winner notified.');
+  alert('Winner notified with their payment link.');
 }
 async function deleteGiveawayEntryBtn(id){
   if(!confirm('Delete this giveaway entry?')) return;

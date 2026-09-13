@@ -168,16 +168,34 @@
     box-shadow:0 16px 40px rgba(232,93,117,0.28);display:grid;grid-template-columns:1fr 1.3fr;gap:0;
   }
   .giveaway-card .gwy-img{aspect-ratio:1/1;background:rgba(255,255,255,0.25);overflow:hidden;}
-  .giveaway-card .gwy-img img{width:100%;height:100%;object-fit:cover;}
+  .giveaway-card .gwy-img img{width:100%;height:100%;object-fit:cover;display:block;}
   .giveaway-card .gwy-body{padding:26px 26px;display:flex;flex-direction:column;justify-content:center;gap:8px;}
   .gwy-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.55);font-weight:800;font-size:11.5px;text-transform:uppercase;letter-spacing:0.06em;padding:6px 12px;border-radius:20px;width:fit-content;animation:ctaPulse 1.8s ease-in-out infinite;}
   .giveaway-card h2{font-size:clamp(19px,2.6vw,26px);margin:4px 0 2px;}
   .giveaway-card p.gwy-desc{font-size:13.5px;line-height:1.55;margin:0 0 4px;color:#3a1c00;}
-  .gwy-price-row{display:flex;align-items:baseline;gap:8px;margin:2px 0 4px;}
-  .gwy-price-row .amt{font-family:'Sora';font-weight:800;font-size:24px;}
+  .gwy-price-row{display:flex;align-items:baseline;gap:8px;margin:2px 0 4px;flex-wrap:wrap;}
+  .gwy-price-row .amt{font-family:'Sora';font-weight:800;font-size:22px;}
   .gwy-price-row .lbl{font-size:12px;font-weight:700;color:#3a1c00;}
   .gwy-enter-btn{margin-top:6px;background:#181B09;color:#fff;border:none;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;width:fit-content;}
-  @media (max-width:640px){ .giveaway-card{grid-template-columns:1fr;} .giveaway-card .gwy-img{aspect-ratio:16/9;} }
+  /* Mobile: square (4:4 / 1:1) hamper photo, stacked card with a touch more
+     polish — rounded corners, breathing room and a soft ring so it reads
+     as a considered "feature card" rather than a squeezed-in banner. */
+  @media (max-width:640px){
+    .giveaway-section{padding:16px 14px 4px;}
+    .giveaway-card{
+      grid-template-columns:1fr;border-radius:20px;
+      box-shadow:0 12px 30px rgba(232,93,117,0.24);
+      border:1px solid rgba(255,255,255,0.5);
+    }
+    .giveaway-card .gwy-img{aspect-ratio:1/1;}
+    .giveaway-card .gwy-body{padding:20px 20px 22px;gap:10px;text-align:left;}
+    .gwy-badge{font-size:10.5px;padding:5px 11px;}
+    .giveaway-card h2{font-size:19px;line-height:1.3;margin:2px 0 0;}
+    .giveaway-card p.gwy-desc{font-size:13px;line-height:1.5;}
+    .gwy-price-row{gap:6px;margin:0 0 2px;}
+    .gwy-price-row .amt{font-size:19px;}
+    .gwy-enter-btn{width:100%;text-align:center;padding:14px 20px;border-radius:13px;font-size:15px;}
+  }
 
   /* ---- entrance pop overlay (first few seconds) ---- */
   .entrance-pop{
@@ -248,10 +266,10 @@
   <div class="giveaway-card" onclick="openGiveawayDetails()">
     <div class="gwy-img"><img id="gwyCardImg" src="" alt="Giveaway hamper"></div>
     <div class="gwy-body">
-      <span class="gwy-badge">🎉 Giveaway live</span>
+      <span class="gwy-badge">🎉 Free giveaway</span>
       <h2 id="gwyCardName">Birthday &amp; Anniversary Hamper Giveaway</h2>
       <p class="gwy-desc" id="gwyCardDesc"></p>
-      <div class="gwy-price-row"><span class="lbl">Entry fee</span><span class="amt" id="gwyCardPrice">—</span></div>
+      <div class="gwy-price-row"><span class="lbl">Entry is 100% free · winner pays</span><span class="amt" id="gwyCardPrice">—</span></div>
       <button class="gwy-enter-btn" onclick="event.stopPropagation();openGiveawayDetails()">See details &amp; enter</button>
     </div>
   </div>
@@ -329,17 +347,27 @@
   </div>
 </div>
 
-<!-- ================= giveaway entry confirmation popup ================= -->
+<!-- ================= giveaway entry confirmation popup (free entry) ================= -->
 <div class="modal" id="giveawayPopup">
   <div class="modal-inner">
     <button class="close-x" style="float:right;" onclick="closeAllOverlays();location.reload();">✕</button>
     <div class="gwy-popup-icon">🎉</div>
-    <h2 style="text-align:center;margin:0 0 8px;">You're entered into the giveaway!</h2>
+    <h2 style="text-align:center;margin:0 0 8px;">You're entered — for free!</h2>
     <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;line-height:1.6;">
-      Entry <b id="gwyPopupId"></b> is confirmed. If you're picked as our lucky winner, we'll reach out to you personally.
-      Meanwhile, you can also check out our affordable hamper sets to Bahrain — from anywhere, anytime.
+      Entry <b id="gwyPopupId"></b> is confirmed and didn't cost a thing. We've also emailed you a confirmation.
+      If you're picked as our lucky winner, we'll email you personally with a link to pay just for the hamper itself
+      so we can arrange delivery. Meanwhile, you can also check out our affordable hamper sets to Bahrain — from
+      anywhere, anytime.
     </p>
     <button class="primary-btn" onclick="closeAllOverlays();document.getElementById('hampersSection').scrollIntoView({behavior:'smooth'});">Browse hampers</button>
+  </div>
+</div>
+
+<!-- ================= giveaway "claim your prize" modal (winner-only, opened via ?claimGiveaway=<id>) ================= -->
+<div class="modal" id="giveawayClaimModal">
+  <div class="modal-inner">
+    <button class="close-x" style="float:right;" onclick="closeAllOverlays()">✕</button>
+    <div id="giveawayClaimBody"></div>
   </div>
 </div>
 
@@ -381,8 +409,7 @@ let COUNTDOWN_TIMER = null;
 let SETTINGS_CACHE = {};
 
 /* ---------------- giveaway + full-page product view state ---------------- */
-let ACTIVE_GIVEAWAY_ENTRY = null; // { entryId, currency, amount, expiresAt }
-let GWY_COUNTDOWN_TIMER = null;
+let ACTIVE_GIVEAWAY_ENTRY = null; // { entryId, currency, amount } — only used by the winner's "claim your prize" payment flow
 let GPDP_PRODUCT = null;
 let GPDP_QTY = 1;
 let GPDP_MODE = 'product'; // 'product' | 'giveaway'
@@ -674,6 +701,8 @@ function closeAllOverlays(){
   document.getElementById('checkoutModal').classList.remove('open');
   document.getElementById('gpdpOverlay').classList.remove('open');
   document.getElementById('giveawayPopup').classList.remove('open');
+  const claimModal = document.getElementById('giveawayClaimModal');
+  if(claimModal) claimModal.classList.remove('open');
 }
 
 /* ---------------- settings (BenefitPay IBAN/QR) ---------------- */
@@ -687,6 +716,7 @@ async function loadSettings(){
   renderGiveawaySection();
   // Platform fee / delivery charge just loaded — refresh any totals already on screen.
   if(document.getElementById('cartDrawer').classList.contains('open')) renderCart();
+  checkForGiveawayClaimLink();
 }
 
 /* ---------------- giveaway (admin-togglable) ---------------- */
@@ -697,6 +727,18 @@ function giveawayPriceValue(){
   if(n > 0) return n;
   return CURRENCY === 'INR' ? 149 : 0.7;
 }
+// The main gift page only ever shows the giveaway's HEADER + a short,
+// one-line description on the card — the full/long description lives
+// behind "See details & enter" (openGiveawayDetails below). Falls back to
+// a truncated version of the long description if no short description has
+// been set in the admin panel yet, so older configs still look fine.
+function giveawayShortDescValue(){
+  const short = (SETTINGS_CACHE.giveawayHamperShortDesc || '').trim();
+  if(short) return short;
+  const long = (SETTINGS_CACHE.giveawayHamperDesc || '').trim();
+  if(!long) return 'Enter for free for a chance to win this hamper — one lucky winner is picked at random.';
+  return long.length > 90 ? long.slice(0, 90).trim() + '…' : long;
+}
 function renderGiveawaySection(){
   const section = document.getElementById('giveawaySection');
   if(!isTrueVal(SETTINGS_CACHE.giveawayEnabled)){
@@ -706,10 +748,13 @@ function renderGiveawaySection(){
   section.style.display = 'block';
   const name = SETTINGS_CACHE.giveawayHamperName || 'Birthday & Anniversary Hamper Giveaway';
   document.getElementById('gwyCardName').textContent = name;
-  document.getElementById('gwyCardDesc').textContent = SETTINGS_CACHE.giveawayHamperDesc || 'Enter for a chance to win this hamper — one lucky winner is picked at random.';
+  document.getElementById('gwyCardDesc').textContent = giveawayShortDescValue();
   document.getElementById('gwyCardImg').src = SETTINGS_CACHE.giveawayHamperImage || 'https://placehold.co/700x700/FDF7F7/8A3B3B?text=Giveaway';
   document.getElementById('gwyCardPrice').textContent = fmtMoney(giveawayPriceValue());
 }
+// "See details & enter" — this is where the FULL/long description lives.
+// Entering is free, so the price shown here is framed as "winner pays",
+// never as an entry fee.
 function openGiveawayDetails(){
   GPDP_MODE = 'giveaway';
   GPDP_PRODUCT = null;
@@ -717,14 +762,15 @@ function openGiveawayDetails(){
   document.getElementById('gpdpCrumb').textContent = `Gift to Bahrain / Giveaway`;
   document.getElementById('gpdpCat').textContent = 'Giveaway — one lucky winner';
   document.getElementById('gpdpName').textContent = SETTINGS_CACHE.giveawayHamperName || 'Birthday & Anniversary Hamper Giveaway';
-  document.getElementById('gpdpPrice').innerHTML = `${fmtMoney(giveawayPriceValue())} <span style="font-size:13px;font-weight:600;color:var(--ink-soft);">entry fee</span>`;
-  document.getElementById('gpdpShortDesc').style.display = 'none';
+  document.getElementById('gpdpPrice').innerHTML = `FREE to enter <span style="font-size:13px;font-weight:600;color:var(--ink-soft);">· winner pays ${fmtMoney(giveawayPriceValue())} for the hamper</span>`;
+  document.getElementById('gpdpShortDesc').textContent = giveawayShortDescValue();
+  document.getElementById('gpdpShortDesc').style.display = 'block';
   document.getElementById('gpdpFreeDelivery').style.display = 'flex';
   document.getElementById('gpdpDesc').textContent = SETTINGS_CACHE.giveawayHamperDesc || '';
   document.getElementById('gpdpMainImg').src = imgs[0];
   document.getElementById('gpdpThumbs').innerHTML = '';
   document.getElementById('gpdpQtyRow').style.display = 'none';
-  document.getElementById('gpdpActionBtn').textContent = 'Enter giveaway';
+  document.getElementById('gpdpActionBtn').textContent = 'Enter for free';
   document.getElementById('gpdpRelated').style.display = 'none';
   document.getElementById('gpdpOverlay').classList.add('open');
   window.scrollTo(0,0);
@@ -1137,10 +1183,11 @@ function renderConfirmation(){
   triggerCelebration();
 }
 
-/* ================= GIVEAWAY CHECKOUT ================= */
-// Mirrors the gift-order checkout flow above (details -> Razorpay/BenefitPay
-// -> confirmation) but for a single giveaway entry instead of a cart, and
-// with its own "Add give away" button label per request.
+/* ================= GIVEAWAY ENTRY (100% free) ================= */
+// Entering the giveaway costs nothing — this is a single-step form
+// (details -> submit -> confirmation). No payment, no countdown timer.
+// Only the WINNER ever pays anything, and that happens later in a
+// completely separate flow — see "GIVEAWAY — CLAIM YOUR PRIZE" below.
 function startGiveawayCheckout(){
   closeAllOverlays();
   document.getElementById('overlay').classList.add('open');
@@ -1154,9 +1201,9 @@ function renderGiveawayDetailsStep(){
   const minDateLabel = prettyDate(minDate);
   const price = giveawayPriceValue();
   document.getElementById('checkoutBody').innerHTML = `
-    <span class="step-badge">Giveaway entry</span>
-    <h2 style="margin:0 0 6px;">Enter the giveaway</h2>
-    <p style="color:var(--ink-soft);font-size:13px;margin:0 0 6px;">One winner is picked at random from all paid entries. If you win, we deliver the hamper to the address below.</p>
+    <span class="step-badge">🎉 Free giveaway entry</span>
+    <h2 style="margin:0 0 6px;">Enter the giveaway — it's free</h2>
+    <p style="color:var(--ink-soft);font-size:13px;margin:0 0 6px;">One winner is picked at random from everyone who enters. Entering costs nothing — if you're picked, we'll email you a link to pay just for the hamper (${fmtMoney(price)}) so we can deliver it to the address below.</p>
 
     <label>Your name</label><input type="text" id="gwSenderName">
     <label>Your email <span style="font-weight:500;color:var(--ink-soft);">(so we can reach you if you win)</span></label><input type="email" id="gwSenderEmail">
@@ -1185,9 +1232,9 @@ function renderGiveawayDetailsStep(){
     </div>
     <div style="font-size:11.5px;color:var(--ink-soft);margin-top:-8px;margin-bottom:4px;">Only used if you're picked as the winner — the earliest date you can pick is ${minDateLabel}.</div>
 
-    <div class="totals-row grand" style="margin-top:16px;"><span>Giveaway entry fee</span><span>${fmtMoney(price)}</span></div>
+    <div class="totals-row grand" style="margin-top:16px;"><span>Entry fee</span><span style="color:#1E7A44;">FREE</span></div>
     <div id="gwDetailsErr" class="err-msg"></div>
-    <button class="primary-btn" onclick="submitGiveawayDetails()">Add give away</button>
+    <button class="primary-btn" onclick="submitGiveawayDetails()">Enter for free</button>
   `;
 }
 
@@ -1218,76 +1265,92 @@ async function submitGiveawayDetails(){
     customerName, customerEmail, phone, address,
     eventType, deliveryDate, deliveryTimeSlot, currency: CURRENCY
   };
-  document.getElementById('checkoutBody').innerHTML = '<p style="text-align:center;padding:40px 0;">Creating your entry…</p>';
+  document.getElementById('checkoutBody').innerHTML = '<p style="text-align:center;padding:40px 0;">Submitting your free entry…</p>';
   try{
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
     const data = await res.json();
     if(!data.ok){ renderGiveawayDetailsStep(); document.getElementById('gwDetailsErr').textContent = data.error || 'Could not create the entry.'; return; }
-    ACTIVE_GIVEAWAY_ENTRY = { entryId: data.entryId, currency: data.currency, amount: data.amount, expiresAt: data.expiresAt };
-    if(CURRENCY === 'INR') renderGiveawayRazorpayStep();
-    else renderGiveawayBenefitPayStep();
+    // No payment step — entering is free, so submitting the form IS entering.
+    renderGiveawayEnteredPopup(data.entryId);
   }catch(e){
     renderGiveawayDetailsStep();
     document.getElementById('gwDetailsErr').textContent = 'Network error — please try again.';
   }
 }
 
-function renderGiveawayRazorpayStep(){
-  clearInterval(GWY_COUNTDOWN_TIMER);
-  document.getElementById('checkoutBody').innerHTML = `
-    <span class="step-badge">Step 2 of 2 · Payment</span>
-    <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)} to enter</h2>
-    <p style="color:var(--ink-soft);font-size:13px;">Entry ${escapeHtml(ACTIVE_GIVEAWAY_ENTRY.entryId)} — complete payment before the timer runs out.</p>
-    <div class="countdown" id="gwCountdownDisplay">05:00</div>
-    <button class="primary-btn" id="gwPayNowBtn" onclick="startGiveawayRazorpayPayment()">Add give away</button>
-    <div id="gwPaymentFailBox" style="display:none;">
+function renderGiveawayEnteredPopup(entryId){
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.getElementById('gwyPopupId').textContent = entryId;
+  document.getElementById('giveawayPopup').classList.add('open');
+  triggerCelebration();
+}
+
+/* ================= GIVEAWAY — CLAIM YOUR PRIZE (winner pays) =================
+ * Reached ONLY via the "claim your hamper" link the winner-notification
+ * email sends: gift-bahrain.html?claimGiveaway=<entryId>. Every server
+ * call here (getGiveawayEntryStatus / createGiveawayRazorpayOrder /
+ * verifyGiveawayPayment / submitGiveawayBenefitPayProof) independently
+ * re-checks that this entry was actually picked as the winner, so this
+ * link only ever does anything for the one real winner.
+ */
+function checkForGiveawayClaimLink(){
+  const entryId = new URLSearchParams(location.search).get('claimGiveaway');
+  if(entryId) openGiveawayClaim(entryId);
+}
+async function openGiveawayClaim(entryId){
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('giveawayClaimModal').classList.add('open');
+  document.getElementById('giveawayClaimBody').innerHTML = '<p style="text-align:center;padding:40px 0;">Checking your entry…</p>';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'getGiveawayEntryStatus', entryId }) });
+    const data = await res.json();
+    if(!data.ok){
+      document.getElementById('giveawayClaimBody').innerHTML = `
+        <h2 style="margin:0 0 8px;">Hmm, that link isn't valid</h2>
+        <p style="color:var(--ink-soft);font-size:13.5px;">${escapeHtml(data.error || 'This entry could not be found.')} If you believe you won, please message us on WhatsApp.</p>
+        <a class="whatsapp-btn" style="display:block;text-align:center;text-decoration:none;" target="_blank" href="https://wa.me/${WHATSAPP_NUMBER}">Message us on WhatsApp</a>
+      `;
+      return;
+    }
+    ACTIVE_GIVEAWAY_ENTRY = { entryId: data.id, currency: data.currency, amount: data.amount };
+    if(data.paymentStatus === 'paid'){
+      document.getElementById('giveawayClaimBody').innerHTML = `
+        <div class="gwy-popup-icon">🎁</div>
+        <h2 style="text-align:center;margin:0 0 8px;">You're all set!</h2>
+        <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;">Your payment for entry ${escapeHtml(data.id)} is already confirmed — we'll be in touch to arrange delivery.</p>
+      `;
+      return;
+    }
+    if(CURRENCY === 'INR' && data.currency !== 'INR'){ /* keep entry's own currency */ }
+    if(data.currency === 'INR') renderGiveawayClaimRazorpayStep(data);
+    else renderGiveawayClaimBenefitPayStep(data);
+  }catch(e){
+    document.getElementById('giveawayClaimBody').innerHTML = '<p style="text-align:center;padding:40px 0;color:#B34141;">Network error — please refresh and try again.</p>';
+  }
+}
+function renderGiveawayClaimRazorpayStep(data){
+  document.getElementById('giveawayClaimBody').innerHTML = `
+    <div class="gwy-popup-icon">🏆</div>
+    <h2 style="margin:0 0 6px;text-align:center;">Congratulations, ${escapeHtml((data.customerName||'').split(' ')[0] || 'winner')}!</h2>
+    <p style="color:var(--ink-soft);font-size:13px;text-align:center;">Pay ${fmtMoney(data.amount)} to claim your hamper for entry ${escapeHtml(data.id)}. We'll arrange delivery right after.</p>
+    <button class="primary-btn" id="gwClaimPayBtn" onclick="startGiveawayClaimRazorpayPayment()">Pay ${fmtMoney(data.amount)} to claim</button>
+    <div id="gwClaimFailBox" style="display:none;">
       <div class="sad-icon">😢</div>
       <h3 style="text-align:center;margin:0 0 6px;">That payment didn't go through!</h3>
       <div class="info-box" style="color:#B34141;background:#FCEEEE;text-align:center;">Let's give it another try.</div>
-      <button class="ghost-btn" onclick="startGiveawayRazorpayPayment()">Retry payment</button>
-    </div>
-    <div id="gwExpiredBox" style="display:none;">
-      <div class="info-box" style="color:#B34141;background:#FCEEEE;">Time's up — this entry was cancelled automatically. Please start again.</div>
-      <button class="ghost-btn" onclick="closeAllOverlays();">Close</button>
+      <button class="ghost-btn" onclick="startGiveawayClaimRazorpayPayment()">Retry payment</button>
     </div>
   `;
-  startGiveawayCountdown();
 }
-function startGiveawayCountdown(){
-  const expiresAt = new Date(ACTIVE_GIVEAWAY_ENTRY.expiresAt).getTime();
-  GWY_COUNTDOWN_TIMER = setInterval(() => {
-    const msLeft = expiresAt - Date.now();
-    if(msLeft <= 0){
-      clearInterval(GWY_COUNTDOWN_TIMER);
-      onGiveawayExpired();
-      return;
-    }
-    const totalSec = Math.floor(msLeft / 1000);
-    const mm = String(Math.floor(totalSec/60)).padStart(2,'0');
-    const ss = String(totalSec % 60).padStart(2,'0');
-    const el = document.getElementById('gwCountdownDisplay');
-    if(el) el.textContent = `${mm}:${ss}`;
-  }, 500);
-}
-async function onGiveawayExpired(){
-  try{ await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'cancelGiveawayEntry', entryId: ACTIVE_GIVEAWAY_ENTRY.entryId }) }); }catch(e){}
-  const payBtn = document.getElementById('gwPayNowBtn');
-  if(payBtn) payBtn.style.display = 'none';
-  const failBox = document.getElementById('gwPaymentFailBox');
-  if(failBox) failBox.style.display = 'none';
-  const expBox = document.getElementById('gwExpiredBox');
-  if(expBox) expBox.style.display = 'block';
-}
-async function startGiveawayRazorpayPayment(){
-  document.getElementById('gwPaymentFailBox').style.display = 'none';
-  document.getElementById('gwPayNowBtn').textContent = 'Opening payment…';
+async function startGiveawayClaimRazorpayPayment(){
+  document.getElementById('gwClaimFailBox').style.display = 'none';
+  document.getElementById('gwClaimPayBtn').textContent = 'Opening payment…';
   try{
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'createGiveawayRazorpayOrder', entryId: ACTIVE_GIVEAWAY_ENTRY.entryId }) });
     const data = await res.json();
-    document.getElementById('gwPayNowBtn').textContent = 'Add give away';
     if(!data.ok){
-      if(data.error === 'expired'){ onGiveawayExpired(); return; }
-      document.getElementById('gwPaymentFailBox').style.display = 'block';
+      document.getElementById('gwClaimPayBtn').textContent = `Pay ${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)} to claim`;
+      document.getElementById('gwClaimFailBox').style.display = 'block';
       return;
     }
     const rzp = new Razorpay({
@@ -1304,54 +1367,54 @@ async function startGiveawayRazorpayPayment(){
           razorpay_signature: response.razorpay_signature
         })});
         const verifyData = await verifyRes.json();
-        clearInterval(GWY_COUNTDOWN_TIMER);
-        if(verifyData.ok) renderGiveawayEnteredPopup();
-        else document.getElementById('gwPaymentFailBox').style.display = 'block';
+        if(verifyData.ok) renderGiveawayClaimPaidConfirmation();
+        else document.getElementById('gwClaimFailBox').style.display = 'block';
       },
-      modal: { ondismiss: function(){ document.getElementById('gwPaymentFailBox').style.display = 'block'; } }
+      modal: { ondismiss: function(){ document.getElementById('gwClaimFailBox').style.display = 'block'; } }
     });
-    rzp.on('payment.failed', function(){ document.getElementById('gwPaymentFailBox').style.display = 'block'; });
+    rzp.on('payment.failed', function(){ document.getElementById('gwClaimFailBox').style.display = 'block'; });
     rzp.open();
+    document.getElementById('gwClaimPayBtn').textContent = `Pay ${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)} to claim`;
   }catch(e){
-    document.getElementById('gwPayNowBtn').textContent = 'Add give away';
-    document.getElementById('gwPaymentFailBox').style.display = 'block';
+    document.getElementById('gwClaimPayBtn').textContent = `Pay ${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)} to claim`;
+    document.getElementById('gwClaimFailBox').style.display = 'block';
   }
 }
-
-function renderGiveawayBenefitPayStep(){
+function renderGiveawayClaimBenefitPayStep(data){
   const iban = SETTINGS_CACHE.benefitpayIban || 'BH00 SOUQ 0000 0000 0000 00';
   const name = SETTINGS_CACHE.benefitpayName || 'Souqify-bh W.L.L.';
   const qr = SETTINGS_CACHE.benefitpayQrUrl || 'assets/benefitpay-qr.png';
   const waText = encodeURIComponent(
-    `Hi Souqify-bh, I've paid for giveaway entry ${ACTIVE_GIVEAWAY_ENTRY.entryId} (${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)}). Please verify and confirm my entry.`
+    `Hi Souqify-bh, I'm the winner of giveaway entry ${data.id} and I've paid ${fmtMoney(data.amount)} for the hamper. Please verify and confirm.`
   );
-  document.getElementById('checkoutBody').innerHTML = `
-    <span class="step-badge">Step 2 of 2 · Payment</span>
-    <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_GIVEAWAY_ENTRY.amount)} via BenefitPay / IBAN</h2>
-    <p style="color:var(--ink-soft);font-size:13px;">Entry ${escapeHtml(ACTIVE_GIVEAWAY_ENTRY.entryId)}. Scan the QR or transfer to the IBAN below, then confirm on WhatsApp.</p>
+  document.getElementById('giveawayClaimBody').innerHTML = `
+    <div class="gwy-popup-icon">🏆</div>
+    <h2 style="margin:0 0 6px;text-align:center;">Congratulations, ${escapeHtml((data.customerName||'').split(' ')[0] || 'winner')}!</h2>
+    <p style="color:var(--ink-soft);font-size:13px;text-align:center;">Pay ${fmtMoney(data.amount)} via BenefitPay / IBAN to claim your hamper for entry ${escapeHtml(data.id)}.</p>
     <div class="qr-box">
       <img src="${qr}" alt="BenefitPay QR">
       <div style="font-weight:700;">${escapeHtml(name)}</div>
       <div style="font-family:monospace;font-size:13px;">${escapeHtml(iban)}</div>
     </div>
     <a class="whatsapp-btn" style="display:block;text-align:center;text-decoration:none;" target="_blank"
-       href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" onclick="markGiveawayBenefitPaySubmitted()">
+       href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" onclick="markGiveawayClaimBenefitPaySubmitted()">
        ✅ I've paid — notify us on WhatsApp
     </a>
-    <div class="info-box">Your entry is reserved and will show as "awaiting verification" until we confirm your payment.</div>
+    <div class="info-box">Your claim is reserved and will show as "awaiting verification" until we confirm your payment.</div>
   `;
 }
-async function markGiveawayBenefitPaySubmitted(){
+async function markGiveawayClaimBenefitPaySubmitted(){
   try{
     await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'submitGiveawayBenefitPayProof', entryId: ACTIVE_GIVEAWAY_ENTRY.entryId }) });
   }catch(e){}
-  setTimeout(renderGiveawayEnteredPopup, 400);
+  setTimeout(renderGiveawayClaimPaidConfirmation, 400);
 }
-
-function renderGiveawayEnteredPopup(){
-  document.getElementById('checkoutModal').classList.remove('open');
-  document.getElementById('gwyPopupId').textContent = ACTIVE_GIVEAWAY_ENTRY.entryId;
-  document.getElementById('giveawayPopup').classList.add('open');
+function renderGiveawayClaimPaidConfirmation(){
+  document.getElementById('giveawayClaimBody').innerHTML = `
+    <div class="gwy-popup-icon">🎁</div>
+    <h2 style="text-align:center;margin:0 0 8px;">Thank you!</h2>
+    <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;">We've received your claim for entry ${escapeHtml(ACTIVE_GIVEAWAY_ENTRY.entryId)}. We'll be in touch shortly to arrange delivery of your hamper.</p>
+  `;
   triggerCelebration();
 }
 
