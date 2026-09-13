@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gift to Bahrain — Souqify-bh</title>
+<title>Gift to Bahrain - Souqify-bh</title>
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 <meta name="theme-color" content="#46501B">
-<meta name="description" content="Send a gift hamper to your loved ones in Bahrain — pay in INR from India, or in BHD from Bahrain.">
+<meta name="description" content="Send a gift hamper to your loved ones in Bahrain. Pay in INR from India, or in BHD from Bahrain.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Jost:wght@300;400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
@@ -178,7 +178,7 @@
   .gwy-price-row .lbl{font-size:12px;font-weight:700;color:#3a1c00;}
   .gwy-enter-btn{margin-top:6px;background:#181B09;color:#fff;border:none;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;width:fit-content;}
   /* Mobile: square (4:4 / 1:1) hamper photo, stacked card with a touch more
-     polish — rounded corners, breathing room and a soft ring so it reads
+     polish. Rounded corners, breathing room and a soft ring so it reads
      as a considered "feature card" rather than a squeezed-in banner. */
   @media (max-width:640px){
     .giveaway-section{padding:16px 14px 4px;}
@@ -259,7 +259,7 @@
 </header>
 
 <div class="hero-banner">
-  <img src="assets/webbanner.png" alt="Souqify — Surprise your loved ones in Bahrain" loading="eager">
+  <img src="assets/webbanner.png" alt="Souqify. Surprise your loved ones in Bahrain" loading="eager">
 </div>
 
 <section class="giveaway-section" id="giveawaySection" style="display:none;">
@@ -269,7 +269,7 @@
       <span class="gwy-badge">🎉 Free giveaway</span>
       <h2 id="gwyCardName">Birthday &amp; Anniversary Hamper Giveaway</h2>
       <p class="gwy-desc" id="gwyCardDesc"></p>
-      <div class="gwy-price-row"><span class="lbl">Entry is 100% free · winner pays</span><span class="amt" id="gwyCardPrice">—</span></div>
+      <div class="gwy-price-row"><span class="lbl">Entry is 100% free · winner pays</span><span class="amt" id="gwyCardPrice">-</span></div>
       <button class="gwy-enter-btn" onclick="event.stopPropagation();openGiveawayDetails()">See details &amp; enter</button>
     </div>
   </div>
@@ -279,7 +279,7 @@
   <div class="wrap">
     <h2>🎁 Gift Hampers</h2>
     <div class="grid" id="giftGrid"></div>
-    <div class="empty-state" id="giftEmpty" style="display:none;">No gift hampers are set up yet — please check back soon.</div>
+    <div class="empty-state" id="giftEmpty" style="display:none;">No gift hampers are set up yet. Please check back soon.</div>
   </div>
 </section>
 
@@ -288,16 +288,16 @@
     <h2>🧩 Customise Your Gift Box</h2>
     <div id="boxCategoryChips" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;"></div>
     <div class="grid" id="boxGrid"></div>
-    <div class="empty-state" id="boxEmpty" style="display:none;">No customisable items are set up yet — please check back soon.</div>
+    <div class="empty-state" id="boxEmpty" style="display:none;">No customisable items are set up yet. Please check back soon.</div>
   </div>
 </section>
 
 <section class="section" id="noteSection" style="padding-top:0;">
   <div class="wrap">
-    <button class="note-toggle" id="noteToggleBtn" onclick="toggleNoteBox()">📝 Add a note for this order (optional) — packing style, a card message, anything we should know</button>
+    <button class="note-toggle" id="noteToggleBtn" onclick="toggleNoteBox()">📝 Add a note for this order (optional). Packing style, a card message, anything we should know</button>
     <div class="note-box" id="noteBox" style="display:none;">
       <label>Choose a design/packing style</label>
-      <select id="designNoteSelect"><option value="">— No preference —</option></select>
+      <select id="designNoteSelect"><option value="">(No preference)</option></select>
       <label>Or write your own short note</label>
       <textarea id="customerNoteText" placeholder="e.g. Please gift-wrap in blue, add a card that says 'Happy Anniversary'"></textarea>
     </div>
@@ -352,11 +352,11 @@
   <div class="modal-inner">
     <button class="close-x" style="float:right;" onclick="closeAllOverlays();location.reload();">✕</button>
     <div class="gwy-popup-icon">🎉</div>
-    <h2 style="text-align:center;margin:0 0 8px;">You're entered — for free!</h2>
+    <h2 style="text-align:center;margin:0 0 8px;">You're entered. For free!</h2>
     <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;line-height:1.6;">
       Entry <b id="gwyPopupId"></b> is confirmed and didn't cost a thing. We've also emailed you a confirmation.
       If you're picked as our lucky winner, we'll email you personally with a link to pay just for the hamper itself
-      so we can arrange delivery. Meanwhile, you can also check out our affordable hamper sets to Bahrain — from
+      so we can arrange delivery. Meanwhile, you can also check out our affordable hamper sets to Bahrain. From
       anywhere, anytime.
     </p>
     <button class="primary-btn" onclick="closeAllOverlays();document.getElementById('hampersSection').scrollIntoView({behavior:'smooth'});">Browse hampers</button>
@@ -376,10 +376,10 @@
   <div class="drawer-head"><h3>Your gift cart</h3><button class="close-x" onclick="closeAllOverlays()">✕</button></div>
   <div class="drawer-body" id="cartBody"></div>
   <div class="drawer-foot">
-    <div class="totals-row"><span>Sub total</span><span id="cartSubtotal">—</span></div>
-    <div class="totals-row"><span>Platform fees</span><span id="cartPlatformFee">—</span></div>
-    <div class="totals-row"><span>Delivery charge</span><span id="cartDeliveryCharge">—</span></div>
-    <div class="totals-row grand"><span>Total</span><span id="cartTotal">—</span></div>
+    <div class="totals-row"><span>Sub total</span><span id="cartSubtotal">-</span></div>
+    <div class="totals-row"><span>Platform fees</span><span id="cartPlatformFee">-</span></div>
+    <div class="totals-row"><span>Delivery charge</span><span id="cartDeliveryCharge">-</span></div>
+    <div class="totals-row grand"><span>Total</span><span id="cartTotal">-</span></div>
     <div id="cartMinOrderNote" style="font-size:11.5px;color:var(--ink-soft);margin-top:6px;"></div>
     <button class="primary-btn" id="cartCheckoutBtn" onclick="openCheckout()">Proceed to gift checkout</button>
   </div>
@@ -409,7 +409,7 @@ let COUNTDOWN_TIMER = null;
 let SETTINGS_CACHE = {};
 
 /* ---------------- giveaway + full-page product view state ---------------- */
-let ACTIVE_GIVEAWAY_ENTRY = null; // { entryId, currency, amount } — only used by the winner's "claim your prize" payment flow
+let ACTIVE_GIVEAWAY_ENTRY = null; // { entryId, currency, amount }. Only used by the winner's "claim your prize" payment flow
 let GPDP_PRODUCT = null;
 let GPDP_QTY = 1;
 let GPDP_MODE = 'product'; // 'product' | 'giveaway'
@@ -441,10 +441,10 @@ function updateCartCount(){
   document.getElementById('cartCount').textContent = n;
 }
 
-// Platform fee + delivery charge — set from the admin panel (Gift to Bahrain
+// Platform fee + delivery charge. Set from the admin panel (Gift to Bahrain
 // tab), currency-specific since INR and BHD orders are priced separately.
 // Both default to 0 until the admin sets them.
-// Minimum gift order amount — set from the admin panel (Gift to Bahrain tab,
+// Minimum gift order amount. Set from the admin panel (Gift to Bahrain tab,
 // "Gift page order charges" card), per currency. Falls back to ₹1,000 / 5.000
 // BHD if the admin hasn't set a value yet.
 function minOrderFor(){
@@ -496,7 +496,7 @@ async function loadGiftProducts(){
 }
 
 // Shared card markup for both the ready-made hampers grid and the
-// Customise Your Gift Box grid — only the "add" button label differs.
+// Customise Your Gift Box grid. Only the "add" button label differs.
 function productCardHtml(p, addLabel){
   const price = priceOf(p), compare = compareOf(p);
   const pct = compare > price ? Math.round((1 - price/compare) * 100) : 0;
@@ -559,7 +559,7 @@ function quickAdd(id){
 
 /* ---------------- full-page product view (like the main store's product page) ---------------- */
 // Opens a product in a full page (gallery + name + price + description
-// only, no features/more-details accordion) instead of a small popup —
+// only, no features/more-details accordion) instead of a small popup .
 // same overlay is reused for the giveaway hamper via openGiveawayDetails().
 function openProduct(id){
   const p = findProduct(id);
@@ -589,7 +589,7 @@ function openProduct(id){
   document.getElementById('gpdpOverlay').classList.add('open');
   window.scrollTo(0,0);
 }
-// "You might also like" — same-category gift items first (hampers + box
+// "You might also like". Same-category gift items first (hampers + box
 // items combined), topped up with other Gift to Bahrain products if the
 // category doesn't have enough on its own. Hidden entirely if nothing to show.
 function renderGpdpRelated(p){
@@ -602,7 +602,7 @@ function renderGpdpRelated(p){
   const rest = pool.filter(x => (x.category || 'Gift') !== (p.category || 'Gift'));
   const picks = [...sameCat, ...rest].slice(0, 4);
   if(!picks.length){ section.style.display = 'none'; return; }
-  title.textContent = sameCat.length ? `You might also like — ${p.category || 'Gift'}` : 'You might also like';
+  title.textContent = sameCat.length ? `You might also like. ${p.category || 'Gift'}` : 'You might also like';
   grid.innerHTML = picks.map(x => productCardHtml(x, ALL_BOX_ITEMS.includes(x) && !ALL_GIFT_PRODUCTS.includes(x) ? '+ Add to box' : 'Add to gift cart')).join('');
   section.style.display = 'block';
 }
@@ -677,7 +677,7 @@ function renderCart(){
   document.getElementById('cartPlatformFee').textContent = fmtMoney(platformFee);
   document.getElementById('cartDeliveryCharge').textContent = fmtMoney(deliveryCharge);
   document.getElementById('cartTotal').textContent = fmtMoney(subtotal + platformFee + deliveryCharge);
-  if(minNote) minNote.textContent = subtotal < minOrderFor() ? `${minText} — add more items to check out.` : '';
+  if(minNote) minNote.textContent = subtotal < minOrderFor() ? `${minText}. Add more items to check out.` : '';
 }
 function changeQty(id, delta){
   const item = CART.find(i => i.id === id);
@@ -714,7 +714,7 @@ async function loadSettings(){
   }catch(e){}
   populateDesignNotes();
   renderGiveawaySection();
-  // Platform fee / delivery charge just loaded — refresh any totals already on screen.
+  // Platform fee / delivery charge just loaded. Refresh any totals already on screen.
   if(document.getElementById('cartDrawer').classList.contains('open')) renderCart();
   checkForGiveawayClaimLink();
 }
@@ -728,7 +728,7 @@ function giveawayPriceValue(){
   return CURRENCY === 'INR' ? 149 : 0.7;
 }
 // The main gift page only ever shows the giveaway's HEADER + a short,
-// one-line description on the card — the full/long description lives
+// one-line description on the card. The full/long description lives
 // behind "See details & enter" (openGiveawayDetails below). Falls back to
 // a truncated version of the long description if no short description has
 // been set in the admin panel yet, so older configs still look fine.
@@ -736,7 +736,7 @@ function giveawayShortDescValue(){
   const short = (SETTINGS_CACHE.giveawayHamperShortDesc || '').trim();
   if(short) return short;
   const long = (SETTINGS_CACHE.giveawayHamperDesc || '').trim();
-  if(!long) return 'Enter for free for a chance to win this hamper — one lucky winner is picked at random.';
+  if(!long) return 'Enter for free for a chance to win this hamper. One lucky winner is picked at random.';
   return long.length > 90 ? long.slice(0, 90).trim() + '…' : long;
 }
 function renderGiveawaySection(){
@@ -752,7 +752,7 @@ function renderGiveawaySection(){
   document.getElementById('gwyCardImg').src = SETTINGS_CACHE.giveawayHamperImage || 'https://placehold.co/700x700/FDF7F7/8A3B3B?text=Giveaway';
   document.getElementById('gwyCardPrice').textContent = fmtMoney(giveawayPriceValue());
 }
-// "See details & enter" — this is where the FULL/long description lives.
+// "See details & enter". This is where the FULL/long description lives.
 // Entering is free, so the price shown here is framed as "winner pays",
 // never as an entry fee.
 function openGiveawayDetails(){
@@ -760,7 +760,7 @@ function openGiveawayDetails(){
   GPDP_PRODUCT = null;
   const imgs = [SETTINGS_CACHE.giveawayHamperImage || 'https://placehold.co/700x700/FDF7F7/8A3B3B?text=Giveaway'];
   document.getElementById('gpdpCrumb').textContent = `Gift to Bahrain / Giveaway`;
-  document.getElementById('gpdpCat').textContent = 'Giveaway — one lucky winner';
+  document.getElementById('gpdpCat').textContent = 'Giveaway: one lucky winner';
   document.getElementById('gpdpName').textContent = SETTINGS_CACHE.giveawayHamperName || 'Birthday & Anniversary Hamper Giveaway';
   document.getElementById('gpdpPrice').innerHTML = `FREE to enter <span style="font-size:13px;font-weight:600;color:var(--ink-soft);">· winner pays ${fmtMoney(giveawayPriceValue())} for the hamper</span>`;
   document.getElementById('gpdpShortDesc').textContent = giveawayShortDescValue();
@@ -785,7 +785,7 @@ function populateDesignNotes(){
   let notes = [];
   try{ notes = JSON.parse(SETTINGS_CACHE.giftBoxDesignNotes || '[]'); }catch(e){ notes = []; }
   const sel = document.getElementById('designNoteSelect');
-  sel.innerHTML = '<option value="">— No preference —</option>' +
+  sel.innerHTML = '<option value="">(No preference)</option>' +
     notes.map(n => `<option value="${escapeHtml(n.text)}">${escapeHtml(n.text)}</option>`).join('');
 }
 
@@ -872,13 +872,13 @@ function renderCheckoutDetailsStep(){
         </select>
       </div>
     </div>
-    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:-8px;margin-bottom:4px;">We need at least 2 days to prepare and hand-deliver your gift — the earliest date you can pick is ${minDateLabel}.</div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:-8px;margin-bottom:4px;">We need at least 2 days to prepare and hand-deliver your gift. The earliest date you can pick is ${minDateLabel}.</div>
 
     <label>How should we deliver it?</label>
     <div class="radio-row" id="deliveryOptions">
       <label class="radio-opt checked"><input type="radio" name="deliveryMethod" value="normal" checked onchange="onDeliveryMethodChange()"><div><b>Normal delivery</b><br><span style="color:var(--ink-soft);">Our rider delivers it straightforwardly, like a regular order.</span></div></label>
       <label class="radio-opt"><input type="radio" name="deliveryMethod" value="surprise" onchange="onDeliveryMethodChange()"><div><b>Surprise like a stranger, then reveal</b><br><span style="color:var(--ink-soft);">Our rider delivers it as if it's from an unknown sender, then reveals it's from you.</span></div></label>
-      <label class="radio-opt"><input type="radio" name="deliveryMethod" value="custom_script" onchange="onDeliveryMethodChange()"><div><b>Custom script</b><br><span style="color:var(--ink-soft);">Tell us exactly how you'd like the surprise to go — no length limit.</span></div></label>
+      <label class="radio-opt"><input type="radio" name="deliveryMethod" value="custom_script" onchange="onDeliveryMethodChange()"><div><b>Custom script</b><br><span style="color:var(--ink-soft);">Tell us exactly how you'd like the surprise to go. No length limit.</span></div></label>
     </div>
     <div id="customScriptBox" style="display:none;">
       <label>Describe exactly how you'd like this delivered/revealed</label>
@@ -932,7 +932,7 @@ async function submitCheckoutDetails(){
   const minDate = minGiftDeliveryDate();
   const chosenDate = new Date(deliveryDate + 'T00:00:00');
   if(isNaN(chosenDate.getTime()) || chosenDate < minDate){
-    errBox.textContent = `Please choose a delivery date on or after ${prettyDate(minDate)} — we need at least 2 days to prepare your gift.`;
+    errBox.textContent = `Please choose a delivery date on or after ${prettyDate(minDate)}. We need at least 2 days to prepare your gift.`;
     return;
   }
   if(!deliveryTimeSlot){ errBox.textContent = 'Please choose a delivery time slot.'; return; }
@@ -970,7 +970,7 @@ async function submitCheckoutDetails(){
     else renderBenefitPayStep();
   }catch(e){
     renderCheckoutDetailsStep();
-    document.getElementById('ckDetailsErr').textContent = 'Network error — please try again.';
+    document.getElementById('ckDetailsErr').textContent = 'Network error. Please try again.';
   }
 }
 
@@ -980,17 +980,17 @@ function renderRazorpayStep(){
   document.getElementById('checkoutBody').innerHTML = `
     <span class="step-badge">Step 2 of 2 · Payment</span>
     <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_ORDER.total)} securely</h2>
-    <p style="color:var(--ink-soft);font-size:13px;">Order ${escapeHtml(ACTIVE_ORDER.orderId)} — complete payment before the timer runs out, or the order is cancelled automatically.</p>
+    <p style="color:var(--ink-soft);font-size:13px;">Order ${escapeHtml(ACTIVE_ORDER.orderId)}. Complete payment before the timer runs out, or the order is cancelled automatically.</p>
     <div class="countdown" id="countdownDisplay">05:00</div>
     <button class="primary-btn" id="payNowBtn" onclick="startRazorpayPayment()">Pay now with Razorpay</button>
     <div id="paymentFailBox" style="display:none;">
       <div class="sad-icon">😢</div>
-      <h3 style="text-align:center;margin:0 0 6px;">Oh nooo — that payment didn't go through!</h3>
+      <h3 style="text-align:center;margin:0 0 6px;">Oh nooo. That payment didn't go through!</h3>
       <div class="info-box" style="color:#B34141;background:#FCEEEE;text-align:center;" id="paymentFailMsg"></div>
       <button class="ghost-btn" onclick="startRazorpayPayment()">Retry payment</button>
     </div>
     <div id="expiredBox" style="display:none;">
-      <div class="info-box" style="color:#B34141;background:#FCEEEE;">Time's up — this order was cancelled automatically. Please start again.</div>
+      <div class="info-box" style="color:#B34141;background:#FCEEEE;">Time's up. This order was cancelled automatically. Please start again.</div>
       <button class="ghost-btn" onclick="closeAllOverlays();">Close</button>
     </div>
   `;
@@ -1021,17 +1021,17 @@ async function onOrderExpired(){
   document.getElementById('expiredBox').style.display = 'block';
 }
 
-// A catchy, event-aware retry message for the "payment didn't go through" box —
+// A catchy, event-aware retry message for the "payment didn't go through" box .
 // falls back to a generic line if we don't have the recipient/event yet.
 function paymentFailCopy(){
   const name = (ACTIVE_ORDER && ACTIVE_ORDER.recipientName) || 'them';
   const event = (ACTIVE_ORDER && ACTIVE_ORDER.eventType) || '';
-  if(event === 'Birthday') return `A hiccup won't stop us — let's retry and make this birthday of ${name} absolutely unforgettable!`;
-  if(event === 'Anniversary') return `Let's not let this slow us down — one more try and ${name}'s anniversary surprise is on its way!`;
-  if(event === 'Wedding') return `A day this special deserves another shot — let's get ${name}'s wedding gift through!`;
+  if(event === 'Birthday') return `A hiccup won't stop us. Let's retry and make this birthday of ${name} absolutely unforgettable!`;
+  if(event === 'Anniversary') return `Let's not let this slow us down. One more try and ${name}'s anniversary surprise is on its way!`;
+  if(event === 'Wedding') return `A day this special deserves another shot. Let's get ${name}'s wedding gift through!`;
   if(event === 'Graduation') return `So close! Let's retry and get this celebration for ${name} back on track.`;
-  if(event === 'Congratulations') return `Let's retry — ${name}'s celebration is still on!`;
-  return `Let's give it another try — we can still make this moment special for ${name}!`;
+  if(event === 'Congratulations') return `Let's retry. ${name}'s celebration is still on!`;
+  return `Let's give it another try. We can still make this moment special for ${name}!`;
 }
 
 function showPaymentFail(customMsg){
@@ -1095,7 +1095,7 @@ function renderBenefitPayStep(){
   document.getElementById('checkoutBody').innerHTML = `
     <span class="step-badge">Step 2 of 2 · Payment</span>
     <h2 style="margin:0 0 6px;">Pay ${fmtMoney(ACTIVE_ORDER.total)} via BenefitPay / IBAN</h2>
-    <p style="color:var(--ink-soft);font-size:13px;">Order ${escapeHtml(ACTIVE_ORDER.orderId)}. Scan the QR or transfer to the IBAN below, then confirm on WhatsApp — we'll verify and confirm your order manually.</p>
+    <p style="color:var(--ink-soft);font-size:13px;">Order ${escapeHtml(ACTIVE_ORDER.orderId)}. Scan the QR or transfer to the IBAN below, then confirm on WhatsApp. We'll verify and confirm your order manually.</p>
     <div class="qr-box">
       <img src="${qr}" alt="BenefitPay QR">
       <div style="font-weight:700;">${escapeHtml(name)}</div>
@@ -1103,9 +1103,9 @@ function renderBenefitPayStep(){
     </div>
     <a class="whatsapp-btn" style="display:block;text-align:center;text-decoration:none;" target="_blank"
        href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" onclick="markBenefitPaySubmitted()">
-       ✅ I've paid — notify us on WhatsApp
+       ✅ I've paid. Notify us on WhatsApp
     </a>
-    <div class="info-box">Your order is reserved and will show as "awaiting verification" until we confirm your payment — usually within a few minutes during business hours.</div>
+    <div class="info-box">Your order is reserved and will show as "awaiting verification" until we confirm your payment, usually within a few minutes during business hours.</div>
   `;
 }
 
@@ -1122,7 +1122,7 @@ function renderAwaitingVerification(){
   document.getElementById('designNoteSelect').value = '';
   document.getElementById('checkoutBody').innerHTML = `
     <div class="confirm-icon">🕒</div>
-    <h2 style="text-align:center;margin:0 0 8px;">Payment received — verifying…</h2>
+    <h2 style="text-align:center;margin:0 0 8px;">Payment received. Verifying…</h2>
     <p style="text-align:center;color:var(--ink-soft);">
       Order <b>${escapeHtml(ACTIVE_ORDER.orderId)}</b> is reserved for ${escapeHtml(ACTIVE_ORDER.recipientName)} in Bahrain.
       We'll confirm it as soon as we verify your BenefitPay/IBAN payment (usually within minutes during business hours).
@@ -1132,22 +1132,22 @@ function renderAwaitingVerification(){
 }
 
 /* -------- confirmation -------- */
-// Event-specific celebration copy — falls back to a generic gift message
+// Event-specific celebration copy. Falls back to a generic gift message
 // for anything not explicitly listed (or no event chosen).
 function eventCelebrationCopy(eventType, recipientName){
   const name = recipientName || 'them';
   const map = {
     'Birthday': { emoji:'🎂🎉', title:`Let's make this birthday memorable!`, text:`Happy Birthday, ${name}! Your surprise is on its way and it's going to be unforgettable.` },
-    'Anniversary': { emoji:'💍🥂', title:`Cheers to more beautiful years together!`, text:`A little something to celebrate ${name}'s special anniversary — sealed with love.` },
-    'Wedding': { emoji:'👰🤵', title:`Wishing them a lifetime of happiness!`, text:`Your gift for ${name}'s big day is confirmed — congratulations to the happy couple!` },
-    'Graduation': { emoji:'🎓🎉', title:`Cheers to new beginnings!`, text:`A proud moment for ${name} — your gift is confirmed and on its way.` },
+    'Anniversary': { emoji:'💍🥂', title:`Cheers to more beautiful years together!`, text:`A little something to celebrate ${name}'s special anniversary. Sealed with love.` },
+    'Wedding': { emoji:'👰🤵', title:`Wishing them a lifetime of happiness!`, text:`Your gift for ${name}'s big day is confirmed. Congratulations to the happy couple!` },
+    'Graduation': { emoji:'🎓🎉', title:`Cheers to new beginnings!`, text:`A proud moment for ${name}. Your gift is confirmed and on its way.` },
     'Congratulations': { emoji:'🎉🙌', title:`What a moment to celebrate!`, text:`Your congratulations gift for ${name} is confirmed and on its way.` },
     'Just Because': { emoji:'💐✨', title:`Sometimes the best surprises need no reason!`, text:`A little something special for ${name}, just because.` }
   };
   return map[eventType] || { emoji:'🎁🎉', title:`A surprise worth celebrating!`, text:`Your gift for ${name} is confirmed and on its way.` };
 }
 
-// Lightweight, dependency-free confetti — bursts a few dozen sweet/party
+// Lightweight, dependency-free confetti. Bursts a few dozen sweet/party
 // emoji across the screen and cleans itself up after the fall finishes.
 function triggerCelebration(){
   const layer = document.createElement('div');
@@ -1184,10 +1184,10 @@ function renderConfirmation(){
 }
 
 /* ================= GIVEAWAY ENTRY (100% free) ================= */
-// Entering the giveaway costs nothing — this is a single-step form
+// Entering the giveaway costs nothing. This is a single-step form
 // (details -> submit -> confirmation). No payment, no countdown timer.
 // Only the WINNER ever pays anything, and that happens later in a
-// completely separate flow — see "GIVEAWAY — CLAIM YOUR PRIZE" below.
+// completely separate flow (see "GIVEAWAY) CLAIM YOUR PRIZE" below.
 function startGiveawayCheckout(){
   closeAllOverlays();
   document.getElementById('overlay').classList.add('open');
@@ -1202,8 +1202,8 @@ function renderGiveawayDetailsStep(){
   const price = giveawayPriceValue();
   document.getElementById('checkoutBody').innerHTML = `
     <span class="step-badge">🎉 Free giveaway entry</span>
-    <h2 style="margin:0 0 6px;">Enter the giveaway — it's free</h2>
-    <p style="color:var(--ink-soft);font-size:13px;margin:0 0 6px;">One winner is picked at random from everyone who enters. Entering costs nothing — if you're picked, we'll email you a link to pay just for the hamper (${fmtMoney(price)}) so we can deliver it to the address below.</p>
+    <h2 style="margin:0 0 6px;">Enter the giveaway. It's free</h2>
+    <p style="color:var(--ink-soft);font-size:13px;margin:0 0 6px;">One winner is picked at random from everyone who enters. Entering costs nothing. If you're picked, we'll email you a link to pay just for the hamper (${fmtMoney(price)}) so we can deliver it to the address below.</p>
 
     <label>Your name</label><input type="text" id="gwSenderName">
     <label>Your email <span style="font-weight:500;color:var(--ink-soft);">(so we can reach you if you win)</span></label><input type="email" id="gwSenderEmail">
@@ -1230,7 +1230,7 @@ function renderGiveawayDetailsStep(){
         </select>
       </div>
     </div>
-    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:-8px;margin-bottom:4px;">Only used if you're picked as the winner — the earliest date you can pick is ${minDateLabel}.</div>
+    <div style="font-size:11.5px;color:var(--ink-soft);margin-top:-8px;margin-bottom:4px;">Only used if you're picked as the winner. The earliest date you can pick is ${minDateLabel}.</div>
 
     <div class="totals-row grand" style="margin-top:16px;"><span>Entry fee</span><span style="color:#1E7A44;">FREE</span></div>
     <div id="gwDetailsErr" class="err-msg"></div>
@@ -1270,11 +1270,11 @@ async function submitGiveawayDetails(){
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
     const data = await res.json();
     if(!data.ok){ renderGiveawayDetailsStep(); document.getElementById('gwDetailsErr').textContent = data.error || 'Could not create the entry.'; return; }
-    // No payment step — entering is free, so submitting the form IS entering.
+    // No payment step. Entering is free, so submitting the form IS entering.
     renderGiveawayEnteredPopup(data.entryId);
   }catch(e){
     renderGiveawayDetailsStep();
-    document.getElementById('gwDetailsErr').textContent = 'Network error — please try again.';
+    document.getElementById('gwDetailsErr').textContent = 'Network error. Please try again.';
   }
 }
 
@@ -1285,7 +1285,7 @@ function renderGiveawayEnteredPopup(entryId){
   triggerCelebration();
 }
 
-/* ================= GIVEAWAY — CLAIM YOUR PRIZE (winner pays) =================
+/* ================= GIVEAWAY. CLAIM YOUR PRIZE (winner pays) =================
  * Reached ONLY via the "claim your hamper" link the winner-notification
  * email sends: gift-bahrain.html?claimGiveaway=<entryId>. Every server
  * call here (getGiveawayEntryStatus / createGiveawayRazorpayOrder /
@@ -1317,7 +1317,7 @@ async function openGiveawayClaim(entryId){
       document.getElementById('giveawayClaimBody').innerHTML = `
         <div class="gwy-popup-icon">🎁</div>
         <h2 style="text-align:center;margin:0 0 8px;">You're all set!</h2>
-        <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;">Your payment for entry ${escapeHtml(data.id)} is already confirmed — we'll be in touch to arrange delivery.</p>
+        <p style="text-align:center;color:var(--ink-soft);font-size:13.5px;">Your payment for entry ${escapeHtml(data.id)} is already confirmed. We'll be in touch to arrange delivery.</p>
       `;
       return;
     }
@@ -1325,7 +1325,7 @@ async function openGiveawayClaim(entryId){
     if(data.currency === 'INR') renderGiveawayClaimRazorpayStep(data);
     else renderGiveawayClaimBenefitPayStep(data);
   }catch(e){
-    document.getElementById('giveawayClaimBody').innerHTML = '<p style="text-align:center;padding:40px 0;color:#B34141;">Network error — please refresh and try again.</p>';
+    document.getElementById('giveawayClaimBody').innerHTML = '<p style="text-align:center;padding:40px 0;color:#B34141;">Network error. Please refresh and try again.</p>';
   }
 }
 function renderGiveawayClaimRazorpayStep(data){
@@ -1398,7 +1398,7 @@ function renderGiveawayClaimBenefitPayStep(data){
     </div>
     <a class="whatsapp-btn" style="display:block;text-align:center;text-decoration:none;" target="_blank"
        href="https://wa.me/${WHATSAPP_NUMBER}?text=${waText}" onclick="markGiveawayClaimBenefitPaySubmitted()">
-       ✅ I've paid — notify us on WhatsApp
+       ✅ I've paid. Notify us on WhatsApp
     </a>
     <div class="info-box">Your claim is reserved and will show as "awaiting verification" until we confirm your payment.</div>
   `;
@@ -1420,14 +1420,14 @@ function renderGiveawayClaimPaidConfirmation(){
 
 /* ================= entrance pop + celebratory CTA ================= */
 // A short toast + confetti burst the moment the page loads, so first-time
-// visitors immediately notice this is a "gift" experience — separate from
+// visitors immediately notice this is a "gift" experience. Separate from
 // the confetti fired on order/giveaway confirmation above.
 function playCelebrationChime(){
   try{
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if(!Ctx) return;
     const ctx = new Ctx();
-    const notes = [523.25, 659.25, 784.0]; // C5 E5 G5 — a bright little chime
+    const notes = [523.25, 659.25, 784.0]; // C5 E5 G5. A bright little chime
     notes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -1441,14 +1441,14 @@ function playCelebrationChime(){
       osc.start(start);
       osc.stop(start + 0.4);
     });
-  }catch(e){ /* autoplay blocked or unsupported — silently skip */ }
+  }catch(e){ /* autoplay blocked or unsupported. Silently skip */ }
 }
 function runEntrancePop(){
   const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const toast = document.getElementById('entrancePop');
   if(toast && !prefersReducedMotion) toast.classList.add('show');
   if(!prefersReducedMotion) triggerCelebration();
-  playCelebrationChime(); // best-effort — most browsers block this before any click, that's fine
+  playCelebrationChime(); // best-effort. Most browsers block this before any click, that's fine
   setTimeout(() => { if(toast) toast.classList.remove('show'); }, 5000);
 }
 runEntrancePop(); // script sits at the end of body, so the DOM above is already ready
