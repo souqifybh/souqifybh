@@ -177,6 +177,9 @@
   .gwy-price-row .amt{font-family:'Sora';font-weight:800;font-size:22px;}
   .gwy-price-row .lbl{font-size:12px;font-weight:700;color:#3a1c00;}
   .gwy-enter-btn{margin-top:6px;background:#181B09;color:#fff;border:none;border-radius:12px;padding:13px 20px;font-weight:800;font-size:14.5px;width:fit-content;}
+  .gwy-btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .gwy-share-btn{margin-top:6px;background:rgba(255,255,255,0.55);color:#181B09;border:none;border-radius:12px;padding:13px 16px;font-weight:800;font-size:14.5px;width:fit-content;cursor:pointer;}
+  .gpdp-share-btn{margin-top:10px;background:none;border:1.5px solid var(--line);color:var(--ink-soft);border-radius:12px;padding:11px 16px;font-weight:700;font-size:13.5px;width:100%;cursor:pointer;}
   /* Mobile: square (4:4 / 1:1) hamper photo, stacked card with a touch more
      polish. Rounded corners, breathing room and a soft ring so it reads
      as a considered "feature card" rather than a squeezed-in banner. */
@@ -195,6 +198,8 @@
     .gwy-price-row{gap:6px;margin:0 0 2px;}
     .gwy-price-row .amt{font-size:19px;}
     .gwy-enter-btn{width:100%;text-align:center;padding:14px 20px;border-radius:13px;font-size:15px;}
+    .gwy-btn-row{width:100%;}
+    .gwy-share-btn{width:100%;text-align:center;padding:14px 16px;border-radius:13px;font-size:15px;}
   }
 
   /* ---- entrance pop overlay (first few seconds) ---- */
@@ -270,7 +275,10 @@
       <h2 id="gwyCardName">Birthday &amp; Anniversary Hamper Giveaway</h2>
       <p class="gwy-desc" id="gwyCardDesc"></p>
       <div class="gwy-price-row"><span class="lbl">Entry is 100% free · winner pays</span><span class="amt" id="gwyCardPrice">-</span></div>
-      <button class="gwy-enter-btn" onclick="event.stopPropagation();openGiveawayDetails()">See details &amp; enter</button>
+      <div class="gwy-btn-row">
+        <button class="gwy-enter-btn" onclick="event.stopPropagation();openGiveawayDetails()">See details &amp; enter</button>
+        <button class="gwy-share-btn" onclick="shareGiveaway(event)">🔗 Share</button>
+      </div>
     </div>
   </div>
 </section>
@@ -338,6 +346,7 @@
           </div>
         </div>
         <button class="primary-btn" id="gpdpActionBtn" onclick="gpdpPrimaryAction()">Add to gift cart</button>
+        <button class="gpdp-share-btn" id="gpdpGiveawayShareBtn" onclick="shareGiveaway(event)" style="display:none;">🔗 Share this giveaway</button>
       </div>
     </div>
     <div class="gpdp-related" id="gpdpRelated" style="display:none;">
@@ -360,6 +369,7 @@
       anywhere, anytime.
     </p>
     <button class="primary-btn" onclick="closeAllOverlays();document.getElementById('hampersSection').scrollIntoView({behavior:'smooth'});">Browse hampers</button>
+    <button class="gpdp-share-btn" onclick="shareGiveaway(event)">🔗 Share this giveaway with friends &amp; family</button>
   </div>
 </div>
 
@@ -492,7 +502,6 @@ async function loadGiftProducts(){
   renderGrid();
   buildBoxCategoryChips();
   renderBoxGrid();
-  loadSettings();
 }
 
 // Shared card markup for both the ready-made hampers grid and the
@@ -585,6 +594,7 @@ function openProduct(id){
   document.getElementById('gpdpQtyRow').style.display = 'flex';
   document.getElementById('gpdpQty').textContent = GPDP_QTY;
   document.getElementById('gpdpActionBtn').textContent = 'Add to gift cart';
+  document.getElementById('gpdpGiveawayShareBtn').style.display = 'none';
   renderGpdpRelated(p);
   document.getElementById('gpdpOverlay').classList.add('open');
   window.scrollTo(0,0);
@@ -707,16 +717,31 @@ function closeAllOverlays(){
 
 /* ---------------- settings (BenefitPay IBAN/QR) ---------------- */
 async function loadSettings(){
+  // Cache-first: render instantly from the last-known settings (if any)
+  // while the fresh fetch runs in the background, so the giveaway card
+  // doesn't sit blank for a full round trip on every single visit.
+  try{
+    const cached = sessionStorage.getItem('giftSettingsCache');
+    if(cached){
+      SETTINGS_CACHE = JSON.parse(cached);
+      populateDesignNotes();
+      renderGiveawaySection();
+    }
+  }catch(e){}
   try{
     const res = await fetch(`${CONFIG.API_URL}?action=getSettings`);
     const data = await res.json();
-    if(data.ok) SETTINGS_CACHE = data.settings || {};
+    if(data.ok){
+      SETTINGS_CACHE = data.settings || {};
+      try{ sessionStorage.setItem('giftSettingsCache', JSON.stringify(SETTINGS_CACHE)); }catch(e){}
+    }
   }catch(e){}
   populateDesignNotes();
   renderGiveawaySection();
   // Platform fee / delivery charge just loaded. Refresh any totals already on screen.
   if(document.getElementById('cartDrawer').classList.contains('open')) renderCart();
   checkForGiveawayClaimLink();
+  checkForGiveawayEnterLink();
 }
 
 /* ---------------- giveaway (admin-togglable) ---------------- */
@@ -771,9 +796,40 @@ function openGiveawayDetails(){
   document.getElementById('gpdpThumbs').innerHTML = '';
   document.getElementById('gpdpQtyRow').style.display = 'none';
   document.getElementById('gpdpActionBtn').textContent = 'Enter for free';
+  document.getElementById('gpdpGiveawayShareBtn').style.display = 'block';
   document.getElementById('gpdpRelated').style.display = 'none';
   document.getElementById('gpdpOverlay').classList.add('open');
   window.scrollTo(0,0);
+}
+// Direct, shareable link straight to the giveaway's "see details & enter"
+// page: gift-bahrain.html?enterGiveaway=1. Anyone who opens that link lands
+// straight on the giveaway instead of the general gift page.
+function giveawayShareUrl(){
+  return `${location.origin}${location.pathname}?enterGiveaway=1`;
+}
+async function shareGiveaway(e){
+  if(e) e.stopPropagation();
+  const url = giveawayShareUrl();
+  const name = SETTINGS_CACHE.giveawayHamperName || 'this giveaway';
+  const shareText = `Enter for free to win ${name}!`;
+  if(navigator.share){
+    try{ await navigator.share({ title: shareText, text: shareText, url }); return; }catch(err){ /* cancelled or unsupported, fall through to copy */ }
+  }
+  try{
+    await navigator.clipboard.writeText(url);
+    alert('Giveaway link copied! Share it with friends and family.');
+  }catch(err){
+    prompt('Copy this link to share the giveaway:', url);
+  }
+}
+// Opens the giveaway details page automatically for anyone who arrives via
+// a shared ?enterGiveaway=1 link, so they land directly on "enter for free"
+// instead of having to find the giveaway card themselves.
+function checkForGiveawayEnterLink(){
+  const params = new URLSearchParams(location.search);
+  if(params.get('enterGiveaway') === '1' && isTrueVal(SETTINGS_CACHE.giveawayEnabled)){
+    openGiveawayDetails();
+  }
 }
 
 /* ---------------- note session ---------------- */
@@ -1454,7 +1510,12 @@ function runEntrancePop(){
 runEntrancePop(); // script sits at the end of body, so the DOM above is already ready
 
 updateCartCount();
+// Products (fast, local products.json) and settings (the giveaway toggle,
+// name, image, price) no longer wait on each other. Firing both at once
+// roughly halves how long the giveaway card takes to show up, since it used
+// to sit behind the full product-grid load before its own fetch even started.
 loadGiftProducts();
+loadSettings();
 </script>
 </body>
 </html>
