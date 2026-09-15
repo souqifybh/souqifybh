@@ -1818,6 +1818,34 @@
   </div>
 </div>
 
+<!-- ================= Confirm/complete address after fetching location =================
+     Opens right after "Use my current location" resolves a GPS pin (or after
+     picking "Add new address"). Same field set as the checkout address block,
+     pre-filled with whatever we already know (GPS road/area, an in-progress
+     checkout, or a saved/default address) and fully editable before saving. -->
+<div class="addr-modal-overlay" id="locAddrOverlay" onclick="if(event.target===this)closeLocationAddressForm()">
+  <div class="addr-modal-sheet">
+    <div class="addr-modal-head">
+      <h3>Confirm delivery address</h3>
+      <button class="sort-close" onclick="closeLocationAddressForm()" aria-label="Close">✕</button>
+    </div>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin:-6px 0 12px;">We've filled in what we could find from your location — check it and complete the rest.</p>
+    <div class="field"><label>Full name</label><input type="text" id="locAddrFullName" placeholder="Recipient's name"></div>
+    <div class="field"><label>Mobile number</label><input type="text" id="locAddrPhone" placeholder="+973 3xxx xxxx"></div>
+    <div class="addr-grid">
+      <div class="field"><label>Flat / Shop no.</label><input type="text" id="locAddrFlat" placeholder="e.g. Flat 12"></div>
+      <div class="field"><label>Building</label><input type="text" id="locAddrBuilding" placeholder="Building name/no."></div>
+      <div class="field"><label>Road</label><input type="text" id="locAddrRoad" placeholder="Road no."></div>
+      <div class="field"><label>Block</label><input type="text" id="locAddrBlock" placeholder="Block no."></div>
+    </div>
+    <div class="field"><label>Area</label><input type="text" id="locAddrArea" placeholder="e.g. Manama, Riffa, Muharraq…"></div>
+    <div class="save-addr-check"><input type="checkbox" id="locAddrIsDefault"><label for="locAddrIsDefault">Set as default address</label></div>
+    <p class="auth-error" id="locAddrError"></p>
+    <button class="submit-btn" onclick="saveLocationAddress()">Save &amp; use this address</button>
+    <button class="btn-ghost" style="width:100%;margin-top:8px;" onclick="closeLocationAddressForm()">Cancel</button>
+  </div>
+</div>
+
 <div class="pdp-overlay" id="pdpOverlay">
   <div class="pdp-topbar">
     <div class="pdp-topbar-inner">
@@ -2389,8 +2417,9 @@ async function deleteAddress(id){
    A lightweight selector that sits under Categories on the homepage. It
    reuses the same saved-address book (ADDRESSES / loadAddresses) that
    powers the full Account > Addresses tab, so anything picked here is the
-   same address a signed-in shopper already manages there. Guests get a
-   friendly nudge to log in before an address can be saved. */
+   same address a signed-in shopper already manages there. Guests get the
+   same list, backed by a browser-local address book instead of the server
+   (see loadGuestAddresses/addGuestAddress below). */
 function initDeliverBar(){
   const saved = localStorage.getItem('gm_deliver_address');
   if(saved) document.getElementById('deliverBarValue').textContent = saved;
@@ -2402,6 +2431,10 @@ function openAddressModal(){
   if(CUSTOMER){
     loadAddresses().then(renderAddressModalList);
   } else {
+    // Guests get the same list, sourced from their browser's saved
+    // addresses instead of the server, so anything saved via "Use my
+    // current location" shows up here too.
+    ADDRESSES = loadGuestAddresses();
     renderAddressModalList();
   }
 }
@@ -2412,18 +2445,12 @@ function closeAddressModal(){
 function renderAddressModalList(){
   const wrap = document.getElementById('addrModalList');
   if(!wrap) return;
-  if(!CUSTOMER){
-    wrap.innerHTML = `
-      <p style="color:var(--ink-soft);font-size:13px;padding:10px 4px 14px;">Log in or create an account to save this address and reuse it on your next order.</p>
-      <button class="submit-btn" style="width:100%;" onclick="closeAddressModal();openAuth('login');">Log in</button>
-      <p style="text-align:center;font-size:13px;margin-top:14px;color:var(--ink-soft);">New here? <a href="javascript:void(0)" onclick="closeAddressModal();openAuth('register');" style="color:var(--blush-ink);font-weight:700;">Create an account</a></p>
-    `;
-    return;
-  }
   const q = (document.getElementById('addrModalSearch').value || '').toLowerCase();
   const list = ADDRESSES.filter(a => !q || `${a.label} ${a.fullName} ${a.address}`.toLowerCase().includes(q));
   if(!list.length){
-    wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:13px;padding:10px 4px;">No saved addresses yet — add one above.</p>';
+    wrap.innerHTML = CUSTOMER
+      ? '<p style="color:var(--ink-soft);font-size:13px;padding:10px 4px;">No saved addresses yet — add one above.</p>'
+      : `<p style="color:var(--ink-soft);font-size:13px;padding:10px 4px 14px;">No saved addresses yet — add one above. <a href="javascript:void(0)" onclick="closeAddressModal();openAuth('login');" style="color:var(--blush-ink);font-weight:700;">Log in</a> to sync your addresses across devices.</p>`;
     return;
   }
   const selectedId = localStorage.getItem('gm_deliver_address_id');
@@ -2462,14 +2489,12 @@ function useCurrentLocationForDelivery(){
   if(btn) btn.style.opacity = '0.6';
   navigator.geolocation.getCurrentPosition(async pos => {
     const { latitude, longitude } = pos.coords;
-    let label = `Current location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`;
     let gpsRoad = '', gpsArea = '';
     // Reverse-geocode the GPS point into a real, map-located address
     // (road/area/city) using OpenStreetMap's free Nominatim service —
-    // no API key needed. Falls back to the raw coordinates above if the
-    // lookup fails or the shopper is offline. Road/area are kept apart
-    // (not just the display label) so checkout can prefill its own Road
-    // and Area fields from an actual GPS pin.
+    // no API key needed. Road/area feed straight into the same address
+    // form checkout uses; the shopper fills in flat/building/block
+    // themselves since a GPS pin can't know those.
     try{
       const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
         headers: { 'Accept-Language': 'en' }
@@ -2479,21 +2504,123 @@ function useCurrentLocationForDelivery(){
         const a = data.address;
         gpsRoad = a.road || a.pedestrian || a.neighbourhood || '';
         gpsArea = [a.suburb || a.city_district, a.city || a.town || a.village].filter(Boolean).join(', ');
-        const parts = [gpsRoad, gpsArea, a.country].filter(Boolean);
-        if(parts.length) label = parts.join(', ');
       }
-    }catch(err){ /* offline or rate-limited — the coordinate fallback above still works */ }
-    localStorage.setItem('gm_deliver_address', label);
-    localStorage.removeItem('gm_deliver_address_id');
-    localStorage.setItem('gm_deliver_gps_road', gpsRoad);
-    localStorage.setItem('gm_deliver_gps_area', gpsArea);
-    document.getElementById('deliverBarValue').textContent = label;
+    }catch(err){ /* offline or rate-limited — the shopper can still fill road/area in manually below */ }
     if(btn) btn.style.opacity = '1';
     closeAddressModal();
+    openLocationAddressForm({ road: gpsRoad, area: gpsArea });
   }, () => {
     if(btn) btn.style.opacity = '1';
     alert('Could not access your location. Please allow location access and try again, or add an address manually.');
   });
+}
+
+// Builds the same one-line display/order string the backend composes from
+// structured fields, so a locally-saved guest address looks identical to
+// one that came from the server.
+function composeAddressClient_(flat, building, road, block, area){
+  return [
+    flat ? 'Flat/Shop ' + flat : '',
+    building ? 'Building ' + building : '',
+    road ? 'Road ' + road : '',
+    block ? 'Block ' + block : '',
+    area || ''
+  ].filter(Boolean).join(', ');
+}
+/* ================= guest (not-logged-in) address book =================
+   Signed-in shoppers' addresses live on the server (ADDRESSES via
+   listAddresses/addAddress). Guests get the same shape of data, just kept
+   in their browser's localStorage instead, so the "Deliver to" arrow and
+   checkout can treat both the same way. */
+function loadGuestAddresses(){
+  try{ return JSON.parse(localStorage.getItem('gm_guest_addresses') || '[]'); }catch(err){ return []; }
+}
+function saveGuestAddressesList(list){
+  localStorage.setItem('gm_guest_addresses', JSON.stringify(list));
+}
+function addGuestAddress(addr){
+  const list = loadGuestAddresses();
+  const id = 'G-' + Date.now();
+  const full = Object.assign({ label:'Home', fullName:'', phone:'', flat:'', building:'', road:'', block:'', area:'', isDefault:false }, addr, { id });
+  full.address = composeAddressClient_(full.flat, full.building, full.road, full.block, full.area);
+  if(full.isDefault) list.forEach(a => a.isDefault = false);
+  list.push(full);
+  saveGuestAddressesList(list);
+  ADDRESSES = list;
+  return full;
+}
+// Opens the shared address-detail form (same fields as checkout) so the
+// shopper can review/complete an address before it's saved and used. Called
+// after a GPS fetch resolves (with road/area prefilled) — editable, and
+// backfilled from whatever we already know: an in-progress checkout, the
+// currently-selected/default saved address, or the logged-in profile.
+function openLocationAddressForm(gps){
+  gps = gps || {};
+  const list = CUSTOMER ? ADDRESSES : loadGuestAddresses();
+  const preferredId = localStorage.getItem('gm_deliver_address_id');
+  const base = (preferredId && list.find(a => a.id === preferredId)) || list.find(a => isTrue(a.isDefault)) || list[0] || {};
+  const checkoutOpen = document.getElementById('checkoutOverlay').classList.contains('show');
+  const ck = id => checkoutOpen ? document.getElementById(id).value.trim() : '';
+
+  document.getElementById('locAddrFullName').value = ck('custName') || base.fullName || (CUSTOMER ? CUSTOMER.name || '' : '');
+  document.getElementById('locAddrPhone').value = ck('custPhone') || base.phone || (CUSTOMER ? CUSTOMER.phone || '' : '');
+  document.getElementById('locAddrFlat').value = ck('custFlat') || base.flat || '';
+  document.getElementById('locAddrBuilding').value = ck('custBuilding') || base.building || '';
+  document.getElementById('locAddrRoad').value = gps.road || ck('custRoad') || base.road || '';
+  document.getElementById('locAddrBlock').value = ck('custBlock') || base.block || '';
+  document.getElementById('locAddrArea').value = gps.area || ck('custArea') || base.area || '';
+  document.getElementById('locAddrIsDefault').checked = list.length === 0;
+  document.getElementById('locAddrError').textContent = '';
+  document.getElementById('locAddrOverlay').classList.add('show');
+  lockBodyScroll();
+}
+function closeLocationAddressForm(){
+  document.getElementById('locAddrOverlay').classList.remove('show');
+  unlockBodyScroll();
+}
+async function saveLocationAddress(){
+  const fullName = document.getElementById('locAddrFullName').value.trim();
+  const phone = document.getElementById('locAddrPhone').value.trim();
+  const flat = document.getElementById('locAddrFlat').value.trim();
+  const building = document.getElementById('locAddrBuilding').value.trim();
+  const road = document.getElementById('locAddrRoad').value.trim();
+  const block = document.getElementById('locAddrBlock').value.trim();
+  const area = document.getElementById('locAddrArea').value.trim();
+  const isDefault = document.getElementById('locAddrIsDefault').checked;
+  const errEl = document.getElementById('locAddrError');
+  errEl.textContent = '';
+  if(!fullName || !phone || !flat || !building || !road || !block || !area){ errEl.textContent = 'Please fill in name, phone, and all address fields.'; return; }
+
+  let newId = null;
+  if(CUSTOMER){
+    try{
+      const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+        action:'addAddress', customerId: CUSTOMER.id, label:'Home', fullName, phone, flat, building, road, block, area,
+        isDefault: isDefault || ADDRESSES.length === 0
+      }) });
+      const data = await res.json();
+      if(!data.ok){ errEl.textContent = data.error || 'Could not save this address.'; return; }
+      newId = data.id;
+      await loadAddresses(); // refresh ADDRESSES from the server
+    }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; return; }
+  } else {
+    const saved = addGuestAddress({ fullName, phone, flat, building, road, block, area, isDefault });
+    newId = saved.id;
+  }
+
+  const label = `${fullName} — ${composeAddressClient_(flat, building, road, block, area)}`;
+  localStorage.setItem('gm_deliver_address', label);
+  localStorage.setItem('gm_deliver_address_id', newId);
+  localStorage.removeItem('gm_deliver_gps_road');
+  localStorage.removeItem('gm_deliver_gps_area');
+  document.getElementById('deliverBarValue').textContent = label;
+  closeLocationAddressForm();
+
+  // If checkout happens to be open already, reflect the newly saved/selected
+  // address there right away instead of leaving its fields stale.
+  if(document.getElementById('checkoutOverlay').classList.contains('show')){
+    if(CUSTOMER) loadCheckoutAddresses(); else loadCheckoutAddressesGuest();
+  }
 }
 
 /* ================= profile ================= */
@@ -4569,13 +4696,7 @@ function openCheckout(){
   }
   updateCheckoutTotalDisplay();
   if(CUSTOMER) loadCheckoutAddresses();
-  else {
-    document.getElementById('savedAddrPicker').style.display = 'none';
-    // Guests don't have a saved-address book to match against, but if
-    // they picked "Use current location" on the homepage, still prefill
-    // Road/Area from that GPS pin so they don't retype it.
-    prefillCheckoutFromGpsPin();
-  }
+  else loadCheckoutAddressesGuest();
   // Refresh the wallet balance quietly in case it changed since login (e.g.
   // a friend just registered with this customer's referral code).
   if(CUSTOMER){
@@ -4621,16 +4742,15 @@ function continueAsGuest(){
   closeCart();
   openCheckout();
 }
-async function loadCheckoutAddresses(){
+// Shared by both signed-in (server) and guest (localStorage) checkout flows
+// so a saved address — wherever it came from — is offered and prefilled
+// the same way.
+function renderCheckoutSavedAddrPicker(list){
   const picker = document.getElementById('savedAddrPicker');
-  picker.style.display = 'none';
-  try{
-    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listAddresses', customerId: CUSTOMER.id }) });
-    const data = await res.json();
-    ADDRESSES = data.addresses || [];
-    if(!ADDRESSES.length){ prefillCheckoutFromGpsPin(); return; }
-    picker.style.display = 'flex';
-    picker.innerHTML = ADDRESSES.map(a => `
+  ADDRESSES = list;
+  if(!list.length){ picker.style.display = 'none'; prefillCheckoutFromGpsPin(); return; }
+  picker.style.display = 'flex';
+  picker.innerHTML = list.map(a => `
       <div class="saved-addr-opt" data-id="${a.id}" onclick="pickCheckoutAddress('${a.id}')">
         <div class="sa-label">${a.label || 'Address'} ${isTrue(a.isDefault) ? '· Default' : ''}</div>
         <div class="sa-text">${a.fullName || ''} · ${a.phone || ''}<br>${a.address || ''}</div>
@@ -4640,14 +4760,28 @@ async function loadCheckoutAddresses(){
         <div class="sa-label">+ Use a new address</div>
       </div>
     `;
-    // Whatever the shopper picked in the homepage "Deliver to" bar wins
-    // over the plain account default, so checkout opens already matching
-    // what they chose there.
-    const preferredId = localStorage.getItem('gm_deliver_address_id');
-    const preferred = preferredId && ADDRESSES.find(a => a.id === preferredId);
-    const def = preferred || ADDRESSES.find(a => isTrue(a.isDefault)) || ADDRESSES[0];
-    if(def) pickCheckoutAddress(def.id);
+  // Whatever the shopper picked in the homepage "Deliver to" bar wins
+  // over the plain default, so checkout opens already matching what they
+  // chose there.
+  const preferredId = localStorage.getItem('gm_deliver_address_id');
+  const preferred = preferredId && list.find(a => a.id === preferredId);
+  const def = preferred || list.find(a => isTrue(a.isDefault)) || list[0];
+  if(def) pickCheckoutAddress(def.id);
+}
+async function loadCheckoutAddresses(){
+  const picker = document.getElementById('savedAddrPicker');
+  picker.style.display = 'none';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listAddresses', customerId: CUSTOMER.id }) });
+    const data = await res.json();
+    renderCheckoutSavedAddrPicker(data.addresses || []);
   }catch(err){ /* saved addresses are a convenience — fine to skip silently if offline */ }
+}
+// Guests don't have a server-side address book, but they get the same
+// picker experience from whatever they've saved to this browser (e.g. via
+// "Use my current location" on the homepage).
+function loadCheckoutAddressesGuest(){
+  renderCheckoutSavedAddrPicker(loadGuestAddresses());
 }
 function pickCheckoutAddress(id){
   checkoutSelectedAddressId = id || null;
@@ -4717,13 +4851,20 @@ async function placeOrder(){
   submitLabel.textContent = method === 'benefitpay' ? T('preparingBenefitpay') : T('placingOrder');
 
   try{
-    if(CUSTOMER && !checkoutSelectedAddressId && document.getElementById('saveThisAddress').checked){
-      try{
-        await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
-          action:'addAddress', customerId: CUSTOMER.id, label:'Home', fullName:name, phone,
-          flat, building, road, block, area, isDefault: ADDRESSES.length === 0
-        }) });
-      }catch(err){ /* saving the address is a convenience — don't block the order over it */ }
+    if(!checkoutSelectedAddressId && document.getElementById('saveThisAddress').checked){
+      if(CUSTOMER){
+        try{
+          await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+            action:'addAddress', customerId: CUSTOMER.id, label:'Home', fullName:name, phone,
+            flat, building, road, block, area, isDefault: ADDRESSES.length === 0
+          }) });
+        }catch(err){ /* saving the address is a convenience — don't block the order over it */ }
+      } else {
+        // Guests get the same address saved to their browser instead of the
+        // server, so it shows up next time in both the "Deliver to" arrow
+        // and this same saved-address picker.
+        try{ addGuestAddress({ label:'Home', fullName:name, phone, flat, building, road, block, area, isDefault: ADDRESSES.length === 0 }); }catch(err){}
+      }
     }
 
     const promoDiscountAmount = getPromoDiscountAmount();
