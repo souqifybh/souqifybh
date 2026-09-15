@@ -813,7 +813,7 @@
 
   /* ---------- Product detail page ---------- */
   .pdp-overlay{
-    position:fixed; inset:0; z-index:400; background:var(--paper); overflow-y:auto;
+    position:fixed; inset:0; z-index:415; background:var(--paper); overflow-y:auto;
     transform:translateY(24px); opacity:0; visibility:hidden; pointer-events:none;
     transition:opacity .32s var(--ease), transform .32s var(--ease), visibility .32s;
   }
@@ -1334,8 +1334,7 @@
 <section class="section section-tight" id="suggestedSection" style="padding-top:32px;padding-bottom:28px;">
   <div class="wrap">
     <div class="section-head reveal" style="margin-bottom:16px;">
-      <span class="eyebrow"><span class="dot"></span> <span>Picked for you</span></span>
-      <h2 style="margin:6px 0 0;">Suggested for you</h2>
+      <h2 style="margin:0;">Suggested for you</h2>
     </div>
     <div class="sfy-grid reveal-stagger" id="suggestedGrid"></div>
   </div>
@@ -1344,7 +1343,6 @@
 <section class="section section-tight" id="featuredSection" style="display:none;">
   <div class="wrap">
     <div class="section-head reveal" style="margin-bottom:26px;">
-      <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowHandpicked">Handpicked</span></span>
       <h2 data-i18n="headFeatured">Featured this week</h2>
     </div>
   </div>
@@ -1362,7 +1360,7 @@
 <section class="value365-section" id="value365Section" style="display:none;">
   <div class="value365-head">
     <h2>💰 Value Picks</h2>
-    <span class="value365-badge">Extra value, in BD</span>
+    <span class="value365-badge">Limited Deals</span>
   </div>
   <div class="value365-rail" id="value365Rail"></div>
 </section>
@@ -1380,8 +1378,7 @@
 <section class="section" id="categories">
   <div class="wrap">
     <div class="section-head reveal">
-      <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowShopByCat">Shop by category</span></span>
-      <h2 data-i18n="headFindGadget">Find your next favorite gadget</h2>
+      <h2 data-i18n="headFindGadget" style="white-space:nowrap;font-size:clamp(18px,6vw,32px);">Find your Favourite Easily</h2>
     </div>
     <div class="cat-grid reveal-stagger" id="categoryCardGrid"></div>
   </div>
@@ -2831,7 +2828,7 @@ const I18N = {
     eyebrowHandpicked:'Handpicked', headFeatured:'Featured this week', subFeatured:'A short list we personally rate, swipe through.',
     eyebrowCrowd:'Crowd favorites', headBestsellers:'Best sellers', subBestsellers:'What Bahrain keeps adding to cart.',
     dealsBannerEyebrow:'Hot deals', dealsBannerTitle:'Save big on select gadgets', dealsBannerSub:'Check out today\'s best discounted picks', dealsBannerCta:'Shop deals →',
-    eyebrowShopByCat:'Shop by category', headFindGadget:'Find your next favorite gadget', subFindGadget:'Browse what people in Bahrain are buying right now.', catShopNow:'Shop now',
+    eyebrowShopByCat:'Shop by category', headFindGadget:'Find your Favourite Easily', subFindGadget:'Browse what people in Bahrain are buying right now.', catShopNow:'Shop now',
     notifHeading:'Offers & updates', notifLoading:'Loading…', notifEmpty:'No active offers right now, check back soon!',
     eyebrowCatalogue:'Full catalogue', headAllProducts:'All products', loadingProducts:'Loading products…', searchPlaceholder:'Search products…',
     eyebrowLovedLocally:'Loved locally', headReviews:'What Bahrain is saying',
@@ -3464,6 +3461,7 @@ function renderSuggestedForYou(){
   if(!grid) return;
   const pool = PRODUCTS.filter(p => !isGiftOnlyProduct(p) && Number(p.stock) > 0);
   const terms = getRecentSearches().map(t => t.toLowerCase());
+  const SUGGESTED_COUNT = 6; // keeps the mobile grid to a clean 2/3-column layout
   let picks;
   if(terms.length){
     // Products matching something the shopper has searched for come
@@ -3473,9 +3471,9 @@ function renderSuggestedForYou(){
       terms.some(t => (p.name || '').toLowerCase().includes(t) || (p.category || '').toLowerCase().includes(t))
     ));
     const rest = shuffleArrayInPlace(pool.filter(p => !matched.includes(p)));
-    picks = matched.concat(rest).slice(0, 8);
+    picks = matched.concat(rest).slice(0, SUGGESTED_COUNT);
   } else {
-    picks = shuffleArrayInPlace(pool.slice()).slice(0, 8);
+    picks = shuffleArrayInPlace(pool.slice()).slice(0, SUGGESTED_COUNT);
   }
   if(!picks.length){ grid.innerHTML = ''; return; }
   grid.innerHTML = picks.map(p => `
@@ -3497,7 +3495,9 @@ function renderValuePicks(){
   const section = document.getElementById('value365Section');
   if(!items.length){ section.style.display = 'none'; return; }
   section.style.display = 'block';
-  const needsReveal = renderCardSection(document.getElementById('value365Rail'), items);
+  // Value Picks cards keep it simple: just the % off, no featured star and
+  // no separate BD price badge cluttering the image overlay.
+  const needsReveal = renderCardSection(document.getElementById('value365Rail'), items, { hideFeatured:true, hideValueAmount:true });
   if(needsReveal) requestAnimationFrame(() => observeReveal());
 }
 
@@ -3543,14 +3543,15 @@ function updateDealsFabVisibility(){
   if(btn) btn.style.display = (pdpOpen || acctOpen) ? 'none' : '';
 }
 
-function cardBadgesHtml(p){
+function cardBadgesHtml(p, opts){
+  opts = opts || {};
   const pct = discountPct(p);
   const outOfStock = Number(p.stock) <= 0;
   return [
     pct > 0 && !outOfStock ? `<span class="card-badge sale">🏷️ ${pct}% ${T('saleOff')}</span>` : '',
-    p.featured ? `<span class="card-badge featured">${T('featuredBadge')}</span>` : '',
+    (!opts.hideFeatured && p.featured) ? `<span class="card-badge featured">${T('featuredBadge')}</span>` : '',
     p.bestseller ? `<span class="card-badge bestseller">${T('bestsellerBadge')}</span>` : '',
-    Number(p.valueAmount) > 0 && !outOfStock ? `<span class="card-badge value">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
+    (!opts.hideValueAmount && Number(p.valueAmount) > 0 && !outOfStock) ? `<span class="card-badge value">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
     outOfStock ? `<span class="card-badge out">${T('outOfStock')}</span>` : ''
   ].join('');
 }
@@ -3573,8 +3574,8 @@ function cardBodyHtml(p){
         <div class="free-delivery"><span class="van">🚚</span> ${T('freeDeliveryBadge')}</div>
   `;
 }
-function productCardHtml(p){
-  const badges = cardBadgesHtml(p);
+function productCardHtml(p, opts){
+  const badges = cardBadgesHtml(p, opts);
   const outOfStock = Number(p.stock) <= 0;
   return `
     <div class="card ${outOfStock?'out-of-stock':''}" data-pid="${p.id}" onclick="openProduct('${p.id}')">
@@ -3587,15 +3588,17 @@ function productCardHtml(p){
 // A short fingerprint of everything a card actually displays (incl. the
 // current language, since translated names/descriptions change this).
 // Used to skip touching a card at all when nothing about it changed.
-function cardSignature(p){
+function cardSignature(p, opts){
+  opts = opts || {};
   return [p.id, currentLang, (p.images && p.images[0]) || '', pName(p), p.price, p.compareAtPrice, p.stock,
-    p.category, p.featured?1:0, p.bestseller?1:0, p.valueAmount||0, p.reviewCount, p.avgRating, pShortDesc(p)].join('|');
+    p.category, p.featured?1:0, p.bestseller?1:0, p.valueAmount||0, p.reviewCount, p.avgRating, pShortDesc(p),
+    opts.hideFeatured?1:0, opts.hideValueAmount?1:0].join('|');
 }
 // Updates an existing card element's content in place. Crucially, the
 // <img> element itself is only touched (its src re-set) when the image
 // URL actually changed -- otherwise it's left completely alone, so the
 // browser never re-fetches/re-decodes it and the photo doesn't blink.
-function patchCardEl(el, p){
+function patchCardEl(el, p, opts){
   el.classList.toggle('out-of-stock', Number(p.stock) <= 0);
   const img = el.querySelector('.imgwrap img');
   if(img){
@@ -3604,7 +3607,7 @@ function patchCardEl(el, p){
     const newAlt = pName(p);
     if(img.getAttribute('alt') !== newAlt) img.setAttribute('alt', newAlt);
   }
-  const badgesHtml = cardBadgesHtml(p);
+  const badgesHtml = cardBadgesHtml(p, opts);
   let badgesWrap = el.querySelector('.card-badges');
   if(badgesHtml){
     if(!badgesWrap){
@@ -3626,7 +3629,7 @@ function patchCardEl(el, p){
 // created from scratch. Returns the newly-created elements (if any), so
 // callers can fade in just those instead of replaying the reveal
 // animation for the whole section.
-function syncCardsIntoContainer(container, items){
+function syncCardsIntoContainer(container, items, opts){
   const existingByPid = new Map();
   Array.from(container.children).forEach(el => {
     const pid = el.getAttribute('data-pid');
@@ -3634,17 +3637,17 @@ function syncCardsIntoContainer(container, items){
   });
   const newlyAdded = [];
   items.forEach(p => {
-    const sig = cardSignature(p);
+    const sig = cardSignature(p, opts);
     let el = existingByPid.get(p.id);
     if(el){
       existingByPid.delete(p.id);
       if(el.getAttribute('data-sig') !== sig){
-        patchCardEl(el, p);
+        patchCardEl(el, p, opts);
         el.setAttribute('data-sig', sig);
       }
     } else {
       const wrap = document.createElement('div');
-      wrap.innerHTML = productCardHtml(p);
+      wrap.innerHTML = productCardHtml(p, opts);
       el = wrap.firstElementChild;
       el.setAttribute('data-sig', sig);
       newlyAdded.push(el);
@@ -3659,14 +3662,17 @@ function syncCardsIntoContainer(container, items){
 // cache render, the fresh fetch, live stock refreshes, and Arabic
 // translations landing -- don't tear down and reload every product photo).
 // Only does a full rebuild (with the normal reveal-on-scroll fade) the
-// very first time a section renders.
-function renderCardSection(container, items){
+// very first time a section renders. `opts` (e.g. {hideFeatured,
+// hideValueAmount}) lets a specific section like Value Picks suppress
+// certain badges without affecting any other section that shares this
+// same renderer.
+function renderCardSection(container, items, opts){
   if(!container.querySelector('.card') || container.querySelector('.empty')){
-    container.innerHTML = items.map(p => productCardHtml(p)).join('');
-    container.querySelectorAll('.card').forEach((el, i) => el.setAttribute('data-sig', cardSignature(items[i])));
+    container.innerHTML = items.map(p => productCardHtml(p, opts)).join('');
+    container.querySelectorAll('.card').forEach((el, i) => el.setAttribute('data-sig', cardSignature(items[i], opts)));
     return true; // needs the reveal observer (first paint)
   }
-  syncCardsIntoContainer(container, items);
+  syncCardsIntoContainer(container, items, opts);
   // No need to re-run the reveal observer: if the container is already
   // showing (class "in"), CSS makes any newly-appended card visible
   // immediately, with its own fade-in transition -- no full-grid replay.
@@ -4369,10 +4375,28 @@ async function submitReview(){
 }
 
 function closeProduct(){
+  hidePdpOverlayOnly();
+  // "Back to shop" always returns to the homepage. If the product was
+  // opened from within the All Products listing, that page was still open
+  // underneath it (just hidden behind the product page) — close it too
+  // instead of leaving it revealed once the product page is gone.
+  const apOverlay = document.getElementById('apOverlay');
+  if(apOverlay.classList.contains('show')){
+    apOverlay.classList.remove('show');
+    unlockBodyScroll();
+  }
+  // Collapse straight back to the plain homepage URL, no matter how many
+  // overlay states (All Products, then this product) were stacked above it.
+  if(location.hash) history.replaceState({}, '', location.pathname + location.search);
+}
+// Just hides the product overlay itself, without touching any page
+// underneath or the URL — used by the popstate handler below, which
+// manages history/overlay-visibility itself based on where navigation
+// actually landed.
+function hidePdpOverlayOnly(){
   document.getElementById('pdpOverlay').classList.remove('show');
   unlockBodyScroll();
   PDP_PRODUCT = null;
-  if(location.hash.startsWith('#/product/')) history.pushState({}, '', location.pathname + location.search);
   updateDealsFabVisibility();
 }
 
@@ -4386,7 +4410,7 @@ function handleRouteFromHash(){
 window.addEventListener('popstate', () => {
   const m = location.hash.match(/^#\/product\/(.+)$/);
   if(m){ openProduct(m[1]); return; }
-  closeProduct();
+  hidePdpOverlayOnly();
   if(location.hash === '#/products'){
     document.getElementById('apOverlay').classList.add('show');
     lockBodyScroll();
