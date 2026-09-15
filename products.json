@@ -23,6 +23,7 @@
     "priceINR": "",
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785307430/Screenshot_2026-07-29_093924_mxbhsu.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/5b370144-d531-4934-b9f6-69d6c2a7199e_map6ld.avif",
@@ -33,6 +34,7 @@
     "colorsList": [
       "Pink"
     ],
+    "variantImages": {},
     "avgRating": 4.833333333333333,
     "reviewCount": 6
   },
@@ -60,6 +62,7 @@
     "priceINR": "",
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787211747/b18159ce-82cb-4007-be64-3363e6723194.avif",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787211240/c87bf18c-98d8-4608-85cc-4687ac264029.avif",
@@ -70,6 +73,7 @@
     "colorsList": [
       "Black"
     ],
+    "variantImages": {},
     "avgRating": 5,
     "reviewCount": 1
   },
@@ -97,6 +101,7 @@
     "priceINR": "",
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600047/IMG_8792_k8ezpt.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600048/IMG_8790_b2c8ns.jpg",
@@ -107,6 +112,7 @@
     "colorsList": [
       "Random #5"
     ],
+    "variantImages": {},
     "avgRating": 4.5,
     "reviewCount": 2
   },
@@ -134,6 +140,7 @@
     "priceINR": "",
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8976_zjs3an.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8977_juifih.jpg",
@@ -144,6 +151,7 @@
     "colorsList": [
       "White"
     ],
+    "variantImages": {},
     "avgRating": 5,
     "reviewCount": 2
   },
@@ -171,6 +179,7 @@
     "priceINR": "",
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787214418/IMG_9173.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787215140/Gemini_Generated_Image_o3qedmo3qedmo3qe.jpg",
@@ -179,6 +188,7 @@
     "colorsList": [
       "White"
     ],
+    "variantImages": {},
     "avgRating": 0,
     "reviewCount": 0
   },
@@ -206,6 +216,7 @@
     "priceINR": 2199,
     "compareAtPriceINR": 2999,
     "giftBoxEnabled": false,
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209893/choco-truffle-cake0005choc-AA.jpg",
@@ -213,6 +224,7 @@
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209994/ChatGPT_Image_Sep_12_2026_01_46_25_PM.png"
     ],
     "colorsList": [],
+    "variantImages": {},
     "avgRating": 0,
     "reviewCount": 0
   },
@@ -240,6 +252,7 @@
     "priceINR": 2199,
     "compareAtPriceINR": 2999,
     "giftBoxEnabled": false,
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789229338/ChatGPT_Image_Sep_12_2026_07_05_37_PM.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209893/choco-truffle-cake0005choc-AA.jpg",
@@ -247,6 +260,7 @@
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789229396/ChatGPT_Image_Sep_12_2026_07_09_40_PM.png"
     ],
     "colorsList": [],
+    "variantImages": {},
     "avgRating": 0,
     "reviewCount": 0
   },
@@ -274,11 +288,13 @@
     "priceINR": 1699,
     "compareAtPriceINR": 1699,
     "giftBoxEnabled": false,
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/1797482A-73FE-4062-8F10-D1B0A61F9828.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/3F5BD647-B0D4-444B-91AC-328FE04CE06C.png"
     ],
     "colorsList": [],
+    "variantImages": {},
     "avgRating": 0,
     "reviewCount": 0
   },
@@ -306,11 +322,13 @@
     "priceINR": 1699,
     "compareAtPriceINR": 2199,
     "giftBoxEnabled": false,
+    "giftVariantImages": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375534/32C74E07-146A-4E1C-842B-A9607BB313BA.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375532/IMG_0166.jpg"
     ],
     "colorsList": [],
+    "variantImages": {},
     "avgRating": 0,
     "reviewCount": 0
   }
