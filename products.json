@@ -24,6 +24,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785307430/Screenshot_2026-07-29_093924_mxbhsu.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/5b370144-d531-4934-b9f6-69d6c2a7199e_map6ld.avif",
@@ -63,6 +64,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787211747/b18159ce-82cb-4007-be64-3363e6723194.avif",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787211240/c87bf18c-98d8-4608-85cc-4687ac264029.avif",
@@ -102,6 +104,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600047/IMG_8792_k8ezpt.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600048/IMG_8790_b2c8ns.jpg",
@@ -141,6 +144,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8976_zjs3an.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8977_juifih.jpg",
@@ -180,6 +184,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787214418/IMG_9173.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787215140/Gemini_Generated_Image_o3qedmo3qedmo3qe.jpg",
@@ -217,6 +222,7 @@
     "compareAtPriceINR": 2999,
     "giftBoxEnabled": false,
     "giftVariantImages": "{\"Birthday\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png\",\"Anniversary\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789229338/ChatGPT_Image_Sep_12_2026_07_05_37_PM.png\"}",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209893/choco-truffle-cake0005choc-AA.jpg",
@@ -256,6 +262,7 @@
     "compareAtPriceINR": 1699,
     "giftBoxEnabled": false,
     "giftVariantImages": "{\"Birthday\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789375534/32C74E07-146A-4E1C-842B-A9607BB313BA.png\",\"Anniversary\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/1797482A-73FE-4062-8F10-D1B0A61F9828.png\"}",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/1797482A-73FE-4062-8F10-D1B0A61F9828.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/3F5BD647-B0D4-444B-91AC-328FE04CE06C.png"
@@ -293,6 +300,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0198.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0199.jpg",
@@ -332,6 +340,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0194.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0195.jpg",
@@ -371,6 +380,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0225.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0226.jpg",
@@ -410,6 +420,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0216.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0207.jpg",
@@ -447,6 +458,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
+    "valueAmount": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455497/IMG_0217.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455497/IMG_0218.jpg",
@@ -456,6 +468,46 @@
     ],
     "colorsList": [
       "Black"
+    ],
+    "variantImages": {},
+    "avgRating": 0,
+    "reviewCount": 0
+  },
+  {
+    "id": "P-1789459301646",
+    "name": "Classic High-End Simple Imported Men's Watch",
+    "description": "Refine your daily style with the original imported men's watch. Designed with an elegant yet simple dial face, this high-end timepiece brings effortless sophistication to any outfit. Whether dressing up for business meetings or maintaining a smart-casual look, its versatile profile makes it a standout daily essential.",
+    "price": 3.99,
+    "compareAtPrice": 6.99,
+    "image1": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0221.jpg",
+    "image2": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0222.jpg",
+    "image3": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0223.jpg",
+    "image4": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0224.jpg",
+    "image5": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789456011/IMG_0232.jpg",
+    "category": "Watches",
+    "stock": 2,
+    "active": true,
+    "featured": true,
+    "bestseller": false,
+    "colors": "Brown",
+    "features": "⌚ Original Brand Craftsmanship: Authentic imported design with premium finishing.\n✨ Classic High-End Aesthetic: Sophisticated, simple style designed to elevate everyday wear.\n⏱️ Precision Movement: Dependable quartz mechanism for accurate, everyday timekeeping.\n👔 Versatile Fashion: Complements both formal business attire and modern casual outfits.\n🎁 Ideal Gift Presentation: Beautifully prepared with protective display accessories.",
+    "moreDetails": "In the Box :\n\n1 x Men's Watch\n1 x Soft Watch Pillow",
+    "shortDescription": "imported watch featuring a clean, simple dial layout that seamlessly blends high-end classic style with modern trendiness.",
+    "giftEnabled": false,
+    "priceINR": "",
+    "compareAtPriceINR": "",
+    "giftBoxEnabled": false,
+    "giftVariantImages": "{}",
+    "valueAmount": "",
+    "images": [
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0221.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0222.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0223.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0224.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789456011/IMG_0232.jpg"
+    ],
+    "colorsList": [
+      "Brown"
     ],
     "variantImages": {},
     "avgRating": 0,
