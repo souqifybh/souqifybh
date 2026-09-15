@@ -300,7 +300,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
-    "valueAmount": "",
+    "valueAmount": 3.49,
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0198.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0199.jpg",
@@ -340,7 +340,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
-    "valueAmount": "",
+    "valueAmount": 3.99,
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0194.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0195.jpg",
@@ -498,7 +498,7 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
-    "valueAmount": "",
+    "valueAmount": 3.99,
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0221.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0222.jpg",
