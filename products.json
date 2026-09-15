@@ -216,7 +216,7 @@
     "priceINR": 2199,
     "compareAtPriceINR": 2999,
     "giftBoxEnabled": false,
-    "giftVariantImages": "",
+    "giftVariantImages": "{\"Birthday\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png\",\"Anniversary\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789229338/ChatGPT_Image_Sep_12_2026_07_05_37_PM.png\"}",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209893/choco-truffle-cake0005choc-AA.jpg",
@@ -224,7 +224,10 @@
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209994/ChatGPT_Image_Sep_12_2026_01_46_25_PM.png"
     ],
     "colorsList": [],
-    "variantImages": {},
+    "variantImages": {
+      "Birthday": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png",
+      "Anniversary": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789229338/ChatGPT_Image_Sep_12_2026_07_05_37_PM.png"
+    },
     "avgRating": 0,
     "reviewCount": 0
   },
