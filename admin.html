@@ -294,6 +294,9 @@
           <div class="field"><label>Category</label><input id="pCategory" placeholder="e.g. Audio, Charging"></div>
           <div class="field"><label>Stock</label><input id="pStock" type="number" value="10"></div>
         </div>
+        <div class="row">
+          <div class="field"><label>Value amount <span class="opt">(optional, BD — set above 0 to feature this product in the storefront's "Value Picks" section and show a value badge)</span></label><input id="pValueAmount" type="number" step="0.001" placeholder="e.g. 2.500"></div>
+        </div>
         <div class="field full"><label>Short description <span class="opt">(optional, one or two lines shown right under the product name, on the product card and product page)</span></label><input id="pShortDesc" maxlength="160" placeholder="e.g. Crystal-clear calls, 40-hour battery, splash-proof"></div>
         <div class="field full"><label>Description <span class="opt">(the full description, shown in the product page's Description tab)</span></label><textarea id="pDesc" placeholder="Full, honest description customers will see on the product page."></textarea></div>
         <div class="field full"><label>Features <span class="opt">(optional, one per line. Shown as a bullet list in the product page's Features tab)</span></label><textarea id="pFeatures" placeholder="e.g.&#10;40-hour battery life&#10;Bluetooth 5.3&#10;IPX5 sweat &amp; splash resistant"></textarea></div>
@@ -326,6 +329,7 @@
             <option value="">All products</option>
             <option value="featured">Featured only</option>
             <option value="bestseller">Best sellers only</option>
+            <option value="valueAmount">Value picks only</option>
             <option value="low">Low stock</option>
             <option value="inactive">Inactive</option>
           </select>
@@ -1133,6 +1137,7 @@ function renderProductRows(){
   if(cat) list = list.filter(p => p.category === cat);
   if(flag === 'featured') list = list.filter(p => isYes(p.featured));
   if(flag === 'bestseller') list = list.filter(p => isYes(p.bestseller));
+  if(flag === 'valueAmount') list = list.filter(p => Number(p.valueAmount) > 0);
   if(flag === 'low') list = list.filter(p => Number(p.stock) <= 5);
   if(flag === 'inactive') list = list.filter(p => !isYes(p.active));
 
@@ -1144,6 +1149,7 @@ function renderProductRows(){
     const flags = [
       isYes(p.featured) ? '<span class="badge featured">⭐ Featured</span>' : '',
       isYes(p.bestseller) ? '<span class="badge bestseller">🔥 Best seller</span>' : '',
+      Number(p.valueAmount) > 0 ? `<span class="badge bestseller">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
       pct > 0 ? `<span class="badge sale">🏷️ ${pct}% off</span>` : '',
       `<span class="badge ${isYes(p.active)?'active-yes':'active-no'}">${isYes(p.active)?'Active':'Hidden'}</span>`
     ].join('');
@@ -1184,6 +1190,7 @@ function editProduct(id){
     document.getElementById('imgPrev'+(i+1)).src = v || 'https://placehold.co/200x200/F7F5F5/8A3B3B?text=%20';
   }
   document.getElementById('pActive').checked = isYes(p.active);
+  document.getElementById('pValueAmount').value = p.valueAmount || '';
   document.getElementById('pFeatured').checked = isYes(p.featured);
   document.getElementById('pBestseller').checked = isYes(p.bestseller);
   ['pActive','pFeatured','pBestseller'].forEach(id => syncPill(id, id+'Pill'));
@@ -1196,6 +1203,7 @@ function resetForm(){
   ['pId','pName','pPrice','pCompareAt','pCategory','pStock','pShortDesc','pDesc','pFeatures','pMoreDetails','pColors'].forEach(id => document.getElementById(id).value='');
   for(let i=1;i<=5;i++){ document.getElementById('pImg'+i).value=''; document.getElementById('imgPrev'+i).src='https://placehold.co/200x200/F7F5F5/8A3B3B?text=%20'; }
   document.getElementById('pActive').checked = true;
+  document.getElementById('pValueAmount').value = '';
   document.getElementById('pFeatured').checked = false;
   document.getElementById('pBestseller').checked = false;
   ['pActive','pFeatured','pBestseller'].forEach(id => syncPill(id, id+'Pill'));
@@ -1226,7 +1234,8 @@ async function saveProduct(){
     images,
     active: document.getElementById('pActive').checked,
     featured: document.getElementById('pFeatured').checked,
-    bestseller: document.getElementById('pBestseller').checked
+    bestseller: document.getElementById('pBestseller').checked,
+    valueAmount: parseFloat(document.getElementById('pValueAmount').value) || 0
   };
   const msg = document.getElementById('productSaveMsg');
   msg.textContent = 'Saving…';

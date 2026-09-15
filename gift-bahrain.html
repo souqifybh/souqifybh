@@ -73,6 +73,13 @@
   .section h2{font-size:18px;margin:0 0 20px;font-weight:800;}
 
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+  /* Hampers grid: always 2 products per row on mobile (matches the app's
+     product-listing look), opening up to more columns on wider screens. */
+  .hamper-grid{grid-template-columns:repeat(2,1fr);gap:12px;}
+  .hamper-grid .card .body{padding:10px 10px 12px;}
+  .hamper-grid .card .name{font-size:13px;}
+  @media (min-width:640px){ .hamper-grid{grid-template-columns:repeat(3,1fr);gap:18px;} .hamper-grid .card .body{padding:16px 16px 18px;} .hamper-grid .card .name{font-size:15px;} }
+  @media (min-width:960px){ .hamper-grid{grid-template-columns:repeat(4,1fr);} }
   .card{background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:0 1px 4px rgba(28,28,30,0.07);display:flex;flex-direction:column;transition:transform .25s var(--ease), box-shadow .25s var(--ease);cursor:pointer;}
   .card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);}
   .card .imgwrap{aspect-ratio:1/1;background:var(--paper-soft);overflow:hidden;position:relative;}
@@ -272,7 +279,7 @@
 <section class="section" id="hampersSection">
   <div class="wrap">
     <h2>🎁 Gift Hampers</h2>
-    <div class="grid" id="giftGrid"></div>
+    <div class="grid hamper-grid" id="giftGrid"></div>
     <div class="empty-state" id="giftEmpty" style="display:none;">No gift hampers are set up yet. Please check back soon.</div>
   </div>
 </section>

@@ -752,6 +752,7 @@
   .card-badge{font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.03em;padding:4px 9px;border-radius:20px;box-shadow:var(--shadow-sm);}
   .card-badge.featured{background:#fff;color:#8A5A00;}
   .card-badge.bestseller{background:var(--ink);color:#fff;}
+  .card-badge.value{background:#FFE7C2;color:#7A4B00;}
   .card-badge.low{background:#B23B2E;color:#fff;}
   .card-badge.out{background:#6B6B70;color:#fff;}
   .stock-inline-row{margin:-2px 0 8px;}
@@ -1055,6 +1056,126 @@
     .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
     .free-delivery{font-size:8.5px;}
   }
+
+  /* ================= Suggested for you ================= */
+  .sfy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+  .sfy-card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform .2s var(--ease), box-shadow .2s var(--ease);}
+  .sfy-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm);}
+  .sfy-imgwrap{aspect-ratio:1/1;background:var(--paper-soft);overflow:hidden;}
+  .sfy-imgwrap img{width:100%;height:100%;object-fit:cover;}
+  .sfy-body{padding:8px 9px 10px;}
+  .sfy-name{font-size:12px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:31px;}
+  .sfy-price{font-family:'Sora';font-weight:800;font-size:13px;margin-top:5px;color:var(--ink);}
+  @media (min-width:640px){ .sfy-grid{grid-template-columns:repeat(4,1fr);gap:16px;} .sfy-body{padding:10px 12px 12px;} .sfy-name{font-size:13.5px;min-height:35px;} .sfy-price{font-size:15px;} }
+  @media (min-width:960px){ .sfy-grid{grid-template-columns:repeat(6,1fr);} }
+
+  /* ================= Value Picks section ================= */
+  .value365-section{background:linear-gradient(135deg,#FFF3DD 0%,#FFE7C2 100%);border-radius:20px;padding:22px 16px 10px;margin:0 18px 44px;}
+  @media (min-width:640px){ .value365-section{margin:0 auto 56px;max-width:1180px;padding:26px 24px 14px;} }
+  .value365-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .value365-head h2{font-size:18px;margin:0;font-weight:800;color:#7A4B00;}
+  .value365-badge{background:#B23B2E;color:#fff;font-weight:800;font-size:11px;padding:4px 10px;border-radius:20px;letter-spacing:.03em;}
+  .value365-rail{display:flex;gap:14px;overflow-x:auto;padding-bottom:16px;scroll-snap-type:x proximity;}
+  .value365-rail .card{min-width:170px;max-width:170px;scroll-snap-align:start;}
+  @media (min-width:640px){ .value365-rail .card{min-width:220px;max-width:220px;} }
+
+  /* ================= Category icon strip (mirrors the reference screenshot's tab row) ================= */
+  .cat-strip-wrap{padding:14px 0 6px;background:#fff;}
+  .cat-icon-strip{display:flex;gap:22px;overflow-x:auto;padding:4px 18px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .cat-icon-strip::-webkit-scrollbar{display:none;}
+  .cat-icon-item{display:flex;flex-direction:column;align-items:center;gap:7px;flex-shrink:0;cursor:pointer;width:66px;}
+  .cat-icon-item .ic-circle{width:56px;height:56px;border-radius:16px;background:var(--paper-soft);border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;transition:border-color .18s ease,transform .18s ease;}
+  .cat-icon-item .ic-circle img{width:100%;height:100%;object-fit:cover;}
+  .cat-icon-item:hover .ic-circle,.cat-icon-item.active .ic-circle{border-color:var(--blush-deep);transform:translateY(-2px);}
+  .cat-icon-item .lbl{font-size:11.5px;font-weight:600;color:var(--ink-soft);text-align:center;white-space:nowrap;}
+  .cat-icon-item.active .lbl{color:var(--blush-ink);font-weight:800;}
+  @media (min-width:640px){ .cat-icon-strip{justify-content:center;} }
+
+  /* ================= Deliver-to address bar (sits right under the header) ================= */
+  .deliver-bar{display:flex;align-items:center;gap:8px;background:var(--paper-soft);border-bottom:1px solid var(--line);padding:6px 18px;cursor:pointer;}
+  .deliver-bar .pin{font-size:14px;flex-shrink:0;}
+  .deliver-bar .db-text{flex:1;min-width:0;display:flex;align-items:baseline;gap:6px;}
+  .deliver-bar .db-label{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);flex-shrink:0;}
+  .deliver-bar .db-value{font-size:12px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .deliver-bar .chev{font-size:10px;color:var(--ink-soft);flex-shrink:0;transition:transform .2s ease;}
+  .deliver-bar.open .chev{transform:rotate(180deg);}
+
+  /* ================= Explore all products — full width CTA ================= */
+  .explore-all-wrap{padding:8px 18px 44px;}
+  @media (min-width:640px){ .explore-all-wrap{max-width:1180px;margin:0 auto;padding:8px 24px 56px;} }
+  .explore-all-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    background:var(--blush-deep);color:#fff;border:none;border-radius:16px;
+    padding:19px 20px;font-weight:800;font-size:16px;font-family:inherit;cursor:pointer;
+    box-shadow:0 10px 24px rgba(70,80,27,0.25);transition:transform .18s var(--ease),background .18s ease;
+  }
+  .explore-all-btn:hover{background:#333C14;transform:translateY(-2px);}
+  .explore-all-btn .arrow{font-size:18px;}
+
+  /* ================= All-products page overlay ================= */
+  .ap-overlay{
+    position:fixed;inset:0;z-index:410;background:#fff;overflow-y:auto;
+    transform:translateY(24px);opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .28s var(--ease),transform .28s var(--ease),visibility .28s;
+  }
+  .ap-overlay.show{opacity:1;transform:translateY(0);visibility:visible;pointer-events:auto;}
+  .ap-topbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:1px solid var(--line);padding:12px 16px;display:flex;align-items:center;gap:12px;}
+  .ap-back{background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink);flex-shrink:0;padding:4px;}
+  .ap-searchwrap{flex:1;display:flex;align-items:center;background:var(--paper-soft);border:1px solid var(--line);border-radius:12px;padding:9px 12px;gap:8px;}
+  .ap-searchwrap input{flex:1;border:none;background:none;font-size:14px;font-family:inherit;outline:none;color:var(--ink);}
+  .ap-cart-btn{background:none;border:none;font-size:20px;cursor:pointer;position:relative;flex-shrink:0;padding:4px;}
+  .ap-toolbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
+  .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .ap-chips::-webkit-scrollbar{display:none;}
+  .ap-sort-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;white-space:nowrap;}
+  .ap-sort-btn:hover{border-color:var(--blush-deep);}
+  .ap-count{padding:12px 16px 0;font-size:12.5px;color:var(--ink-soft);font-weight:600;}
+  .ap-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px 16px 60px;}
+  @media (min-width:640px){ .ap-grid{grid-template-columns:repeat(4,1fr);gap:18px;padding:16px 24px 70px;} }
+  @media (min-width:960px){ .ap-grid{grid-template-columns:repeat(5,1fr);} }
+
+  /* ================= Sort page (feels like its own screen) ================= */
+  .sort-overlay{
+    position:fixed;inset:0;z-index:420;background:rgba(20,20,20,0.45);
+    display:flex;align-items:flex-end;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility .25s;
+  }
+  .sort-overlay.show{opacity:1;visibility:visible;pointer-events:auto;}
+  @media (min-width:640px){ .sort-overlay{align-items:center;justify-content:center;} }
+  .sort-sheet{background:#fff;width:100%;max-height:80vh;border-radius:20px 20px 0 0;overflow-y:auto;transform:translateY(100%);transition:transform .3s var(--ease);}
+  .sort-overlay.show .sort-sheet{transform:translateY(0);}
+  @media (min-width:640px){ .sort-sheet{max-width:420px;border-radius:20px;transform:translateY(16px);} }
+  .sort-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;}
+  .sort-head h3{margin:0;font-size:16px;font-weight:800;}
+  .sort-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-soft);}
+  .sort-option{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;font-size:14.5px;font-weight:600;cursor:pointer;border-bottom:1px solid var(--line);}
+  .sort-option:last-child{border-bottom:none;}
+  .sort-option.active{color:var(--blush-ink);font-weight:800;background:var(--paper-soft);}
+  .sort-option .dot-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;position:relative;}
+  .sort-option.active .dot-radio{border-color:var(--blush-deep);}
+  .sort-option.active .dot-radio::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--blush-deep);}
+
+  /* ================= Deliver-to address modal ================= */
+  .addr-modal-overlay{position:fixed;inset:0;z-index:430;background:rgba(20,20,20,0.45);display:flex;align-items:flex-end;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,visibility .25s;}
+  .addr-modal-overlay.show{opacity:1;visibility:visible;pointer-events:auto;}
+  @media (min-width:640px){ .addr-modal-overlay{align-items:center;justify-content:center;} }
+  .addr-modal-sheet{background:#fff;width:100%;max-height:85vh;border-radius:20px 20px 0 0;overflow-y:auto;transform:translateY(100%);transition:transform .3s var(--ease);padding:22px 20px 30px;}
+  .addr-modal-overlay.show .addr-modal-sheet{transform:translateY(0);}
+  @media (min-width:640px){ .addr-modal-sheet{max-width:480px;border-radius:20px;transform:translateY(16px);} }
+  .addr-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+  .addr-modal-head h3{margin:0;font-size:17px;font-weight:800;}
+  .addr-modal-search{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;font-family:inherit;background:var(--paper-soft);margin-bottom:16px;}
+  .addr-modal-action{display:flex;align-items:center;gap:12px;padding:14px 4px;cursor:pointer;border-bottom:1px solid var(--line);}
+  .addr-modal-action .ic{font-size:19px;color:var(--blush-deep);flex-shrink:0;}
+  .addr-modal-action .txt b{display:block;font-size:14px;font-weight:700;color:var(--blush-ink);}
+  .addr-modal-action .txt span{font-size:12px;color:var(--ink-soft);}
+  .addr-modal-saved-head{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin:18px 0 6px;}
+  .addr-modal-item{display:flex;align-items:flex-start;gap:10px;padding:12px 4px;cursor:pointer;border-bottom:1px solid var(--line);}
+  .addr-modal-item .ic{font-size:16px;margin-top:2px;color:var(--ink-soft);flex-shrink:0;}
+  .addr-modal-item .txt{flex:1;min-width:0;}
+  .addr-modal-item .txt b{display:block;font-size:13.5px;font-weight:700;}
+  .addr-modal-item .txt span{font-size:12px;color:var(--ink-soft);line-height:1.4;}
+  .addr-modal-item.selected{background:var(--paper-soft);border-radius:10px;}
+  .addr-modal-item .sel-pill{font-size:10px;font-weight:800;color:#fff;background:var(--blush-deep);border-radius:20px;padding:2px 8px;flex-shrink:0;}
 </style>
 </head>
 <body class="notranslate">
@@ -1100,7 +1221,7 @@
       <div><span class="word brand-wordmark" role="img" aria-label="Souqify-bh"></span></div>
     </div>
     <div class="nav-links">
-      <a href="#shop" data-i18n="navShop">Shop</a>
+      <a href="javascript:void(0)" onclick="openAllProductsPage()" data-i18n="navShop">Shop</a>
       <a href="#categories" data-i18n="navCategories">Categories</a>
       <a href="#reviews" data-i18n="navReviews">Reviews</a>
       <a href="#about" data-i18n="navAbout">About</a>
@@ -1144,7 +1265,7 @@
     <button class="header-search-close" onclick="closeHeaderSearch()" aria-label="Close search">✕</button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#shop" onclick="closeMobileMenu()" data-i18n="navShop">Shop</a>
+    <a href="javascript:void(0)" onclick="closeMobileMenu();openAllProductsPage();" data-i18n="navShop">Shop</a>
     <a href="#categories" onclick="closeMobileMenu()" data-i18n="navCategories">Categories</a>
     <a href="#reviews" onclick="closeMobileMenu()" data-i18n="navReviews">Reviews</a>
     <a href="#about" onclick="closeMobileMenu()" data-i18n="navAbout">About</a>
@@ -1154,6 +1275,15 @@
     </div>
   </div>
 </header>
+
+<div class="deliver-bar" id="deliverBar" onclick="openAddressModal()">
+  <span class="pin">📍</span>
+  <div class="db-text">
+    <div class="db-label">Deliver to</div>
+    <div class="db-value" id="deliverBarValue">Select delivery address</div>
+  </div>
+  <span class="chev">▾</span>
+</div>
 
 <div class="acct-menu" id="acctMenu">
   <a href="javascript:void(0)" onclick="openMyOrders('orders')" data-i18n="acctOrders">📦 My orders</a>
@@ -1201,6 +1331,16 @@
   </div>
 </div>
 
+<section class="section section-tight" id="suggestedSection" style="padding-top:32px;padding-bottom:28px;">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-bottom:16px;">
+      <span class="eyebrow"><span class="dot"></span> <span>Picked for you</span></span>
+      <h2 style="margin:6px 0 0;">Suggested for you</h2>
+    </div>
+    <div class="sfy-grid reveal-stagger" id="suggestedGrid"></div>
+  </div>
+</section>
+
 <section class="section section-tight" id="featuredSection" style="display:none;">
   <div class="wrap">
     <div class="section-head reveal" style="margin-bottom:26px;">
@@ -1218,6 +1358,14 @@
 <div class="celebrate-wrap">
   <button class="celebrate-cta" onclick="goToGiftBahrain(this)"><span class="emo">🎉</span> Surprise &amp; Celebrate — Click Now <span class="emo">🎁</span></button>
 </div>
+
+<section class="value365-section" id="value365Section" style="display:none;">
+  <div class="value365-head">
+    <h2>💰 Value Picks</h2>
+    <span class="value365-badge">Extra value, in BD</span>
+  </div>
+  <div class="value365-rail" id="value365Rail"></div>
+</section>
 
 <section class="section section-tight" id="bestsellersSection" style="display:none;background:var(--paper-soft);">
   <div class="wrap">
@@ -1239,21 +1387,9 @@
   </div>
 </section>
 
-<section class="section" id="shop" style="background:var(--paper-soft);">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow"><span class="dot"></span> <span data-i18n="eyebrowCatalogue">Full catalogue</span></span>
-      <h2 data-i18n="headAllProducts">All products</h2>
-    </div>
-    <div class="toolbar-inner reveal">
-      <div id="categoryChips" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
-      <span id="dealsFilterChip" class="chip active" style="display:none;align-items:center;gap:6px;" onclick="clearDealsFilter()">
-        <span data-i18n="dealsChipLabel">Deals</span> ✕
-      </span>
-    </div>
-    <div class="grid reveal-stagger" id="productGrid"></div>
-  </div>
-</section>
+<div class="explore-all-wrap">
+  <button class="explore-all-btn" onclick="openAllProductsPage()">Explore All Products <span class="arrow">→</span></button>
+</div>
 
 <a class="deals-home-banner reveal" href="deals.html">
   <div class="dhb-text">
@@ -1314,7 +1450,7 @@
       </div>
       <p style="font-size:13px;color:#b8b3b3;line-height:1.6;max-width:260px;" data-i18n="footerTagline">Shop More. Pay Less.</p>
     </div>
-    <div><h4 data-i18n="footerShop">Shop</h4><a href="#shop" data-i18n="footerAllProducts">All products</a><a href="deals.html" data-i18n="footerDeals">Deals</a><a href="#categories" data-i18n="navCategories">Categories</a><a href="#reviews" data-i18n="navReviews">Reviews</a><a href="about-us.html" data-i18n="footerAboutUs">About us</a></div>
+    <div><h4 data-i18n="footerShop">Shop</h4><a href="javascript:void(0)" onclick="openAllProductsPage()" data-i18n="footerAllProducts">All products</a><a href="deals.html" data-i18n="footerDeals">Deals</a><a href="#categories" data-i18n="navCategories">Categories</a><a href="#reviews" data-i18n="navReviews">Reviews</a><a href="about-us.html" data-i18n="footerAboutUs">About us</a></div>
     <div><h4 data-i18n="footerSupport">Support</h4><a id="waFooterLink" href="#" target="_blank" data-i18n="footerWhatsapp">WhatsApp us</a><a href="delivery-policy.html" data-i18n="footerDeliveryPolicy">Delivery policy</a><a href="return-refund-policy.html" data-i18n="footerReturns">Returns &amp; refunds</a></div>
     <div><h4 data-i18n="footerPayments">Payments</h4><a href="cash-on-delivery.html" data-i18n="footerCod">Cash on delivery</a></div>
   </div>
@@ -1624,6 +1760,61 @@
       <button class="submit-btn" onclick="saveProfile()">Save changes</button>
       <p style="text-align:center;font-size:13px;margin-top:14px;color:var(--ink-soft);">Want to change your password? <a href="javascript:void(0)" onclick="closeMyOrders();openForgotPassword();" style="color:var(--blush-ink);font-weight:700;">Reset it by email</a></p>
     </div>
+  </div>
+</div>
+
+<!-- ================= All products page (sort/filter/browse) ================= -->
+<div class="ap-overlay" id="apOverlay">
+  <div class="ap-topbar">
+    <button class="ap-back" onclick="closeAllProductsPage()" aria-label="Back">←</button>
+    <div class="ap-searchwrap">
+      <span>🔍</span>
+      <input type="text" id="apSearchInput" placeholder="Search products…" oninput="renderAllProductsGrid()" onchange="trackRecentSearch(this.value)">
+    </div>
+    <button class="ap-cart-btn icon-btn" onclick="openCart()" aria-label="Cart">🛒<span class="badge-corner" id="apCartCount">0</span></button>
+  </div>
+  <div class="ap-toolbar">
+    <div class="ap-chips" id="apCategoryChips"></div>
+    <button class="ap-sort-btn" onclick="openSortOverlay()">⇅ <span id="apSortLabel">Sort</span></button>
+  </div>
+  <div class="ap-count" id="apResultCount"></div>
+  <div class="ap-grid" id="apGrid"></div>
+</div>
+
+<!-- ================= Sort options (feels like its own page) ================= -->
+<div class="sort-overlay" id="sortOverlay" onclick="if(event.target===this)closeSortOverlay()">
+  <div class="sort-sheet">
+    <div class="sort-head">
+      <h3>Sort by</h3>
+      <button class="sort-close" onclick="closeSortOverlay()" aria-label="Close">✕</button>
+    </div>
+    <div id="sortOptionsList">
+      <div class="sort-option" data-sort="popularity" onclick="applySort('popularity')"><span>Popularity</span><span class="dot-radio"></span></div>
+      <div class="sort-option" data-sort="newest" onclick="applySort('newest')"><span>Newest to Oldest</span><span class="dot-radio"></span></div>
+      <div class="sort-option" data-sort="price_low" onclick="applySort('price_low')"><span>Price — Low to High</span><span class="dot-radio"></span></div>
+      <div class="sort-option" data-sort="price_high" onclick="applySort('price_high')"><span>Price — High to Low</span><span class="dot-radio"></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Deliver-to address modal ================= -->
+<div class="addr-modal-overlay" id="addrModalOverlay" onclick="if(event.target===this)closeAddressModal()">
+  <div class="addr-modal-sheet">
+    <div class="addr-modal-head">
+      <h3>Select delivery address</h3>
+      <button class="sort-close" onclick="closeAddressModal()" aria-label="Close">✕</button>
+    </div>
+    <input type="text" class="addr-modal-search" id="addrModalSearch" placeholder="Search by name, area, road, block, building no." oninput="renderAddressModalList()">
+    <div class="addr-modal-action" onclick="useCurrentLocationForDelivery()">
+      <span class="ic">📍</span>
+      <div class="txt"><b>Use my current location</b><span>Allow access to location</span></div>
+    </div>
+    <div class="addr-modal-action" onclick="closeAddressModal();openAddressModalAddNew();">
+      <span class="ic">➕</span>
+      <div class="txt"><b>Add new address</b><span>Save a new delivery address</span></div>
+    </div>
+    <div class="addr-modal-saved-head">Saved addresses</div>
+    <div id="addrModalList"></div>
   </div>
 </div>
 
@@ -2194,6 +2385,117 @@ async function deleteAddress(id){
   }catch(err){ alert('Could not reach the server. Please try again.'); }
 }
 
+/* ================= Home "Deliver to" address bar + modal =================
+   A lightweight selector that sits under Categories on the homepage. It
+   reuses the same saved-address book (ADDRESSES / loadAddresses) that
+   powers the full Account > Addresses tab, so anything picked here is the
+   same address a signed-in shopper already manages there. Guests get a
+   friendly nudge to log in before an address can be saved. */
+function initDeliverBar(){
+  const saved = localStorage.getItem('gm_deliver_address');
+  if(saved) document.getElementById('deliverBarValue').textContent = saved;
+}
+function openAddressModal(){
+  document.getElementById('addrModalOverlay').classList.add('show');
+  document.getElementById('addrModalSearch').value = '';
+  lockBodyScroll();
+  if(CUSTOMER){
+    loadAddresses().then(renderAddressModalList);
+  } else {
+    renderAddressModalList();
+  }
+}
+function closeAddressModal(){
+  document.getElementById('addrModalOverlay').classList.remove('show');
+  unlockBodyScroll();
+}
+function renderAddressModalList(){
+  const wrap = document.getElementById('addrModalList');
+  if(!wrap) return;
+  if(!CUSTOMER){
+    wrap.innerHTML = `
+      <p style="color:var(--ink-soft);font-size:13px;padding:10px 4px 14px;">Log in or create an account to save this address and reuse it on your next order.</p>
+      <button class="submit-btn" style="width:100%;" onclick="closeAddressModal();openAuth('login');">Log in</button>
+      <p style="text-align:center;font-size:13px;margin-top:14px;color:var(--ink-soft);">New here? <a href="javascript:void(0)" onclick="closeAddressModal();openAuth('register');" style="color:var(--blush-ink);font-weight:700;">Create an account</a></p>
+    `;
+    return;
+  }
+  const q = (document.getElementById('addrModalSearch').value || '').toLowerCase();
+  const list = ADDRESSES.filter(a => !q || `${a.label} ${a.fullName} ${a.address}`.toLowerCase().includes(q));
+  if(!list.length){
+    wrap.innerHTML = '<p style="color:var(--ink-soft);font-size:13px;padding:10px 4px;">No saved addresses yet — add one above.</p>';
+    return;
+  }
+  const selectedId = localStorage.getItem('gm_deliver_address_id');
+  wrap.innerHTML = list.map(a => {
+    const isSel = a.id === selectedId || (!selectedId && isTrue(a.isDefault));
+    return `
+    <div class="addr-modal-item ${isSel ? 'selected' : ''}" onclick="selectDeliveryAddress('${a.id}')">
+      <span class="ic">${isTrue(a.isDefault) ? '🏠' : '📍'}</span>
+      <div class="txt"><b>${a.fullName || a.label || 'Address'}</b><span>${a.address || ''}</span></div>
+      ${isSel ? '<span class="sel-pill">Selected</span>' : ''}
+    </div>`;
+  }).join('');
+}
+function selectDeliveryAddress(id){
+  const a = ADDRESSES.find(x => x.id === id);
+  if(!a) return;
+  const label = a.fullName ? `${a.fullName} — ${a.address}` : (a.address || 'Selected address');
+  localStorage.setItem('gm_deliver_address', label);
+  localStorage.setItem('gm_deliver_address_id', id);
+  localStorage.removeItem('gm_deliver_gps_road');
+  localStorage.removeItem('gm_deliver_gps_area');
+  document.getElementById('deliverBarValue').textContent = label;
+  closeAddressModal();
+}
+function openAddressModalAddNew(){
+  if(CUSTOMER){
+    openMyOrders('addresses');
+    setTimeout(openAddressForm, 250);
+  } else {
+    openAuth('login');
+  }
+}
+function useCurrentLocationForDelivery(){
+  if(!navigator.geolocation){ alert('Location access is not available on this device.'); return; }
+  const btn = event ? event.currentTarget : null;
+  if(btn) btn.style.opacity = '0.6';
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const { latitude, longitude } = pos.coords;
+    let label = `Current location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`;
+    let gpsRoad = '', gpsArea = '';
+    // Reverse-geocode the GPS point into a real, map-located address
+    // (road/area/city) using OpenStreetMap's free Nominatim service —
+    // no API key needed. Falls back to the raw coordinates above if the
+    // lookup fails or the shopper is offline. Road/area are kept apart
+    // (not just the display label) so checkout can prefill its own Road
+    // and Area fields from an actual GPS pin.
+    try{
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`, {
+        headers: { 'Accept-Language': 'en' }
+      });
+      const data = await res.json();
+      if(data && data.address){
+        const a = data.address;
+        gpsRoad = a.road || a.pedestrian || a.neighbourhood || '';
+        gpsArea = [a.suburb || a.city_district, a.city || a.town || a.village].filter(Boolean).join(', ');
+        const parts = [gpsRoad, gpsArea, a.country].filter(Boolean);
+        if(parts.length) label = parts.join(', ');
+      }
+    }catch(err){ /* offline or rate-limited — the coordinate fallback above still works */ }
+    localStorage.setItem('gm_deliver_address', label);
+    localStorage.removeItem('gm_deliver_address_id');
+    localStorage.setItem('gm_deliver_gps_road', gpsRoad);
+    localStorage.setItem('gm_deliver_gps_area', gpsArea);
+    document.getElementById('deliverBarValue').textContent = label;
+    if(btn) btn.style.opacity = '1';
+    closeAddressModal();
+  }, () => {
+    if(btn) btn.style.opacity = '1';
+    alert('Could not access your location. Please allow location access and try again, or add an address manually.');
+  });
+}
+
 /* ================= profile ================= */
 function loadProfile(){
   if(!CUSTOMER) return;
@@ -2696,6 +2998,7 @@ function normalizeProduct(p){
     compareAtPrice: (compareAtPrice && compareAtPrice > Number(p.price)) ? compareAtPrice : null,
     featured: p.featured === true || p.featured === 'TRUE' || p.featured === 1 || p.featured === '1',
     bestseller: p.bestseller === true || p.bestseller === 'TRUE' || p.bestseller === 1 || p.bestseller === '1',
+    valueAmount: Number(p.valueAmount) || 0,
     stock: p.stock === undefined || p.stock === '' ? 10 : Number(p.stock)
   });
 }
@@ -2734,13 +3037,16 @@ function renderAllProductSections(){
   buildCategoryChips();
   buildCategoryCards();
   buildTopCategoryStrip();
-  renderProducts();
+  renderAllProductsGrid();
   renderFeatured();
   renderBestsellers();
+  renderSuggestedForYou();
+  renderValuePicks();
   if(!productsRouteHandled){
     productsRouteHandled = true;
     handleRouteFromHash();
     handleReviewLinkFromQuery();
+    if(location.hash === '#/products') openAllProductsPage();
   }
 }
 
@@ -2871,8 +3177,9 @@ function handleReviewLinkFromQuery(){
 
 function buildCategoryChips(){
   const cats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
-  const wrap = document.getElementById('categoryChips');
-  wrap.innerHTML = cats.map(c => `<button class="chip ${c===activeCategory?'active':''}" onclick="goToCategory('${c.replace(/'/g,"\\'")}')">${c==='All' ? T('chipAll') : catLabel(c)}</button>`).join('');
+  const wrap = document.getElementById('apCategoryChips');
+  if(!wrap) return;
+  wrap.innerHTML = cats.map(c => `<button class="chip ${c===activeCategory?'active':''}" onclick="setCategory('${c.replace(/'/g,"\\'")}')">${c==='All' ? T('chipAll') : catLabel(c)}</button>`).join('');
 }
 function buildCategoryCards(){
   const cats = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
@@ -2905,17 +3212,18 @@ function categoryIconHtml(cat){
   if(withImage) return `<img src="${withImage.images[0]}" alt="${catLabel(cat)}" loading="lazy">`;
   return CATEGORY_ICONS[cat] || '✨';
 }
-function setCategory(c){ activeCategory = c; buildCategoryChips(); renderProducts(); }
+function setCategory(c){ activeCategory = c; buildCategoryChips(); renderAllProductsGrid(); }
 
 // "Hampers" only ever contains Gift-to-Bahrain items, which live on the
 // dedicated gift page (not the regular storefront catalogue) — so tapping
 // that category anywhere on the homepage should jump straight to the
 // Hampers section on gift-bahrain.html instead of filtering/sorting the
-// homepage shop grid (which would just come up empty).
+// all-products page (which would just come up empty). Every other category
+// opens the full-screen All Products page pre-filtered to that category.
 function goToCategory(c){
   if(c === 'Hampers'){ window.location.href = 'gift-bahrain.html#hampersSection'; return; }
-  setCategory(c);
-  document.getElementById('shop').scrollIntoView({behavior:'smooth'});
+  activeCategory = c;
+  openAllProductsPage();
 }
 
 // Gift-to-Bahrain hamper / gift-box items are managed on a separate page
@@ -2924,47 +3232,167 @@ function isGiftOnlyProduct(p){
   return p.giftEnabled === true || p.giftEnabled === 'TRUE' || p.giftEnabled === 'true' ||
     p.giftBoxEnabled === true || p.giftBoxEnabled === 'TRUE' || p.giftBoxEnabled === 'true';
 }
-function renderProducts(){
-  const q = document.getElementById('searchInput').value.toLowerCase();
-  const filtered = PRODUCTS.filter(p =>
+
+/* ================= All Products page (full-screen "page"), with sort ================= */
+let sortMode = 'popularity';
+const SORT_LABELS = { popularity:'Popularity', newest:'Newest to Oldest', price_low:'Price: Low to High', price_high:'Price: High to Low' };
+function productSeq(p){
+  // Products are created as id 'P-<timestamp>' — used as an approximate
+  // "created at" ordering for the Newest-to-Oldest sort, since the sheet
+  // doesn't carry a separate createdAt column for products.
+  const n = Number(String(p.id || '').replace(/[^0-9]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+function sortProductList(list){
+  const arr = list.slice();
+  if(sortMode === 'price_low') arr.sort((a,b) => a.price - b.price);
+  else if(sortMode === 'price_high') arr.sort((a,b) => b.price - a.price);
+  else if(sortMode === 'newest') arr.sort((a,b) => productSeq(b) - productSeq(a));
+  else arr.sort((a,b) => (Number(b.reviewCount)||0) - (Number(a.reviewCount)||0) || (b.bestseller?1:0) - (a.bestseller?1:0));
+  return arr;
+}
+function openAllProductsPage(){
+  document.getElementById('apOverlay').classList.add('show');
+  document.getElementById('apSearchInput').value = '';
+  buildCategoryChips();
+  renderAllProductsGrid();
+  lockBodyScroll();
+  history.pushState({ap:true}, '', location.pathname + location.search + '#/products');
+}
+function closeAllProductsPage(){
+  document.getElementById('apOverlay').classList.remove('show');
+  unlockBodyScroll();
+  if(location.hash === '#/products') history.replaceState({}, '', location.pathname + location.search);
+}
+function renderAllProductsGrid(){
+  const searchEl = document.getElementById('apSearchInput');
+  const q = searchEl ? searchEl.value.toLowerCase() : '';
+  let filtered = PRODUCTS.filter(p =>
     !isGiftOnlyProduct(p) &&
     (activeCategory === 'All' || p.category === activeCategory) &&
     (maxPriceFilter === null || p.price <= maxPriceFilter) &&
     (minDiscountFilter === null || discountPct(p) >= minDiscountFilter) &&
     (p.name || '').toLowerCase().includes(q)
   );
-  const dealsChip = document.getElementById('dealsFilterChip');
-  if(dealsChip) dealsChip.style.display = (maxPriceFilter !== null || minDiscountFilter !== null) ? 'inline-flex' : 'none';
-  const grid = document.getElementById('productGrid');
+  filtered = sortProductList(filtered);
+  const countEl = document.getElementById('apResultCount');
+  const grid = document.getElementById('apGrid');
+  if(!grid) return;
+  if(countEl) countEl.textContent = filtered.length ? `${filtered.length} product${filtered.length===1?'':'s'}` : '';
+  const sortLabelEl = document.getElementById('apSortLabel');
+  if(sortLabelEl) sortLabelEl.textContent = SORT_LABELS[sortMode] || 'Sort';
   if(!filtered.length){
     grid.innerHTML = `<div class="empty">${PRODUCTS.length ? T('noProductsMatch') : T('noProductsLoaded')}</div>`;
-    grid.classList.remove('in');
-    observeReveal();
     return;
   }
   const needsReveal = renderCardSection(grid, filtered);
-  if(needsReveal){
-    grid.classList.remove('in');
-    requestAnimationFrame(() => observeReveal());
-  }
+  if(needsReveal) requestAnimationFrame(() => observeReveal());
   translateProductsIfNeeded(filtered);
+  const cartCountEl = document.getElementById('apCartCount');
+  if(cartCountEl) cartCountEl.textContent = CART.reduce((s,i) => s + i.qty, 0);
 }
+function openSortOverlay(){
+  document.querySelectorAll('.sort-option').forEach(el => el.classList.toggle('active', el.dataset.sort === sortMode));
+  document.getElementById('sortOverlay').classList.add('show');
+}
+function closeSortOverlay(){
+  document.getElementById('sortOverlay').classList.remove('show');
+}
+function applySort(mode){
+  sortMode = mode;
+  closeSortOverlay();
+  renderAllProductsGrid();
+}
+
+/* ================= Suggested for you (random picks, refreshed on demand) ================= */
+/* ================= Recent-search tracking (powers "Suggested for you") =================
+   A short rolling list of what this shopper has actually searched for /
+   shown interest in, kept in localStorage. "Suggested for you" uses this
+   to lean the random picks toward their interests instead of being
+   completely random, with no manual refresh needed. */
+const RECENT_SEARCH_KEY = 'gm_recent_searches';
+const RECENT_SEARCH_MAX = 8;
+function trackRecentSearch(term){
+  term = (term || '').trim();
+  if(term.length < 2) return;
+  let list = [];
+  try{ list = JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY) || '[]'); }catch(e){ list = []; }
+  list = list.filter(t => t.toLowerCase() !== term.toLowerCase());
+  list.unshift(term);
+  list = list.slice(0, RECENT_SEARCH_MAX);
+  try{ localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(list)); }catch(e){ /* private mode / quota — fine to skip */ }
+}
+function getRecentSearches(){
+  try{ return JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY) || '[]'); }catch(e){ return []; }
+}
+function shuffleArrayInPlace(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function renderSuggestedForYou(){
+  const grid = document.getElementById('suggestedGrid');
+  if(!grid) return;
+  const pool = PRODUCTS.filter(p => !isGiftOnlyProduct(p) && Number(p.stock) > 0);
+  const terms = getRecentSearches().map(t => t.toLowerCase());
+  let picks;
+  if(terms.length){
+    // Products matching something the shopper has searched for come
+    // first (randomised among themselves), then the rest of the grid is
+    // filled out with other random picks so the section never looks bare.
+    const matched = shuffleArrayInPlace(pool.filter(p =>
+      terms.some(t => (p.name || '').toLowerCase().includes(t) || (p.category || '').toLowerCase().includes(t))
+    ));
+    const rest = shuffleArrayInPlace(pool.filter(p => !matched.includes(p)));
+    picks = matched.concat(rest).slice(0, 8);
+  } else {
+    picks = shuffleArrayInPlace(pool.slice()).slice(0, 8);
+  }
+  if(!picks.length){ grid.innerHTML = ''; return; }
+  grid.innerHTML = picks.map(p => `
+    <div class="sfy-card" onclick="openProduct('${p.id}')">
+      <div class="sfy-imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy"></div>
+      <div class="sfy-body">
+        <div class="sfy-name">${pName(p)}</div>
+        <div class="sfy-price">${p.price.toFixed(3)} BHD</div>
+      </div>
+    </div>
+  `).join('');
+  grid.classList.remove('in');
+  requestAnimationFrame(() => observeReveal());
+}
+
+/* ================= Value Picks (admin-set BD value amount) ================= */
+function renderValuePicks(){
+  const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p));
+  const section = document.getElementById('value365Section');
+  if(!items.length){ section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  const needsReveal = renderCardSection(document.getElementById('value365Rail'), items);
+  if(needsReveal) requestAnimationFrame(() => observeReveal());
+}
+
+function renderProducts(){ renderAllProductsGrid(); }
 function clearDealsFilter(){
   maxPriceFilter = null;
   minDiscountFilter = null;
-  renderProducts();
+  renderAllProductsGrid();
 }
 function bottomNavHome(){
   maxPriceFilter = null;
   minDiscountFilter = null;
   if(document.getElementById('pdpOverlay').classList.contains('show')) closeProduct();
+  if(document.getElementById('apOverlay').classList.contains('show')) closeAllProductsPage();
+  if(document.getElementById('sortOverlay').classList.contains('show')) closeSortOverlay();
+  if(document.getElementById('addrModalOverlay').classList.contains('show')) closeAddressModal();
   if(document.getElementById('drawer').classList.contains('show')) closeCart();
   if(document.getElementById('checkoutOverlay').classList.contains('show')) closeCheckout();
   if(document.getElementById('ordersOverlay').classList.contains('show')) closeMyOrders();
   if(document.getElementById('authOverlay').classList.contains('show')) closeAuth();
   document.getElementById('acctMenu').classList.remove('show');
   window.scrollTo({top:0, behavior:'smooth'});
-  renderProducts();
   setBottomNavActive('bnHomeBtn');
 }
 function bottomNavDeals(){
@@ -2995,6 +3423,7 @@ function cardBadgesHtml(p){
     pct > 0 && !outOfStock ? `<span class="card-badge sale">🏷️ ${pct}% ${T('saleOff')}</span>` : '',
     p.featured ? `<span class="card-badge featured">${T('featuredBadge')}</span>` : '',
     p.bestseller ? `<span class="card-badge bestseller">${T('bestsellerBadge')}</span>` : '',
+    Number(p.valueAmount) > 0 && !outOfStock ? `<span class="card-badge value">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
     outOfStock ? `<span class="card-badge out">${T('outOfStock')}</span>` : ''
   ].join('');
 }
@@ -3033,7 +3462,7 @@ function productCardHtml(p){
 // Used to skip touching a card at all when nothing about it changed.
 function cardSignature(p){
   return [p.id, currentLang, (p.images && p.images[0]) || '', pName(p), p.price, p.compareAtPrice, p.stock,
-    p.category, p.featured?1:0, p.bestseller?1:0, p.reviewCount, p.avgRating, pShortDesc(p)].join('|');
+    p.category, p.featured?1:0, p.bestseller?1:0, p.valueAmount||0, p.reviewCount, p.avgRating, pShortDesc(p)].join('|');
 }
 // Updates an existing card element's content in place. Crucially, the
 // <img> element itself is only touched (its src re-set) when the image
@@ -3829,7 +4258,15 @@ function handleRouteFromHash(){
 }
 window.addEventListener('popstate', () => {
   const m = location.hash.match(/^#\/product\/(.+)$/);
-  if(m) openProduct(m[1]); else closeProduct();
+  if(m){ openProduct(m[1]); return; }
+  closeProduct();
+  if(location.hash === '#/products'){
+    document.getElementById('apOverlay').classList.add('show');
+    lockBodyScroll();
+  } else {
+    document.getElementById('apOverlay').classList.remove('show');
+    unlockBodyScroll();
+  }
 });
 
 function renderCart(){
@@ -3837,6 +4274,8 @@ function renderCart(){
   document.getElementById('cartCount').textContent = count;
   const mobileBadge = document.getElementById('cartCountMobile');
   if(mobileBadge) mobileBadge.textContent = count;
+  const apBadge = document.getElementById('apCartCount');
+  if(apBadge) apBadge.textContent = count;
   const wrap = document.getElementById('cartItems');
   const cartItemName = (i) => (currentLang === 'ar' && translationCache.ar[i.name]) ? translationCache.ar[i.name] : i.name;
   wrap.innerHTML = CART.length ? CART.map(i => `
@@ -4130,7 +4569,13 @@ function openCheckout(){
   }
   updateCheckoutTotalDisplay();
   if(CUSTOMER) loadCheckoutAddresses();
-  else document.getElementById('savedAddrPicker').style.display = 'none';
+  else {
+    document.getElementById('savedAddrPicker').style.display = 'none';
+    // Guests don't have a saved-address book to match against, but if
+    // they picked "Use current location" on the homepage, still prefill
+    // Road/Area from that GPS pin so they don't retype it.
+    prefillCheckoutFromGpsPin();
+  }
   // Refresh the wallet balance quietly in case it changed since login (e.g.
   // a friend just registered with this customer's referral code).
   if(CUSTOMER){
@@ -4154,6 +4599,17 @@ function openCheckout(){
 function clearCheckoutAddressFields(){
   ['custFlat','custBuilding','custRoad','custBlock','custArea'].forEach(id => document.getElementById(id).value = '');
 }
+// If the shopper used "Use current location" on the homepage (and hasn't
+// since picked a saved address instead), drop the GPS-derived Road/Area
+// straight into checkout's own fields — still fully editable, since a
+// GPS pin can't know the flat/building/block numbers.
+function prefillCheckoutFromGpsPin(){
+  const road = localStorage.getItem('gm_deliver_gps_road');
+  const area = localStorage.getItem('gm_deliver_gps_area');
+  if(road) document.getElementById('custRoad').value = road;
+  if(area) document.getElementById('custArea').value = area;
+  if(road || area) document.getElementById('saveAddrCheckWrap').style.display = 'flex';
+}
 function switchToLogin(){
   closeCheckout();
   pendingAfterAuth = 'checkout';
@@ -4172,7 +4628,7 @@ async function loadCheckoutAddresses(){
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listAddresses', customerId: CUSTOMER.id }) });
     const data = await res.json();
     ADDRESSES = data.addresses || [];
-    if(!ADDRESSES.length) return;
+    if(!ADDRESSES.length){ prefillCheckoutFromGpsPin(); return; }
     picker.style.display = 'flex';
     picker.innerHTML = ADDRESSES.map(a => `
       <div class="saved-addr-opt" data-id="${a.id}" onclick="pickCheckoutAddress('${a.id}')">
@@ -4184,7 +4640,12 @@ async function loadCheckoutAddresses(){
         <div class="sa-label">+ Use a new address</div>
       </div>
     `;
-    const def = ADDRESSES.find(a => isTrue(a.isDefault)) || ADDRESSES[0];
+    // Whatever the shopper picked in the homepage "Deliver to" bar wins
+    // over the plain account default, so checkout opens already matching
+    // what they chose there.
+    const preferredId = localStorage.getItem('gm_deliver_address_id');
+    const preferred = preferredId && ADDRESSES.find(a => a.id === preferredId);
+    const def = preferred || ADDRESSES.find(a => isTrue(a.isDefault)) || ADDRESSES[0];
     if(def) pickCheckoutAddress(def.id);
   }catch(err){ /* saved addresses are a convenience — fine to skip silently if offline */ }
 }
@@ -4207,6 +4668,7 @@ function pickCheckoutAddress(id){
     document.getElementById('custName').value = CUSTOMER ? CUSTOMER.name || '' : '';
     document.getElementById('custPhone').value = CUSTOMER ? CUSTOMER.phone || '' : '';
     clearCheckoutAddressFields();
+    prefillCheckoutFromGpsPin();
   }
 }
 function onCheckoutFieldsEdited(){
@@ -4441,7 +4903,6 @@ function closeHeaderSearch(){
   closeSearchSuggestions();
 }
 function onHeaderSearchInput(){
-  renderProducts();
   renderSearchSuggestions();
 }
 function closeSearchSuggestions(){
@@ -4476,14 +4937,23 @@ function renderSearchSuggestions(){
   box.classList.add('show');
 }
 function selectSearchSuggestion(id){
+  const p = PRODUCTS.find(x => x.id === id);
+  if(p) trackRecentSearch(pName(p) || p.category || '');
   closeSearchSuggestions();
   closeHeaderSearch();
   openProduct(id);
+  renderSuggestedForYou();
 }
 function viewAllSearchMatches(){
+  const q = document.getElementById('searchInput').value;
+  trackRecentSearch(q);
   closeSearchSuggestions();
-  const shop = document.getElementById('shop');
-  if(shop) shop.scrollIntoView({ behavior:'smooth' });
+  closeHeaderSearch();
+  activeCategory = 'All';
+  openAllProductsPage();
+  const apInput = document.getElementById('apSearchInput');
+  if(apInput){ apInput.value = q; renderAllProductsGrid(); }
+  renderSuggestedForYou();
 }
 document.addEventListener('click', function(evt){
   const bar = document.getElementById('headerSearchBar');
@@ -4520,7 +4990,7 @@ async function loadNotifPanel(){
       const sub = minOrder > 0
         ? `Spend ${minOrder.toFixed(3)} BHD, get ${discountLabel} off with code ${c.code}`
         : `Get ${discountLabel} off with code ${c.code}`;
-      return `<div class="notif-item" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'});toggleNotifPanel();">
+      return `<div class="notif-item" onclick="openAllProductsPage();toggleNotifPanel();">
         <div class="t">🎁 Special offer</div>
         <div class="s">${sub}</div>
       </div>`;
@@ -4897,6 +5367,7 @@ async function loadSettings(){
 
 
 renderCart();
+initDeliverBar();
 loadProducts().then(loadHomeTestimonials);
 loadNotifPanel(); // prefetch so the bell badge count is correct even before the panel is opened
 loadSettings();
