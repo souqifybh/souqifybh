@@ -366,6 +366,10 @@
           <div class="row"><input id="gImg3" placeholder="Image 3 URL"><input id="gImg4" placeholder="Image 4 URL"></div>
           <div class="row"><input id="gImg5" placeholder="Image 5 URL"><div class="field"></div></div>
         </div>
+        <div class="field full" id="gVariantImagesBox">
+          <label>Occasion variant images <span class="opt">(optional, ready-made hampers only. Upload a separate photo for Birthday vs Anniversary versions of this same hamper, and customers get a "Preview as" switcher on the hamper's page that swaps the photo. Leave blank to just use the main Images above for every occasion)</span></label>
+          <div class="row"><input id="gImgBirthday" placeholder="🎂 Birthday version image URL"><input id="gImgAnniversary" placeholder="💍 Anniversary version image URL"></div>
+        </div>
         <div class="toggle-row">
           <label class="toggle-pill" id="gActivePill"><input type="checkbox" id="gActive" checked onchange="syncPill('gActive','gActivePill')"><span class="ic">✅</span> Active (visible on gift page)</label>
           <label class="toggle-pill" id="gGiftEnabledPill"><input type="checkbox" id="gGiftEnabled" checked onchange="syncPill('gGiftEnabled','gGiftEnabledPill')"><span class="ic">🎁</span> Ready-made hamper</label>
@@ -2270,7 +2274,7 @@ let GIFT_ORDERS_CACHE = [];
 let GIVEAWAY_ENTRIES_CACHE = [];
 
 function resetGiftForm(){
-  ['gId','gName','gCategory','gPriceINR','gCompareINR','gPriceBHD','gCompareBHD','gShortDesc','gDesc','gImg1','gImg2','gImg3','gImg4','gImg5']
+  ['gId','gName','gCategory','gPriceINR','gCompareINR','gPriceBHD','gCompareBHD','gShortDesc','gDesc','gImg1','gImg2','gImg3','gImg4','gImg5','gImgBirthday','gImgAnniversary']
     .forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
   document.getElementById('gStock').value = 20;
   document.getElementById('gActive').checked = true;
@@ -2306,7 +2310,11 @@ async function saveGiftProduct(){
     active: document.getElementById('gActive').checked,
     giftEnabled: document.getElementById('gGiftEnabled').checked,
     giftBoxEnabled: document.getElementById('gGiftBoxEnabled').checked,
-    images: [1,2,3,4,5].map(n => document.getElementById('gImg'+n).value.trim())
+    images: [1,2,3,4,5].map(n => document.getElementById('gImg'+n).value.trim()),
+    giftVariantImages: {
+      Birthday: document.getElementById('gImgBirthday').value.trim(),
+      Anniversary: document.getElementById('gImgAnniversary').value.trim()
+    }
   };
   document.getElementById('giftSaveMsg').textContent = 'Saving…';
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
@@ -2336,6 +2344,9 @@ function editGiftProduct(id){
   syncPill('gGiftBoxEnabled','gGiftBoxEnabledPill');
   const imgs = p.images || [];
   [1,2,3,4,5].forEach(n => document.getElementById('gImg'+n).value = imgs[n-1] || '');
+  const variantImages = p.variantImages || {};
+  document.getElementById('gImgBirthday').value = variantImages.Birthday || '';
+  document.getElementById('gImgAnniversary').value = variantImages.Anniversary || '';
   document.getElementById('giftFormTitle').textContent = 'Edit gift hamper product';
   document.getElementById('giftCancelEditBtn').style.display = 'inline-block';
   window.scrollTo(0,0);
