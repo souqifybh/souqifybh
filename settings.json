@@ -2,7 +2,7 @@
   "ok": true,
   "settings": {
     "heroActive": true,
-    "heroImage": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789394693/ChatGPT_Image_Sep_14_2026_05_04_17_PM.png",
+    "heroImage": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789586923/ChatGPT_Image_Sep_16_2026_10_28_12_PM.png",
     "heroImage2": "https://res.cloudinary.com/bib9sqiz/image/upload/v1787489627/ChatGPT_Image_Aug_23_2026_03_51_50_PM.png",
     "heroImage3": "https://res.cloudinary.com/bib9sqiz/image/upload/v1787489687/ChatGPT_Image_Aug_23_2026_03_54_32_PM.png",
     "heroEyebrow": "",
@@ -13,7 +13,7 @@
     "heroProductId3": "P-1787211854015",
     "referEarnActive": false,
     "announcementActive": true,
-    "announcementText": "🔒 100% GENUINE PRODUCTS ✅CASH 💵ON DELIVERY 🚚",
+    "announcementText": "🔒 100% GENUINE PRODUCTS ✅     CASH ON DELIVERY 🚚",
     "razorpayKeyId": "rzp_live_TXicGytbZcJELZ",
     "benefitpayName": "",
     "benefitpayIban": "",
@@ -27,7 +27,7 @@
     "giveawayPriceINR": 0,
     "giveawayPriceBHD": 0,
     "giveawayHamperShortDesc": "",
-    "heroCategory": "",
+    "heroCategory": "Watches",
     "heroCategory2": "",
     "heroCategory3": ""
   }

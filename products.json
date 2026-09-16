@@ -1030,5 +1030,45 @@
     "variantImages": {},
     "avgRating": 0,
     "reviewCount": 0
+  },
+  {
+    "id": "P-1789586125405",
+    "name": "New Authentic Men's Business Quartz Wristwatch",
+    "description": "Upgrade your everyday look with this new authentic men's quartz wristwatch. Featuring a trendy Korean retro style, it seamlessly blends vintage sophistication with modern versatility. Engineered for daily comfort and reliability, this timepiece effortlessly transitions from student lectures to formal business settings and casual weekend outings.",
+    "price": 3.69,
+    "compareAtPrice": 6.99,
+    "image1": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0366.jpg",
+    "image2": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0368.jpg",
+    "image3": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0367.jpg",
+    "image4": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0369.jpg",
+    "image5": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0365.jpg",
+    "category": "Watches",
+    "stock": 2,
+    "active": true,
+    "featured": true,
+    "bestseller": false,
+    "colors": "Brown",
+    "features": "⏱️ Precision Quartz Movement: Delivers accurate and reliable daily timekeeping.\n🇰🇷 Korean Retro Styling: Classic vintage aesthetic with a trendy, modern edge.\n💼 Business to Casual Flexibility: Complements both formal attire and smart casual outfits.\n🎓 Student Friendly: Comfortable, lightweight build designed for all-day daily wear.\n🎁 Complete Presentation: Securely packaged with essential display accessories, perfect for gifting or storage.",
+    "moreDetails": "In the Box :\n\n1 x Men's Quartz Wristwatch\n1 x Soft Watch Pillow",
+    "shortDescription": "A stylish, Korean-inspired retro quartz watch designed for students and modern men, effortlessly combining vintage charm with business-casual fashion.",
+    "giftEnabled": false,
+    "priceINR": "",
+    "compareAtPriceINR": "",
+    "giftBoxEnabled": false,
+    "giftVariantImages": "{}",
+    "valueAmount": 3.69,
+    "images": [
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0366.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0368.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0367.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0369.jpg",
+      "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0365.jpg"
+    ],
+    "colorsList": [
+      "Brown"
+    ],
+    "variantImages": {},
+    "avgRating": 0,
+    "reviewCount": 0
   }
 ]
