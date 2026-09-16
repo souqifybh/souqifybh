@@ -764,6 +764,19 @@
   .blink-stock{animation:gmStockBlink 1.2s ease-in-out infinite;}
   @media (prefers-reduced-motion: reduce){ .blink-stock{animation:none!important;} }
 
+  /* ---- real live-activity badges (viewers / recent orders) ---- */
+  .activity-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:4px 9px 4px 7px;border-radius:20px;white-space:nowrap;}
+  .activity-badge .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:activityDotPulse 1.4s ease-in-out infinite;}
+  @keyframes activityDotPulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.45;transform:scale(.75);}}
+  @media (prefers-reduced-motion: reduce){ .activity-badge .dot{animation:none!important;} }
+  .activity-badge.viewers{background:#FDECEC;color:#B23B2E;}
+  .activity-badge.viewers .dot{background:#E0483A;}
+  .activity-badge.orders{background:#EAF3FD;color:#1E5FA8;}
+  .activity-badge.orders .dot{background:#3B82E0;}
+  .card-activity{position:absolute;left:10px;bottom:10px;z-index:2;display:flex;flex-direction:column;gap:4px;align-items:flex-start;}
+  html[dir="rtl"] .card-activity{left:auto;right:10px;}
+  .pdp-activity{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px;}
+
   /* ---------- Checkout promo banner: 3:1 cartoon strip advertising active discount codes ---------- */
   .promo-banner{
     position:relative; width:100%; aspect-ratio:3/1; border-radius:14px; overflow:hidden; margin-bottom:16px;
@@ -1875,6 +1888,7 @@
         <div class="pdp-price" id="pdpPrice"></div>
         <div class="pdp-free-delivery" id="pdpFreeDelivery"><span class="van">🚚</span> <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span></div>
         <div class="pdp-stock" id="pdpStock"></div>
+        <div class="pdp-activity" id="pdpActivity"></div>
         <div class="pdp-colors" id="pdpColors" style="display:none;">
           <div class="colors-label" data-i18n="pdpColorLabel">Color</div>
           <div class="color-pills" id="colorPills"></div>
@@ -2891,6 +2905,8 @@ const I18N = {
     saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet. Try another search.', viewAllResults:'View all matching products',
     productsAvailable:'{n} products available now', productAvailable:'1 product available now',
     inStock:'✓ In stock', outOfStock:'✕ Out of stock', onlyLeftStock:'⚠ Only {n} left in stock', saveLabel:'Save',
+    activityViewerSingular:'1 person viewing now', activityViewerPlural:'{n} people viewing now',
+    activityOrderSingular:'1 ordered in the last hour', activityOrderPlural:'{n} ordered in the last hour',
     outOfStockBtn:'Out of stock', outOfStockAlert:'Sorry, this product is out of stock.', maxStockAlert:'Sorry, only {n} left in stock.',
     shopCrumb:'Shop', pdpBack:'← Back to shop', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
     pdpTrustCod:'✅ Cash on delivery available', pdpTrustBenefitpay:'📲 BenefitPay via WhatsApp confirmation', pdpTrustDelivery:'🚚 Delivered across Bahrain',
@@ -2971,6 +2987,8 @@ const I18N = {
     saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة. جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
     productsAvailable:'{n} منتج متوفر الآن', productAvailable:'منتج واحد متوفر الآن',
     inStock:'✓ متوفر', outOfStock:'✕ غير متوفر', onlyLeftStock:'⚠ {n} فقط متبقي في المخزون', saveLabel:'وفّر',
+    activityViewerSingular:'يشاهده شخص واحد الآن', activityViewerPlural:'يشاهده {n} أشخاص الآن',
+    activityOrderSingular:'تم طلبه مرة واحدة خلال الساعة الأخيرة', activityOrderPlural:'تم طلبه {n} مرات خلال الساعة الأخيرة',
     outOfStockBtn:'غير متوفر', outOfStockAlert:'عذرًا، هذا المنتج غير متوفر حاليًا.', maxStockAlert:'عذرًا، يتبقى {n} فقط في المخزون.',
     shopCrumb:'المتجر', pdpBack:'← العودة للمتجر', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
     pdpTrustCod:'✅ الدفع عند الاستلام متاح', pdpTrustBenefitpay:'📲 BenefitPay عبر تأكيد واتساب', pdpTrustDelivery:'🚚 التوصيل لجميع مناطق البحرين',
@@ -3180,6 +3198,7 @@ function renderAllProductSections(){
   renderBestsellers();
   renderSuggestedForYou();
   renderValuePicks();
+  startCardActivityPolling();
   if(!productsRouteHandled){
     productsRouteHandled = true;
     handleRouteFromHash();
@@ -3563,8 +3582,6 @@ function cardBadgesHtml(p, opts){
   const outOfStock = Number(p.stock) <= 0;
   return [
     pct > 0 && !outOfStock ? `<span class="card-badge sale">🏷️ ${pct}% ${T('saleOff')}</span>` : '',
-    (!opts.hideFeatured && !opts.featuredStar && p.featured) ? `<span class="card-badge featured">${T('featuredBadge')}</span>` : '',
-    p.bestseller ? `<span class="card-badge bestseller">${T('bestsellerBadge')}</span>` : '',
     (!opts.hideValueAmount && Number(p.valueAmount) > 0 && !outOfStock) ? `<span class="card-badge value">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
     outOfStock ? `<span class="card-badge out">${T('outOfStock')}</span>` : ''
   ].join('');
@@ -3575,8 +3592,7 @@ function cardBadgesHtml(p, opts){
 // Featured rail), so it doesn't collide with the sale/bestseller/value
 // badges on the other side.
 function rightBadgesHtml(p, opts){
-  opts = opts || {};
-  return (opts.featuredStar && p.featured) ? `<span class="card-badge featured-star" title="${T('featuredBadge')}">⭐</span>` : '';
+  return '';
 }
 function cardBodyHtml(p){
   const stock = Number(p.stock);
@@ -3605,7 +3621,7 @@ function productCardHtml(p, opts){
     <div class="card ${outOfStock?'out-of-stock':''}" data-pid="${p.id}" onclick="openProduct('${p.id}')">
       ${badges ? `<div class="card-badges">${badges}</div>` : ''}
       ${rightBadges ? `<div class="card-badges-right">${rightBadges}</div>` : ''}
-      <div class="imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy" decoding="async"></div>
+      <div class="imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy" decoding="async"><div class="card-activity" id="cardActivity-${p.id}"></div></div>
       <div class="body">${cardBodyHtml(p)}</div>
     </div>
   `;
@@ -3846,6 +3862,114 @@ let PDP_QTY = 1;
 let PDP_SELECTED_COLOR = null;
 let REVIEWS = [];
 
+/* ================= real product activity (live viewers + real recent orders) =================
+ * Viewer counts come from real heartbeat pings this browser sends while a
+ * product page is actually open (see startPdpActivityTracking/stopPdpActivityTracking).
+ * Recent-order counts come from real Orders-sheet rows in the backend, batched
+ * per visible product and refreshed every 5 minutes (see startCardActivityPolling).
+ * Nothing here is randomly generated.
+ */
+function gmSessionId(){
+  try{
+    let sid = sessionStorage.getItem('gm_session_id');
+    if(!sid){
+      sid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('sid-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+      sessionStorage.setItem('gm_session_id', sid);
+    }
+    return sid;
+  }catch(e){
+    return 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  }
+}
+function activityBadgeHtml(type, count, labelSingular, labelPlural){
+  if(!count || count <= 0) return '';
+  const label = count === 1 ? labelSingular : labelPlural.replace('{n}', count);
+  return `<span class="activity-badge ${type}"><span class="dot"></span>${label}</span>`;
+}
+
+// ---- product page (PDP): live viewer count via heartbeat ----
+let PDP_ACTIVITY_TIMER = null;
+function pdpActivityHeartbeat(){
+  if(!PDP_PRODUCT) return;
+  const productId = PDP_PRODUCT.id;
+  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'trackProductView', productId, sessionId: gmSessionId() }) })
+    .then(r => r.json())
+    .then(data => {
+      if(!data.ok || !PDP_PRODUCT || PDP_PRODUCT.id !== productId) return;
+      renderPdpActivity(data.viewers, null);
+    })
+    .catch(() => {});
+}
+function pdpOrderActivityFetch(){
+  if(!PDP_PRODUCT) return;
+  const productId = PDP_PRODUCT.id;
+  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'getProductActivity', productIds:[productId] }) })
+    .then(r => r.json())
+    .then(data => {
+      if(!data.ok || !PDP_PRODUCT || PDP_PRODUCT.id !== productId) return;
+      renderPdpActivity(null, data.orders ? data.orders[productId] : 0);
+    })
+    .catch(() => {});
+}
+let PDP_LAST_VIEWERS = 0, PDP_LAST_ORDERS = 0;
+function renderPdpActivity(viewers, orders){
+  const el = document.getElementById('pdpActivity');
+  if(!el) return;
+  if(viewers !== null) PDP_LAST_VIEWERS = viewers;
+  if(orders !== null) PDP_LAST_ORDERS = orders;
+  el.innerHTML = [
+    activityBadgeHtml('viewers', PDP_LAST_VIEWERS, T('activityViewerSingular'), T('activityViewerPlural')),
+    activityBadgeHtml('orders', PDP_LAST_ORDERS, T('activityOrderSingular'), T('activityOrderPlural'))
+  ].join('');
+}
+function startPdpActivityTracking(){
+  stopPdpActivityTracking();
+  PDP_LAST_VIEWERS = 0; PDP_LAST_ORDERS = 0;
+  renderPdpActivity(0, 0);
+  pdpActivityHeartbeat();
+  pdpOrderActivityFetch();
+  PDP_ACTIVITY_TIMER = setInterval(() => {
+    pdpActivityHeartbeat();
+  }, 25000); // heartbeat/live viewer refresh — keeps this visitor "present" and the count current
+  PDP_ORDER_TIMER = setInterval(() => {
+    pdpOrderActivityFetch();
+  }, 5 * 60 * 1000); // recent-orders count — refreshed every 5 minutes as requested
+}
+let PDP_ORDER_TIMER = null;
+function stopPdpActivityTracking(){
+  if(PDP_ACTIVITY_TIMER){ clearInterval(PDP_ACTIVITY_TIMER); PDP_ACTIVITY_TIMER = null; }
+  if(PDP_ORDER_TIMER){ clearInterval(PDP_ORDER_TIMER); PDP_ORDER_TIMER = null; }
+}
+
+// ---- product grid cards: real recent-order counts, batched, every 5 minutes ----
+let CARD_ACTIVITY_TIMER = null;
+function fetchCardActivity(){
+  const ids = Array.from(document.querySelectorAll('[id^="cardActivity-"]'))
+    .map(el => el.id.replace('cardActivity-', ''));
+  const uniqueIds = Array.from(new Set(ids));
+  if(!uniqueIds.length) return;
+  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'getProductActivity', productIds: uniqueIds }) })
+    .then(r => r.json())
+    .then(data => {
+      if(!data.ok) return;
+      uniqueIds.forEach(id => {
+        const el = document.getElementById('cardActivity-' + id);
+        if(!el) return;
+        const orders = (data.orders && data.orders[id]) || 0;
+        el.innerHTML = activityBadgeHtml('orders', orders, T('activityOrderSingular'), T('activityOrderPlural'));
+      });
+    })
+    .catch(() => {});
+}
+function startCardActivityPolling(){
+  // Always fetch right away so newly-rendered cards (search results, filters,
+  // the All Products overlay, etc.) get their real count immediately, but
+  // only ever run ONE 5-minute interval for the whole page.
+  fetchCardActivity();
+  if(CARD_ACTIVITY_TIMER) return;
+  CARD_ACTIVITY_TIMER = setInterval(fetchCardActivity, 5 * 60 * 1000); // every 5 minutes, as requested
+}
+
 function renderStars(rating, cls){
   rating = Math.round(Number(rating) || 0);
   const full = '★'.repeat(rating);
@@ -3957,6 +4081,7 @@ function openProduct(id){
   if(location.hash !== `#/product/${id}`) history.pushState({pdp:id}, '', `#/product/${id}`);
   updateDealsFabVisibility();
   updatePdpWishBtn();
+  startPdpActivityTracking();
 }
 function pickPdpColor(c){
   PDP_SELECTED_COLOR = c;
@@ -4434,6 +4559,7 @@ function hidePdpOverlayOnly(){
   document.getElementById('pdpOverlay').classList.remove('show');
   unlockBodyScroll();
   PDP_PRODUCT = null;
+  stopPdpActivityTracking();
   updateDealsFabVisibility();
 }
 
