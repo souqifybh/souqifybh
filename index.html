@@ -2070,21 +2070,37 @@ function unlockBodyScroll(){
    All our sheets/modals (checkout, login/signup, "Confirm delivery address", add-address, etc.)
    are `position:fixed; inset:0`, which is pinned to the *layout* viewport — but mobile browsers
    shrink the *visual* viewport when the keyboard opens, without resizing the layout viewport the
-   same way. That mismatch is exactly what was pushing the sheet (and whatever field you were
-   typing into) behind the keyboard, and what made the browser's own "scroll the focused field
-   into view" overshoot and hide the field instead of showing it.
-   Fix: keep every open overlay glued to the real, current visible area (visualViewport), then
-   once the keyboard has finished animating in, gently bring the exact field you're editing into
-   view inside its own sheet. The page underneath never moves — it's already scroll-locked above.
-   This runs the same way for every input in every section, so it's not a one-off per form. */
+   same way. Two separate things were broken because of that:
+     1) The overlay itself stayed sized to the full (pre-keyboard) screen, so the sheet — which
+        is bottom-anchored inside it — sat below the visible area, partly behind the keyboard.
+     2) The sheet's own `max-height:85vh` (or `.modal`'s `90vh`) is *also* calculated against the
+        full screen and never shrinks, so once bottom-anchored inside the (now correctly resized)
+        overlay, a sheet taller than the remaining visible space just overflows upward, off the
+        top of the screen — with nothing to scroll, because its own content still fits under its
+        oversized max-height. That's what was permanently hiding fields like "Full name" with no
+        way to reach them, no matter how the field was tapped.
+   Fix: keep the overlay glued to the real, current visible area (visualViewport), AND clamp the
+   sheet's max-height to that same visible area whenever the keyboard is open, so it's forced to
+   scroll internally instead of overflowing off-screen. Once that's in place, gently bring the
+   exact field you're editing into view inside its own sheet. The page underneath never moves —
+   it's already scroll-locked above. This runs the same way for every input in every section. */
 const KB_OVERLAY_SELECTOR = '.modal-overlay.show, .addr-modal-overlay.show, .ap-overlay.show, .sort-overlay.show, .lang-popup-overlay.show, .cod-popup-overlay.show, .pdp-overlay.show, .img-zoom-overlay.show, .overlay.show';
+const KB_SHEET_SELECTOR = '.addr-modal-sheet, .modal, .sort-sheet';
 
 function kbSyncOverlayFrames(){
   if(!window.visualViewport) return;
   const vv = window.visualViewport;
+  // Keyboard (or similar on-screen chrome) is considered "open" once it's covering a
+  // meaningful chunk of the layout viewport — small diffs are just browser UI chrome (address
+  // bar show/hide) and shouldn't force sheets into their cramped, scroll-locked sizing.
+  const kbOpen = (window.innerHeight - vv.height) > 100;
   document.querySelectorAll(KB_OVERLAY_SELECTOR).forEach(ov => {
     ov.style.height = vv.height + 'px';
     ov.style.top = vv.offsetTop + 'px';
+    const sheet = ov.querySelector(KB_SHEET_SELECTOR);
+    if(sheet){
+      sheet.style.maxHeight = kbOpen ? Math.max(160, vv.height - 24) + 'px' : '';
+    }
   });
 }
 
@@ -2103,7 +2119,7 @@ document.addEventListener('focusin', (e) => {
   if(!e.target.matches('input, textarea, select')) return;
   kbFocusedField = e.target;
   kbSyncOverlayFrames();
-  setTimeout(kbBringFieldIntoView, 300); // let the keyboard animation + viewport resize settle first
+  setTimeout(() => { kbSyncOverlayFrames(); kbBringFieldIntoView(); }, 300); // let the keyboard animation + viewport resize settle first
 });
 document.addEventListener('focusout', (e) => {
   if(e.target === kbFocusedField) kbFocusedField = null;
