@@ -1925,10 +1925,6 @@
         </div>
       </div>
     </div>
-    <div class="pdp-related">
-      <h3 data-i18n="pdpRelated">You might also like</h3>
-      <div class="rail-scroll" id="pdpRelated"></div>
-    </div>
     <div class="reviews-section">
       <div class="reviews-head">
         <div class="reviews-summary">
@@ -1961,6 +1957,10 @@
 
       <div id="reviewsList"><p style="color:var(--ink-soft);font-size:14px;">Loading reviews…</p></div>
     </div>
+    <div class="pdp-related">
+      <h3 data-i18n="pdpRelated">You might also like</h3>
+      <div class="rail-scroll" id="pdpRelated"></div>
+    </div>
     <div class="pdp-promo">
       <div class="pdp-promo-strip" id="pdpPromoStrip">
         <img src="assets/promo-whatsapp.svg" alt="Chat with us on WhatsApp" class="active">
@@ -1975,6 +1975,18 @@
     </div>
   </div>
   <footer class="pdp-footer">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:14px;">
+          <div class="mark brand-cart-icon" role="img" aria-label="Souqify-bh"></div>
+          <span class="word brand-wordmark-white" role="img" aria-label="Souqify-bh"></span>
+        </div>
+        <p style="font-size:13px;color:#b8b3b3;line-height:1.6;max-width:260px;" data-i18n="footerTagline">Shop More. Pay Less.</p>
+      </div>
+      <div><h4 data-i18n="footerShop">Shop</h4><a href="javascript:void(0)" onclick="closeProduct();openAllProductsPage()" data-i18n="footerAllProducts">All products</a><a href="deals.html" data-i18n="footerDeals">Deals</a><a href="javascript:void(0)" onclick="closeProduct();document.querySelector('#categories') && document.querySelector('#categories').scrollIntoView({behavior:'smooth'})" data-i18n="navCategories">Categories</a><a href="javascript:void(0)" onclick="document.querySelector('.reviews-section').scrollIntoView({behavior:'smooth'})" data-i18n="navReviews">Reviews</a><a href="about-us.html" data-i18n="footerAboutUs">About us</a></div>
+      <div><h4 data-i18n="footerSupport">Support</h4><a id="pdpWaFooterLink" href="#" target="_blank" data-i18n="footerWhatsapp">WhatsApp us</a><a href="delivery-policy.html" data-i18n="footerDeliveryPolicy">Delivery policy</a><a href="return-refund-policy.html" data-i18n="footerReturns">Returns &amp; refunds</a></div>
+      <div><h4 data-i18n="footerPayments">Payments</h4><a href="cash-on-delivery.html" data-i18n="footerCod">Cash on delivery</a></div>
+    </div>
     <div class="foot-social">
       <a href="https://www.facebook.com/Souqifybh/" target="_blank" rel="noopener" aria-label="Facebook">
         <svg viewBox="0 0 24 24"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.85c0-2.51 1.49-3.9 3.77-3.9 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.88h2.78l-.44 2.91h-2.34V22c4.78-.79 8.44-4.94 8.44-9.94z"/></svg>
@@ -2096,6 +2108,7 @@ let ADDRESSES = [];
 let checkoutSelectedAddressId = null;
 
 document.getElementById('waFooterLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi Souqify-bh, I have a question about my order.')}`;
+document.getElementById('pdpWaFooterLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi Souqify-bh, I have a question about my order.')}`;
 
 /* ================= account / auth ================= */
 function updateAcctButton(){
@@ -3442,7 +3455,7 @@ function renderAllProductsGrid(){
     grid.innerHTML = `<div class="empty">${PRODUCTS.length ? T('noProductsMatch') : T('noProductsLoaded')}</div>`;
     return;
   }
-  const needsReveal = renderCardSection(grid, filtered);
+  const needsReveal = renderCardSection(grid, filtered, { hideValueAmount:true });
   if(needsReveal) requestAnimationFrame(() => observeReveal());
   translateProductsIfNeeded(filtered);
   const cartCountEl = document.getElementById('apCartCount');
