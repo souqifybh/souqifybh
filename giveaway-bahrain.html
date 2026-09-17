@@ -244,11 +244,24 @@ function renderHero(){
 }
 
 /* ---------------- date helpers (mirrors gift-bahrain.html) ---------------- */
+// The giveaway winner is announced on 30 Sep 2026, so no delivery date on
+// or before that day can be picked at entry time (nobody could receive
+// their hamper before a winner even exists yet). The calendar's earliest
+// selectable day is therefore 1 Oct 2026, unless the normal "at least 2
+// days from today" lead-time rule ever pushes later than that (e.g. once
+// 30 Sep 2026 has already passed) — in that case the later of the two
+// wins, same as before.
+const GIVEAWAY_WINNER_ANNOUNCE_DATE = new Date(2026, 8, 30); // 30 Sep 2026 (month is 0-indexed)
 function minGiftDeliveryDate(){
   const d = new Date();
   d.setHours(0,0,0,0);
   d.setDate(d.getDate() + 2);
-  return d;
+
+  const earliestAfterAnnouncement = new Date(GIVEAWAY_WINNER_ANNOUNCE_DATE);
+  earliestAfterAnnouncement.setHours(0,0,0,0);
+  earliestAfterAnnouncement.setDate(earliestAfterAnnouncement.getDate() + 1); // 1 Oct 2026
+
+  return d > earliestAfterAnnouncement ? d : earliestAfterAnnouncement;
 }
 function isoDate(d){
   const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
