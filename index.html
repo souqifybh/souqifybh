@@ -15,6 +15,13 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '1423474533209803');
 fbq('track', 'PageView');
+/* --- Catalog event helpers (Souqify) --- */
+function metaTrack(name, params, opts){
+  try{ if(typeof fbq === 'function'){ opts ? fbq('track', name, params, opts) : fbq('track', name, params); } }catch(e){}
+}
+function metaContents(items){
+  return (items || []).map(function(i){ return { id: i.id, quantity: i.qty, item_price: Number(i.price) }; });
+}
 </script>
 <noscript><img height="1" width="1" style="display:none"
 src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
@@ -3854,6 +3861,7 @@ function addToCart(id, qty, evt, color){
   if(existing) existing.qty += qtyToAdd;
   else CART.push({ id, name:p.name, price:Number(p.price), image:p.images[0], qty: qtyToAdd, color: color || null });
   saveCart();
+  metaTrack('AddToCart', { content_ids:[p.id], content_type:'product', content_name:p.name, contents:[{ id:p.id, quantity:qtyToAdd, item_price:Number(p.price) }], value:Number(p.price)*qtyToAdd, currency:'BHD' });
   if(evt && evt.target && p) flyToCart(evt.target, p.images[0]);
   else bumpCartIcon();
   openCart();
@@ -4172,6 +4180,7 @@ function openProduct(id){
   updateDealsFabVisibility();
   updatePdpWishBtn();
   startPdpActivityTracking();
+  metaTrack('ViewContent', { content_ids:[p.id], content_type:'product', content_name:p.name, content_category:p.category, value:Number(p.price), currency:'BHD' });
 }
 function pickPdpColor(c){
   PDP_SELECTED_COLOR = c;
@@ -4931,6 +4940,7 @@ function openCheckout(){
     openAuth('login');
     return;
   }
+  metaTrack('InitiateCheckout', { content_ids: CART.map(function(i){ return i.id; }), contents: metaContents(CART), content_type:'product', num_items: CART.reduce(function(n,i){ return n + i.qty; }, 0), value: cartTotal(), currency:'BHD' });
   buildPayOptions();
   document.getElementById('checkoutStep1').style.display='block';
   document.getElementById('checkoutStepQR').style.display='none';
@@ -5202,6 +5212,7 @@ async function placeOrder(){
       localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
     }
 
+    metaTrack('Purchase', { content_ids: CART.map(function(i){ return i.id; }), contents: metaContents(CART), content_type:'product', num_items: CART.reduce(function(n,i){ return n + i.qty; }, 0), value: Math.max(0, cartTotal() - actualPromoDiscount) + orderFees, currency:'BHD' }, { eventID: String(orderId) });
     CART = [];
     saveCart();
   } finally {
@@ -5272,6 +5283,10 @@ async function onQrPaidClick(){
   document.getElementById('confirmWaBtn').style.display = 'none';
   document.getElementById('confirmWaQueryLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi! I have a question about my order ' + orderId + '.')}`;
 
+  if(pendingOrderPayload){
+    const qrItems = pendingOrderPayload.items || [];
+    metaTrack('Purchase', { content_ids: qrItems.map(function(i){ return i.id; }), contents: metaContents(qrItems), content_type:'product', num_items: qrItems.reduce(function(n,i){ return n + i.qty; }, 0), value: Number(qrCurrentAmount) + Number(actualWalletUsed || 0), currency:'BHD' }, { eventID: String(orderId) });
+  }
   CART = [];
   saveCart();
   pendingOrderPayload = null;
