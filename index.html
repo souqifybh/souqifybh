@@ -3300,7 +3300,16 @@ function renderAllProductSections(){
     productsRouteHandled = true;
     handleRouteFromHash();
     handleReviewLinkFromQuery();
-    if(location.hash === '#/products') openAllProductsPage();
+    // #/products or #/products/<category> — reopen the All Products page,
+    // pre-filtered to that category, when the link itself was shared from
+    // there (e.g. someone copied the link while "Watches" was selected).
+    const apMatch = location.hash.match(/^#\/products(?:\/(.+))?$/);
+    if(apMatch){
+      const requestedCat = apMatch[1] ? decodeURIComponent(apMatch[1]) : 'All';
+      const validCats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+      activeCategory = validCats.includes(requestedCat) ? requestedCat : 'All';
+      openAllProductsPage();
+    }
   }
 }
 
@@ -3466,7 +3475,25 @@ function categoryIconHtml(cat){
   if(withImage) return `<img src="${withImage.images[0]}" alt="${catLabel(cat)}" loading="lazy">`;
   return CATEGORY_ICONS[cat] || '✨';
 }
-function setCategory(c){ activeCategory = c; buildCategoryChips(); renderAllProductsGrid(); }
+// Builds the #/products hash for a given category so the address bar (and
+// therefore whatever URL someone copies out of it) always reflects the
+// category currently selected on the All Products page. "All" keeps the
+// plain #/products hash; any real category gets its own path segment so a
+// copied/shared link reopens the page pre-filtered to that same category.
+function productsHashFor(c){
+  return (c && c !== 'All') ? `#/products/${encodeURIComponent(c)}` : '#/products';
+}
+function setCategory(c){
+  activeCategory = c;
+  buildCategoryChips();
+  renderAllProductsGrid();
+  // Keep the URL in sync while the All Products page is open, without adding
+  // a new history entry per click — so copying the link at any point shares
+  // exactly the category currently selected.
+  if(document.getElementById('apOverlay').classList.contains('show')){
+    history.replaceState({ap:true, cat:c}, '', location.pathname + location.search + productsHashFor(c));
+  }
+}
 
 // "Hampers" only ever contains Gift-to-Bahrain items, which live on the
 // dedicated gift page (not the regular storefront catalogue) — so tapping
@@ -3511,12 +3538,12 @@ function openAllProductsPage(){
   buildCategoryChips();
   renderAllProductsGrid();
   lockBodyScroll();
-  history.pushState({ap:true}, '', location.pathname + location.search + '#/products');
+  history.pushState({ap:true, cat:activeCategory}, '', location.pathname + location.search + productsHashFor(activeCategory));
 }
 function closeAllProductsPage(){
   document.getElementById('apOverlay').classList.remove('show');
   unlockBodyScroll();
-  if(location.hash === '#/products') history.replaceState({}, '', location.pathname + location.search);
+  if(location.hash === '#/products' || /^#\/products\//.test(location.hash)) history.replaceState({}, '', location.pathname + location.search);
 }
 function renderAllProductsGrid(){
   const searchEl = document.getElementById('apSearchInput');
@@ -4673,7 +4700,13 @@ window.addEventListener('popstate', () => {
   const m = location.hash.match(/^#\/product\/(.+)$/);
   if(m){ openProduct(m[1]); return; }
   hidePdpOverlayOnly();
-  if(location.hash === '#/products'){
+  const apMatch = location.hash.match(/^#\/products(?:\/(.+))?$/);
+  if(apMatch){
+    const requestedCat = apMatch[1] ? decodeURIComponent(apMatch[1]) : 'All';
+    const validCats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+    activeCategory = validCats.includes(requestedCat) ? requestedCat : 'All';
+    buildCategoryChips();
+    renderAllProductsGrid();
     document.getElementById('apOverlay').classList.add('show');
     lockBodyScroll();
   } else {
