@@ -2,15 +2,15 @@
   "ok": true,
   "settings": {
     "heroActive": true,
-    "heroImage": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789586923/ChatGPT_Image_Sep_16_2026_10_28_12_PM.png",
+    "heroImage": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789929417/ChatGPT_Image_Sep_20_2026_09_32_26_PM.png",
     "heroImage2": "https://res.cloudinary.com/bib9sqiz/image/upload/v1787489627/ChatGPT_Image_Aug_23_2026_03_51_50_PM.png",
-    "heroImage3": "https://res.cloudinary.com/bib9sqiz/image/upload/v1787489687/ChatGPT_Image_Aug_23_2026_03_54_32_PM.png",
+    "heroImage3": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789929416/ChatGPT_Image_Sep_20_2026_09_29_03_PM.png",
     "heroEyebrow": "",
-    "heroBadge1": "",
-    "heroBadge2": "",
+    "heroBadge1": "📦 In stock",
+    "heroBadge2": "🚚 Same day delivery in Bahrain",
     "heroProductId": "",
     "heroProductId2": "P-1787169123648",
-    "heroProductId3": "P-1787211854015",
+    "heroProductId3": "",
     "referEarnActive": false,
     "announcementActive": true,
     "announcementText": "🔒 100% GENUINE PRODUCTS ✅     CASH ON DELIVERY 🚚",
@@ -29,6 +29,6 @@
     "giveawayHamperShortDesc": "",
     "heroCategory": "Watches",
     "heroCategory2": "",
-    "heroCategory3": ""
+    "heroCategory3": "Watches"
   }
 }
