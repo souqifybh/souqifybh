@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Track your order | Souqify-bh</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#46501B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#A5BA4A; --blush-deep:#46501B; --blush-ink:#181B09;
+    --ink:#1C1C1E; --ink-soft:#6B6B70; --paper:#FFFFFF; --paper-soft:#F7F8F0;
+    --line:#E3E7D5; --ok:#2E7D32; --bad:#B3261E; --radius:16px;
+    --shadow-sm:0 2px 10px rgba(28,28,30,0.06); --shadow-md:0 14px 40px rgba(28,28,30,0.10);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper-soft);color:var(--ink);font-family:'Inter',Arial,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+  h1,h2,h3,.display{font-family:'Sora','Inter',Arial,sans-serif;letter-spacing:-0.01em;}
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  header{background:#fff;border-bottom:1px solid var(--line);}
+  header .in{max-width:760px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+  .logo img.icon{width:34px;height:34px;border-radius:8px;}
+  .logo img.word{height:46px;width:auto;margin-left:-6px;}
+  .shop-link{font-size:13px;font-weight:700;text-decoration:none;color:var(--blush-deep);}
+
+  main{flex:1;width:100%;max-width:760px;margin:0 auto;padding:28px 20px 48px;}
+  .hero{text-align:center;margin-bottom:22px;}
+  .hero h1{font-size:clamp(24px,5vw,32px);margin:0 0 6px;font-weight:800;}
+  .hero p{margin:0;color:var(--ink-soft);font-size:14.5px;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:22px;}
+  .lookup{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;}
+  .lookup input{flex:1;min-width:200px;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font:600 15px 'Inter',Arial,sans-serif;text-transform:uppercase;letter-spacing:.02em;}
+  .lookup input:focus{outline:none;border-color:var(--blush-deep);}
+  .btn{background:var(--blush-deep);color:#fff;border:0;border-radius:12px;padding:13px 22px;font:700 14px 'Inter',Arial,sans-serif;cursor:pointer;text-decoration:none;display:inline-block;text-align:center;}
+  .btn:hover{background:#333C14;}
+  .btn.ghost{background:#fff;color:var(--blush-deep);border:1.5px solid var(--blush-deep);}
+  .btn.ghost:hover{background:var(--paper-soft);}
+  .btn.wa{background:#1FAF54;}
+  .btn.wa:hover{background:#178A42;}
+
+  .msg{padding:14px 16px;border-radius:12px;font-size:14px;line-height:1.55;}
+  .msg.err{background:#FDECEA;color:var(--bad);border:1px solid #F6C9C5;}
+  .msg.info{color:var(--ink-soft);text-align:center;padding:24px 10px;}
+  .spinner{width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--blush-deep);border-radius:50%;margin:0 auto 10px;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+  .k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .oid{font:800 18px 'Sora','Inter',Arial,sans-serif;margin-top:3px;word-break:break-all;}
+  .placed{font-size:13px;color:var(--ink-soft);margin-top:3px;}
+  .badge{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;font-weight:800;font-size:13px;background:#EEF3D6;color:var(--blush-ink);}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--blush-deep);}
+  .badge.delivered{background:#E4F3E6;color:var(--ok);} .badge.delivered .dot{background:var(--ok);}
+  .badge.cancelled{background:#FDECEA;color:var(--bad);} .badge.cancelled .dot{background:var(--bad);}
+
+  .status-msg{margin:16px 0 4px;font-size:15px;line-height:1.6;color:var(--ink);}
+  .status-msg strong{font-family:'Sora','Inter',Arial,sans-serif;}
+
+  .tl{list-style:none;margin:20px 0 4px;padding:0;}
+  .tl li{position:relative;padding:0 0 18px 36px;font-size:14px;font-weight:600;color:var(--ink-soft);line-height:24px;}
+  .tl li:last-child{padding-bottom:0;}
+  .tl li::before{content:'';position:absolute;left:10.5px;top:24px;bottom:0;width:3px;background:var(--line);}
+  .tl li:last-child::before{display:none;}
+  .tl li.done::before{background:var(--blush-deep);}
+  .tl .c{position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;color:#fff;font-weight:800;}
+  .tl li.done .c{background:var(--blush-deep);border-color:var(--blush-deep);}
+  .tl li.now .c{border-color:var(--blush-deep);box-shadow:0 0 0 5px rgba(165,186,74,.35);}
+  .tl li.done,.tl li.now{color:var(--ink);}
+  .tl li.now{font-weight:800;}
+
+  .sec{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);}
+  .items{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px;}
+  .items li{display:flex;align-items:center;gap:12px;}
+  .items .th{width:48px;height:48px;border-radius:10px;background:var(--paper-soft);border:1px solid var(--line);object-fit:cover;flex:none;}
+  .items .nm{flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.35;}
+  .items .nm small{display:block;color:var(--ink-soft);font-weight:500;font-size:12px;}
+  .items .q{font-weight:800;font-size:14px;flex:none;}
+  .row{display:flex;justify-content:space-between;gap:12px;font-size:14px;margin-top:10px;}
+  .row span:first-child{color:var(--ink-soft);}
+  .row span:last-child{font-weight:700;text-align:right;}
+  .cta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+
+  .help{margin-top:18px;text-align:center;font-size:13px;color:var(--ink-soft);}
+  footer{text-align:center;padding:22px 16px;font-size:12px;color:var(--ink-soft);}
+  footer a{color:var(--blush-deep);font-weight:600;}
+  @media (max-width:520px){ .card{padding:18px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="in">
+    <a class="logo" href="/"><img class="icon" src="android-chrome-192x192.png" alt=""><img class="word" src="souqify-wordmark.png" alt="Souqify-bh"></a>
+    <a class="shop-link" href="/">Continue shopping &rarr;</a>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Track your order</h1>
+    <p>See where your Souqify-bh order is right now.</p>
+  </div>
+
+  <div class="card">
+    <form class="lookup" id="lookupForm" autocomplete="off">
+      <input id="orderInput" type="text" inputmode="text" placeholder="Order number, e.g. ORD-260921-101010" aria-label="Order number" maxlength="40">
+      <button class="btn" type="submit">Track</button>
+    </form>
+    <div id="result"><div class="msg info">Enter your order number to see its status.</div></div>
+  </div>
+
+  <div class="help">Need help? <a href="https://wa.me/97335184023" target="_blank" rel="noopener" style="color:var(--blush-deep);font-weight:700;">Message us on WhatsApp</a></div>
+</main>
+
+<footer>
+  &copy; <span id="yr"></span> Souqify-bh &middot; AIN ZAHARA GENERAL TRADING W.L.L &middot; <a href="/">souqify-bh.com</a>
+</footer>
+
+<script>
+const CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0nP0mfTHx3AGvMOrsqwsBvTZm-9RL4iJ947YJEVViOgx-YFUJNc9zo1/exec',
+  WHATSAPP_NUMBER: '97335184023'
+};
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+$('yr').textContent = new Date().getFullYear();
+
+// Same stage names as the admin panel's tracking dropdown (Code.gs: DELIVERY_STAGES).
+const TIMELINE = [
+  { title:'Order placed',              text:"We've received your order. Our team will confirm it shortly." },
+  { title:'Order confirmed',           text:"Your order is confirmed and is being packed." },
+  { title:'Booked delivery slot',      text:"We've booked a delivery slot for your order." },
+  { title:'Picked by courier partner', text:"Your order has been picked up by our courier partner." },
+  { title:'Delivery hub',              text:"Your order has reached the delivery hub and will be out for delivery soon." },
+  { title:'Out for delivery',          text:"Your order is out for delivery. Please keep your phone reachable." },
+  { title:'Delivered',                 text:"Your order has been delivered. Thank you for shopping with Souqify-bh!" }
+];
+const CANCELLED_TEXT = "This order was cancelled. If you have any questions, message us on WhatsApp.";
+
+function currentStep(o){
+  if(o.status === 'delivered') return TIMELINE.length - 1;
+  if(o.status === 'shipped'){
+    const i = TIMELINE.findIndex(t => t.title === o.deliveryStage);
+    return i >= 1 ? i : 3;               // shipped with no stage picked yet = handed to the courier
+  }
+  if(o.status === 'confirmed') return 1;
+  return 0;
+}
+
+function fmtDate(iso){
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function fmtDay(ymd){
+  const p = String(ymd).split('-').map(Number);
+  if(p.length !== 3 || p.some(isNaN)) return String(ymd || '');
+  return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+}
+
+function paymentLine(o){
+  const paid = o.paymentStatus === 'paid';
+  if(o.paymentMode === 'cod') return paid ? 'Cash on Delivery · Paid' : 'Cash on Delivery · pay when you receive it';
+  if(paid) return 'Prepaid · Paid';
+  if(o.paymentStatus === 'awaiting_verification') return 'Prepaid · payment being verified';
+  return 'Prepaid';
+}
+
+function render(o){
+  const cancelled = o.status === 'cancelled';
+  const cur = currentStep(o);
+  const title = cancelled ? 'Order cancelled' : TIMELINE[cur].title;
+  const text  = cancelled ? CANCELLED_TEXT : TIMELINE[cur].text;
+  const timeline = cancelled ? '' : `
+    <ol class="tl">${TIMELINE.map((t, i) => {
+      const done = i < cur || (i === cur && cur === TIMELINE.length - 1);
+      const cls = done ? 'done' : (i === cur ? 'now' : '');
+      return `<li class="${cls}"><span class="c">${done ? '&#10003;' : ''}</span>${esc(t.title)}</li>`;
+    }).join('')}</ol>`;
+
+  const items = (o.items || []).map(i => `
+    <li>
+      ${i.image ? `<img class="th" src="${esc(i.image)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">` : '<div class="th"></div>'}
+      <div class="nm">${esc(i.name)}${i.color ? `<small>${esc(i.color)}</small>` : ''}</div>
+      <div class="q">&times;${esc(i.qty)}</div>
+    </li>`).join('');
+
+  const rows = [];
+  if(o.isGift && o.deliveryDate) rows.push(['Delivery date', fmtDay(o.deliveryDate) + (o.deliveryTimeSlot ? ' · ' + o.deliveryTimeSlot : '')]);
+  rows.push(['Payment', paymentLine(o)]);
+  if(o.trackingNumber) rows.push(['Tracking number', o.trackingNumber]);
+
+  const cta = [];
+  if(o.trackingUrl) cta.push(`<a class="btn" href="${esc(o.trackingUrl)}" target="_blank" rel="noopener">Track package</a>`);
+  cta.push(`<a class="btn wa" href="https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi, I have a question about order ' + o.id)}" target="_blank" rel="noopener">Ask about this order</a>`);
+
+  $('result').innerHTML = `
+    <div class="top">
+      <div>
+        <div class="k">Order number</div>
+        <div class="oid">${esc(o.id)}</div>
+        ${o.placedAt ? `<div class="placed">Placed on ${esc(fmtDate(o.placedAt))}</div>` : ''}
+      </div>
+      <span class="badge ${esc(cancelled ? 'cancelled' : (o.status === 'delivered' ? 'delivered' : ''))}"><span class="dot"></span>${esc(title)}</span>
+    </div>
+    <p class="status-msg">${esc(text)}</p>
+    ${timeline}
+    <div class="sec">
+      <div class="k">Items in this order</div>
+      <ul class="items">${items || '<li><div class="nm">-</div></li>'}</ul>
+    </div>
+    <div class="sec" style="margin-top:14px;padding-top:6px;">
+      ${rows.map(r => `<div class="row"><span>${esc(r[0])}</span><span>${esc(r[1])}</span></div>`).join('')}
+      <div class="cta">${cta.join('')}</div>
+    </div>`;
+}
+
+async function track(rawId, pushUrl){
+  const id = String(rawId || '').trim().toUpperCase();
+  if(!id){ $('result').innerHTML = '<div class="msg info">Enter your order number to see its status.</div>'; return; }
+  $('orderInput').value = id;
+  $('result').innerHTML = '<div class="msg info"><div class="spinner"></div>Looking up your order…</div>';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'trackOrder', orderId: id }) });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Order not found.');
+    render(data.order);
+    if(pushUrl){ try{ history.replaceState(null, '', 'track.html?id=' + encodeURIComponent(id)); }catch(e){} }
+  }catch(err){
+    const m = String(err && err.message || '');
+    const friendly = /unknown post action/i.test(m)
+      ? 'Order tracking is not switched on yet. Please try again shortly or message us on WhatsApp.'
+      : (/failed to fetch|networkerror|load failed/i.test(m) ? 'We could not reach the server. Please check your connection and try again.' : m || 'Something went wrong. Please try again.');
+    $('result').innerHTML = '<div class="msg err">' + esc(friendly) + '</div>';
+  }
+}
+
+$('lookupForm').addEventListener('submit', e => { e.preventDefault(); track($('orderInput').value, true); });
+
+// Opened from the label QR: track.html?id=ORD-...
+const startId = new URLSearchParams(location.search).get('id');
+if(startId) track(startId, false);
+</script>
+</body>
+</html>

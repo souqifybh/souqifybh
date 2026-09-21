@@ -186,6 +186,9 @@
   a.oitem-name:hover{text-decoration:underline solid;}
   .oitem-col{flex:none;color:var(--ink-soft);font-size:11px;}
   .oitem-qty{flex:none;font-weight:800;}
+  /* Tracking (delivery stage) mini-section under Order status */
+  .stagebox{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
+  .stage-k{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px;}
 
   @media (max-width:980px){
     .stat-grid{grid-template-columns:repeat(2,1fr);}
@@ -1419,6 +1422,7 @@ function renderOrderRows(){
           <select class="status" onchange="updateOrder('${o.id}','orderStatus',this.value)">
             ${['new','confirmed','shipped','delivered'].map(s => `<option value="${s}" ${o.orderStatus===s?'selected':''}>${s}</option>`).join('')}
           </select>
+          ${deliveryStageBoxHtml(o)}
         </td>
         <td>
           <select class="status" onchange="updatePaymentStatus('${o.id}',this.value)">
@@ -1482,6 +1486,7 @@ async function updateOrder(id, field, value){
   await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
   const o = ORDERS.find(o => o.id === id);
   if(o) o[field] = value;
+  if(field === 'orderStatus') syncStageBox(id);
   renderDashboard();
 }
 // Marking an order "paid" auto-fills paidAmount to the full total on the
@@ -2791,13 +2796,19 @@ function code128Svg(text, heightCss){
  *    - Cash on Delivery (not yet paid): product, qty, amount + a big bold
  *      "AMOUNT TO COLLECT" box.
  *    - Prepaid: product name + qty only, no money on the label.
- *    QR code (or Code 128 barcode when the order needs the space) holds
- *    the order ID. Everything is drawn in pure black on white so it
- *    prints cleanly on a thermal label printer.
+ *    The QR code opens the customer tracking page (track.html?id=ORDER_ID)
+ *    with the order's status. It is large at the top when there is room,
+ *    and shrinks to the bottom of the label on orders with many items.
+ *    (A Code 128 barcode of the order ID is available from the Code
+ *    dropdown, but it has no tracking link.) Everything is drawn in pure
+ *    black on white so it prints cleanly on a thermal label printer.
  * ===================================================================== */
 const LBL_STORE_URL = 'https://souqify-bh.com';
 const LBL_COMPANY   = 'AIN ZAHARA GENERAL TRADING W.L.L';
 const LBL_SUPPORT   = '+973 3518 4023';
+// The QR on every label opens this public tracking page (track.html), which
+// shows only the order number, its status and the products ordered.
+function lblTrackUrl(id){ return LBL_STORE_URL + '/track.html?id=' + encodeURIComponent(id); }
 const LBL_WORDMARK  = 'data:image/png;base64,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';
 const LBL_ICON      = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAaQAAAFhAQAAAAAXEuOfAAAHUUlEQVR42tVcvW7cRhD+do64YyHgWKowIBZGapdKZSJP4iIP4DJFEDFV2nQpk4fIAxCwH8DpUjgACxcqeYaKO4HipLg7ieTO/o1lIrlGp7v9OLOzM9/8kJIZCACuWiS8djQAAG6R9KIeAHCok1CmKwAA2y5Jw9Pqz2kanszASSpSc3rTJO3r/CZlYzs6v7tL0vD8ZkhBrZ7eVtGgw6OsJHM8oVoVqlOh9ipUr0INKhTrziv+wA6UFo5nDSvNMVOpOWaCSsNC4xx0oXEOWmmcg8DMzIn2N0eX2BWAGVJ5I0+04fHHOs0RTyhTa2ShAlAno0qVrEKFypOcXum9p59ZUqiQSuaXaWjUsrqFNESt1XC/lIZJxEHpWflZNFSgymU1HBaUxemoYkFr5Av7Rr2QrGzhfTULySK1hu1CGpoUyp4c011UjuCZhg9RgnLVvu6B1aPHmvhk/q3Gho3K8u0IFU/0twvy/L0KxSNU+Ywarlhg/zqEeiGfPp9fosNvxLL9VQB1xcxsBWsRQDEzc++xhkT0G6sfjLFh7mA8P+rtefdynwLgkIvBDgAPWYos41pE8KSHNRz9CEUYw449L6pweTb58I+LL1NkVYEOEQCTy/C26SnC8HaVSqqIJeHK9mufICtzdhXkqVFyZxJVsWhBMa4xD7BSx9hPvMFWxL5+/GrOUSFZbMgubSsKuOE9uLaL75CsW+DXdJ5vgTvLDcc8X8o5GA92OxeSVYthRsE6Bmg7D6rwWGQWdzG+0beabD40c0wMyk57BCh6Do3PZ2NU5qWp5FNOR1UqVCmmGgpc4FIla61CmVbiLvLWty4VKXQ2myZRw6Ny1yqP2ginQR4/6JxDIIpx1iTUSciqtrwsJlLeemXNPbV3hyu7k4pxpBTuKESGYpCRLypqV5ARQo5o1aImgGpVHHXm9wsfyiL6O/HSFJA1uGLIi+JKxb2tdGDZFJUHM1ecrIOmxn5cXnrmAEL4vVdlhwddTinE8w+hduKFggxQhTQUr/BeOsmgrAddNq+EREjB1P0hVdalg7D9qJenkZClsnfC+Z2KN8yEFR3ca1VZfF6xnyI6UlQ2oV4vijeq+XeligEuHSby93qZw2PIU2o9VVkpfWUBU9srKIqjskRrlMC1bBGCO6kcBb0ROt+JR3X2V+1mPpHazD0qt333aq+v5xO6bHKPZeJkNb4LZmJ+DUVlLxdE05Loyh+VLLyLsGHt1JVUbRXFWK6fhxN5uq3WNbbxyroVxzZVANU7azeKKKOEezrjU56fy83x02EOmJ1yLRrxPi1SPrhaDi/qTsiWxkZVYiZv/D5v9QGv5UgIZKL3APDJ3hKFi40/AlFpz9RXltYrZu4CKLsZjUIBEip5vpHZ1ii+1iwl105g5qj8a2lYPJeGS6Iibk2XzyUr4hrV0tYwE+bk8EUY4ydav0DDaSq6agDzezMZA5iY6gsogerazzbT9HBTA2ao0P04KwzmDDBJD/xLY7rh3bsx+VJEXv7mOsf3L/Ex5bz+urxcr/vLfNyiZxJqkh72/9SogW1tTaT85/UzsEeLrJpxhC82Xq3Q4IBd/duc+3yy8g+3wB57+8EpEg72sWD48+PnHp+Ah2q+gN1Ev13V2M9uIN6wnR3s9PCD5Epz3ygCtauJi8q/p7+u41AdJEonJBF9oeKNVoNayacceFTvhYzq/KJaGdVOCsP5q/flg80+jdmOrnCtYuwmkbFhohScMTa72viwhm80OSXioeeZhkOkj5FclCWh+siqyJb1asHapkrO5rsi6olHO5sbLLcvSkd1//mqMtIN/3fVshrVLyVL3X8NC1qDdbJqFapJRuWQp/hhWTF/uWcHBvv4ZtVrLD+oej3WnXKl6/VUstpgJ+WuF5/Fe4NOuA/2KV85vkoVqlChchUqU6FIhQo6Ry5evI4Txpw0adtKnVTQ9HJfeREztrFQK9W+uIlY3pk5rx+87nEsiu3qa+MVtnZoeJ513wh6b873kyJdqAw53uCmpt6N6iMSEjn4ZHbXoJmpYVnjtPxKmgIFrdFJybp2atgK3ewQy2w9PF1gXDbvQ9573sJq/NlZ3auQNQZfyy6iNhIP/BTS8PV+9kULGK5PrCFpyACqtRQjlUfWABhmW9aWO4+sASCJFouxVaLzVznOHCRXSZW/eIqWVUX4YTndWjtbSs688XzZvP/PdzfZArLKOFSbLmsv5/XBj/LSk0/DRtC590Rl74vKjSsqCeCapc12Tx4qatjc24HcT+wqJdhNO3mG4PiIBsPDGwbAoRRix4wqH1I5DSV5ra6vLEPzqMxHOeQvOp39sSObb1XZXCovjdsahRSI9XQxxbFhFbJ8Jq0rp3a1qsrzXbrp57sCePq/NMIdOiO1A/nUQoINa2f/UnpQleAaNNsry8e8lWoX9pxyAdiT2HpS6wuoC6ktrSZaGxYdxxpmH/LRP2PaOab6a+ns33h8nrmXblc0oyquk1Bcb4QPR39eJKParfBhMyK6fwGKOc8FWtiQlwAAAABJRU5ErkJggg==';
 
@@ -2867,7 +2878,9 @@ function lblBuildData(o){
 function lblSheetHtml(o, codeMode){
   const d = lblBuildData(o);
   const weight = d.items.length + (d.cod ? d.extras.length : 0);
-  const useQr = codeMode === 'qr' || (codeMode !== 'barcode' && weight <= 4);
+  // qr = large QR at the top | compact = small QR at the bottom (many items) | barcode = Code 128 only
+  const mode = (codeMode === 'qr' || codeMode === 'compact' || codeMode === 'barcode') ? codeMode : (weight <= 4 ? 'qr' : 'compact');
+  const trackUrl = lblTrackUrl(o.id);
 
   const MAX_ROWS = 14;
   const shown = d.items.slice(0, MAX_ROWS);
@@ -2897,7 +2910,7 @@ function lblSheetHtml(o, codeMode){
       </div>
       ${payBox}
     </div>
-    <div class="ot${useQr ? '' : ' bc'}">
+    <div class="ot${mode === 'qr' ? '' : ' bc'}">
       <div class="l">
         <div class="a">
           <div class="k">Ordered through</div>
@@ -2909,7 +2922,7 @@ function lblSheetHtml(o, codeMode){
           <div class="meta">${lblEsc(lblDate(o.timestamp))} &nbsp;|&nbsp; ${d.items.length} product${d.items.length === 1 ? '' : 's'}, ${totalQty} pc${totalQty === 1 ? '' : 's'}</div>
         </div>
       </div>
-      ${useQr ? `<div class="qr">${qrSvg(o.id)}</div>` : ''}
+      ${mode === 'qr' ? `<div class="qrw"><div class="qr">${qrSvg(trackUrl)}</div><div class="qcap">SCAN TO TRACK</div></div>` : ''}
     </div>
     <div class="ship${addr.length > 120 ? ' long' : ''}">
       <div class="k">Ship to</div>
@@ -2926,10 +2939,15 @@ function lblSheetHtml(o, codeMode){
     </div>
     ${d.cod && d.extras.length ? `<div class="sum">${d.extras.map(e => `<div><span>${lblEsc(e[0])}</span><span>${lblEsc(e[1])}</span></div>`).join('')}</div>` : ''}
     ${d.cod ? `<div class="collect"><div class="k2">AMOUNT TO BE<br>COLLECTED (COD)</div><div class="amt">BD ${lblMoney(d.collect)}</div></div>` : ''}
-    <div class="ft${useQr ? '' : ' bc'}">
-      ${useQr ? '' : code128Svg(o.id, '7.5mm')}
+    ${mode === 'compact' ? `
+    <div class="ft cq">
+      <div class="qrs">${qrSvg(trackUrl)}</div>
+      <div class="ftx"><div class="k">Scan to track your order</div><div class="idt2">${lblEsc(o.id)}</div><div class="pr">Printed ${lblEsc(printedAt)}</div></div>
+    </div>` : `
+    <div class="ft${mode === 'barcode' ? ' bc' : ''}">
+      ${mode === 'barcode' ? code128Svg(o.id, '7.5mm') : ''}
       <div class="idt"><span>${lblEsc(o.id)}</span><span class="pr">Printed ${lblEsc(printedAt)}</span></div>
-    </div>
+    </div>`}
    </div>
   </div>`;
 }
@@ -2962,7 +2980,9 @@ html,body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-web
 .ot.bc .oid{font-size:8.6pt;word-break:normal;white-space:nowrap}
 .oid{font-size:9pt;font-weight:900;letter-spacing:.02em;line-height:1.1;word-break:break-all}
 .meta{font-size:6.6pt;font-weight:600;margin-top:.7mm}
-.qr{width:22mm;height:22mm;flex:none}
+.qrw{flex:none;width:22mm;text-align:center}
+.qr{width:22mm;height:22mm}
+.qcap{font-size:4.8pt;font-weight:800;letter-spacing:.1em;margin-top:.2mm}
 .ship{flex:none;padding:1.5mm 2mm;border-bottom:.4mm solid #000}
 .ship .cn{font-size:11pt;font-weight:900;line-height:1.1;margin-top:.5mm}
 .ship .ad{font-size:8.6pt;font-weight:600;line-height:1.25;margin-top:.5mm}
@@ -2987,6 +3007,10 @@ tr.more td{font-style:italic;font-weight:700}
 .ft .idt{display:flex;justify-content:space-between;align-items:baseline;font-size:6.6pt;font-weight:700;letter-spacing:.06em;margin-top:.5mm}
 .ft .pr{font-size:5pt;font-weight:400;letter-spacing:0}
 .ft.bc{padding-top:1.4mm}
+.ft.cq{display:flex;align-items:center;gap:2.5mm;padding:1.2mm 2mm}
+.ft.cq .qrs{width:16.5mm;height:16.5mm;flex:none}
+.ft.cq .ftx{flex:1;min-width:0}
+.ft.cq .idt2{font-size:8.4pt;font-weight:900;letter-spacing:.03em;margin:.5mm 0 .3mm}
 .sheet.t1 table.it td{font-size:7pt;padding:.6mm 0}
 .sheet.t2 table.it td{font-size:6.4pt;padding:.4mm 0}.sheet.t2 .nm{-webkit-line-clamp:1}
 .sheet.t3 table.it td{font-size:5.6pt;padding:.2mm 0}.sheet.t3 .nm{-webkit-line-clamp:1}
@@ -3016,6 +3040,11 @@ function lblPopupBoot(cfg){
       for(var l = 0; l < levels.length; l++){
         sh.className = 'sheet' + (levels[l] ? ' ' + levels[l] : '');
         if(it.scrollHeight <= it.clientHeight + 1){ ok = true; break; }
+      }
+      if(!ok){
+        // Next: drop the small "Sold by" line to win back some height.
+        var sold = sh.querySelector('.sold');
+        if(sold){ sold.style.display = 'none'; if(it.scrollHeight <= it.clientHeight + 1) ok = true; }
       }
       if(!ok){
         var body = it.querySelector('tbody'), cols = it.querySelectorAll('th').length, hidden = 0;
@@ -3055,11 +3084,11 @@ function openLabelWindow(ids, codeMode, autoprint){
   const w = window.open('', 'souqifyLabels');
   if(!w){ alert('Your browser blocked the label window. Please allow pop-ups for this page and try again.'); return; }
   const cfg = JSON.stringify({ ids: orders.map(o => o.id), autoprint: !!autoprint }).replace(/</g, '\\u003c');
-  const sel = m => `<option value="${m}"${m === codeMode ? ' selected' : ''}>${{auto:'Auto (QR, or barcode if many items)', qr:'QR code', barcode:'Barcode'}[m]}</option>`;
+  const sel = m => `<option value="${m}"${m === codeMode ? ' selected' : ''}>${{auto:'Auto (tracking QR)', qr:'Large QR (top)', compact:'Small QR (bottom)', barcode:'Barcode only (no tracking)'}[m]}</option>`;
   const html = '<!doctype html><html><head><meta charset="utf-8"><title>Label ' + lblEsc(orders.map(o => o.id).join(', ')) + '</title>' +
     '<style>' + LBL_CSS + '</style></head><body>' +
     '<div class="bar"><b>Souqify-bh shipping label</b><span>' + orders.length + ' label' + (orders.length === 1 ? '' : 's') + ' &middot; 3 &times; 5 in (76 &times; 127 mm)</span>' +
-    '<label>Code: <select onchange="lblRegen(this.value)">' + ['auto', 'qr', 'barcode'].map(sel).join('') + '</select></label>' +
+    '<label>Code: <select onchange="lblRegen(this.value)">' + ['auto', 'qr', 'compact', 'barcode'].map(sel).join('') + '</select></label>' +
     '<button onclick="window.print()">&#128424; Print</button></div>' +
     orders.map(o => lblSheetHtml(o, codeMode)).join('') +
     '<script>(' + lblPopupBoot.toString() + ')(' + cfg + ');<\/script></body></html>';
@@ -3067,6 +3096,62 @@ function openLabelWindow(ids, codeMode, autoprint){
   try{ w.focus(); }catch(e){}
 }
 function printOrderLabel(id){ openLabelWindow([id], 'auto', true); }
+
+/* =====================================================================
+ * TRACKING (delivery stage) dropdown, shown under the Order status of an
+ * order once it is "shipped". Saved via the updateDeliveryStage action
+ * (add-on in Code.gs). Choosing "Delivered" also marks the order delivered.
+ * ===================================================================== */
+const DELIVERY_STAGES = ['Order confirmed', 'Booked delivery slot', 'Picked by courier partner', 'Delivery hub', 'Out for delivery', 'Delivered'];
+
+function deliveryStageBoxHtml(o){
+  const show = o.orderStatus === 'shipped' || o.orderStatus === 'delivered';
+  const cur = o.orderStatus === 'delivered' ? 'Delivered' : (o.deliveryStage || '');
+  return `<div class="stagebox" id="stage_${lblEsc(o.id)}" style="${show ? '' : 'display:none;'}">
+    <div class="stage-k">Delivery stage</div>
+    <select class="status" onchange="setDeliveryStage('${lblEsc(o.id)}', this)">
+      <option value="">Select stage…</option>
+      ${DELIVERY_STAGES.map(s => `<option value="${s}"${s === cur ? ' selected' : ''}>${s}</option>`).join('')}
+    </select>
+  </div>`;
+}
+
+// Called after the main Order status changes: reveal/hide the Tracking box.
+function syncStageBox(id){
+  const o = ORDERS.find(x => x.id === id);
+  const box = document.getElementById('stage_' + id);
+  if(!o || !box) return;
+  box.style.display = (o.orderStatus === 'shipped' || o.orderStatus === 'delivered') ? '' : 'none';
+  const sel = box.querySelector('select');
+  if(sel) sel.value = o.orderStatus === 'delivered' ? 'Delivered' : (o.deliveryStage || '');
+}
+
+async function setDeliveryStage(id, selEl){
+  const stage = selEl.value;
+  const o = ORDERS.find(x => x.id === id);
+  const previous = o ? (o.deliveryStage || '') : '';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateDeliveryStage', password: ADMIN_PASSWORD, id, stage }) });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Could not save.');
+  }catch(err){
+    selEl.value = previous;
+    alert('Could not update tracking: ' + (err && err.message ? err.message : err) +
+      '\n\nIf this says "Unknown POST action", add the updateDeliveryStage line to Code.gs and deploy a new version.');
+    return;
+  }
+  if(o){
+    o.deliveryStage = stage;
+    if(stage === 'Delivered'){
+      o.orderStatus = 'delivered';
+      // keep the main Order status dropdown in step
+      const row = selEl.closest('td');
+      const main = row && row.querySelector('select.status');
+      if(main) main.value = 'delivered';
+    }
+  }
+  renderDashboard();
+}
 
 </script>
 </body>
