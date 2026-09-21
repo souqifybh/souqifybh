@@ -13,7 +13,7 @@
     "heroProductId3": "",
     "referEarnActive": false,
     "announcementActive": true,
-    "announcementText": "🔒 100% GENUINE PRODUCTS ✅     CASH ON DELIVERY 🚚",
+    "announcementText": "🔒 AFFORDABLE PRICES ✅     CASH ON DELIVERY 🚚",
     "razorpayKeyId": "rzp_live_TXicGytbZcJELZ",
     "benefitpayName": "",
     "benefitpayIban": "",
@@ -29,6 +29,7 @@
     "giveawayHamperShortDesc": "",
     "heroCategory": "Watches",
     "heroCategory2": "",
-    "heroCategory3": "Watches"
+    "heroCategory3": "Watches",
+    "mediaLayout": "grid"
   }
 }
