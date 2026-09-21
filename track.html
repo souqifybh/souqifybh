@@ -67,17 +67,30 @@
   .status-msg{margin:16px 0 4px;font-size:15px;line-height:1.6;color:var(--ink);}
   .status-msg strong{font-family:'Sora','Inter',Arial,sans-serif;}
 
-  .tl{list-style:none;margin:20px 0 4px;padding:0;}
-  .tl li{position:relative;padding:0 0 18px 36px;font-size:14px;font-weight:600;color:var(--ink-soft);line-height:24px;}
-  .tl li:last-child{padding-bottom:0;}
-  .tl li::before{content:'';position:absolute;left:10.5px;top:24px;bottom:0;width:3px;background:var(--line);}
+  .timeline-wrap{margin-top:20px;padding:18px 16px 6px;border:1px solid var(--line);border-radius:14px;background:#FCFDF8;}
+  .timeline-title{font:800 13px 'Sora','Inter',Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin-bottom:14px;}
+  .tl{list-style:none;margin:0;padding:0;}
+  .tl li{position:relative;display:grid;grid-template-columns:34px 1fr auto;column-gap:10px;min-height:58px;padding:0 0 18px;font-size:14px;color:var(--ink-soft);}
+  .tl li:last-child{min-height:34px;padding-bottom:0;}
+  .tl li::before{content:'';position:absolute;left:14px;top:28px;bottom:0;width:2px;background:var(--line);}
   .tl li:last-child::before{display:none;}
   .tl li.done::before{background:var(--blush-deep);}
-  .tl .c{position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1;color:#fff;font-weight:800;}
-  .tl li.done .c{background:var(--blush-deep);border-color:var(--blush-deep);}
-  .tl li.now .c{border-color:var(--blush-deep);box-shadow:0 0 0 5px rgba(165,186,74,.35);}
-  .tl li.done,.tl li.now{color:var(--ink);}
-  .tl li.now{font-weight:800;}
+  .tl .c{position:relative;z-index:1;width:29px;height:29px;border-radius:50%;background:#fff;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;line-height:1;color:var(--ink-soft);font-weight:800;}
+  .tl li.done .c{background:var(--blush-deep);border-color:var(--blush-deep);color:#fff;}
+  .tl li.now .c{border-color:var(--blush-deep);background:#fff;box-shadow:0 0 0 5px rgba(165,186,74,.22);color:var(--blush-deep);}
+  .tl .stage{padding-top:4px;line-height:1.35;}
+  .tl .stage-name{font-weight:700;color:var(--ink);}
+  .tl li:not(.done):not(.now) .stage-name{color:var(--ink-soft);font-weight:600;}
+  .tl .stage-text{margin-top:3px;font-size:12px;line-height:1.45;color:var(--ink-soft);}
+  .tl .stage-time{margin-top:5px;font-size:11px;font-weight:700;color:var(--blush-deep);}
+  .tl .stage-state{padding-top:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}
+  .tl li.done .stage-state{color:var(--blush-deep);}
+  .tl li.now .stage-state{color:var(--blush-deep);}
+  @media(max-width:520px){
+    .timeline-wrap{padding:16px 12px 4px;}
+    .tl li{grid-template-columns:34px 1fr;column-gap:9px;}
+    .tl .stage-state{grid-column:2;padding-top:3px;}
+  }
 
   .sec{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);}
   .items{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:10px;}
@@ -163,6 +176,22 @@ function fmtDate(iso){
   const d = new Date(iso);
   return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
 }
+function fmtDateTime12(iso){
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? '' : d.toLocaleString('en-US', {
+    day:'numeric', month:'short', year:'numeric',
+    hour:'numeric', minute:'2-digit', hour12:true
+  });
+}
+function timelineTime(o, title, index){
+  const history = Array.isArray(o.deliveryTimeline) ? o.deliveryTimeline : [];
+  const hit = history.find(x => String(x.title || '') === title);
+  if (hit && hit.at) return fmtDateTime12(hit.at);
+
+  // Order placed is always supported by the existing order timestamp.
+  if (index === 0 && o.placedAt) return fmtDateTime12(o.placedAt);
+  return '';
+}
 function fmtDay(ymd){
   const p = String(ymd).split('-').map(Number);
   if(p.length !== 3 || p.some(isNaN)) return String(ymd || '');
@@ -183,11 +212,28 @@ function render(o){
   const title = cancelled ? 'Order cancelled' : TIMELINE[cur].title;
   const text  = cancelled ? CANCELLED_TEXT : TIMELINE[cur].text;
   const timeline = cancelled ? '' : `
-    <ol class="tl">${TIMELINE.map((t, i) => {
-      const done = i < cur || (i === cur && cur === TIMELINE.length - 1);
-      const cls = done ? 'done' : (i === cur ? 'now' : '');
-      return `<li class="${cls}"><span class="c">${done ? '&#10003;' : ''}</span>${esc(t.title)}</li>`;
-    }).join('')}</ol>`;
+    <div class="timeline-wrap">
+      <div class="timeline-title">Order tracking</div>
+      <ol class="tl">${TIMELINE.map((t, i) => {
+        const done = i < cur || (i === cur && cur === TIMELINE.length - 1);
+        const now = i === cur && cur !== TIMELINE.length - 1;
+        const cls = done ? 'done' : (now ? 'now' : '');
+        const state = done ? 'Completed' : (now ? 'Current' : 'Upcoming');
+        const completedAt = timelineTime(o, t.title, i);
+        const timeHtml = completedAt
+          ? `<div class="stage-time">${esc(completedAt)}</div>`
+          : '';
+        return `<li class="${cls}">
+          <span class="c">${done ? '&#10003;' : (now ? '&#8226;' : '')}</span>
+          <div class="stage">
+            <div class="stage-name">${esc(t.title)}</div>
+            <div class="stage-text">${esc(t.text)}</div>
+            ${timeHtml}
+          </div>
+          <span class="stage-state">${state}</span>
+        </li>`;
+      }).join('')}</ol>
+    </div>`;
 
   const items = (o.items || []).map(i => `
     <li>
