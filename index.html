@@ -237,7 +237,9 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 
   /* ---------- intro splash ---------- */
   #introScreen{
-    position:fixed; inset:0; z-index:1000; background:var(--blush);
+    position:fixed; inset:0; z-index:1000;
+    /* splash background: soft cream (matches reference screenshot) - desktop + mobile */
+    background:#F9F8F3 linear-gradient(90deg,#F9F8F3 0%,#F9F8F3 40%,#F1F1E7 100%);
     display:flex; align-items:center; justify-content:center;
     transition:opacity .6s ease, visibility .6s ease;
   }
