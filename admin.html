@@ -178,6 +178,15 @@
   .order-details.show{display:block;}
   .order-details .oi{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line);}
 
+  /* Ordered products: one line each, name is a link to that product's page */
+  .oitems{margin-top:7px;min-width:210px;max-width:290px;}
+  .oitem{display:flex;align-items:baseline;gap:6px;font-size:12px;line-height:1.55;white-space:nowrap;}
+  .oitem-name{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;color:var(--ink);}
+  a.oitem-name{color:var(--blush-deep);text-decoration:underline dotted;text-underline-offset:3px;}
+  a.oitem-name:hover{text-decoration:underline solid;}
+  .oitem-col{flex:none;color:var(--ink-soft);font-size:11px;}
+  .oitem-qty{flex:none;font-weight:800;}
+
   @media (max-width:980px){
     .stat-grid{grid-template-columns:repeat(2,1fr);}
     .grid2{grid-template-columns:1fr;}
@@ -1378,16 +1387,15 @@ function renderOrderRows(){
 
   document.getElementById('orderRows').innerHTML = list.length ? list.map((o,idx) => {
     const items = parseItems(o);
-    const itemsText = items.map(i => `${i.name} ×${i.qty}`).join(', ');
     return `
       <tr>
         <td>
           <a href="javascript:void(0)" onclick="toggleDetails('od${idx}')" style="font-weight:700;">${o.id}</a>
           <div class="muted">${new Date(o.timestamp).toLocaleString()}</div>
+          ${orderItemsLinksHtml(o)}
           <div class="order-details" id="od${idx}">
             <div class="oi"><span>Phone</span><span>${o.phone||'-'}</span></div>
             <div class="oi"><span>Address</span><span style="text-align:right;max-width:220px;">${o.address||'-'}</span></div>
-            <div class="oi"><span>Items</span><span style="text-align:right;max-width:220px;">${itemsText||'-'}</span></div>
             <div class="oi"><span>Notes</span><span>${o.notes||'-'}</span></div>
           </div>
         </td>
@@ -1423,6 +1431,7 @@ function renderOrderRows(){
           <button class="ghost small" onclick="saveTracking('${o.id}')">Save</button>
         </td>
         <td style="min-width:150px;">
+          <button class="primary small" style="width:100%;margin-bottom:4px;" onclick="printOrderLabel('${o.id}')">🖨 Print label</button>
           <button class="ghost small" onclick="toggleDetails('od${idx}')">Details</button>
           <select id="sampleType_${o.id}" style="width:100%;margin-top:4px;padding:6px 8px;font-size:11.5px;border:1.5px solid var(--line);border-radius:7px;font-family:inherit;">
             <option value="confirmation">Sample: Order confirmation</option>
@@ -2517,6 +2526,548 @@ switchTab = function(tab){
   if(tab === 'giftorders') loadGiftOrders();
   if(tab === 'giveaway') loadGiveawayEntries();
 };
+</script>
+<script>
+/* ---------- QR code generator (byte mode, ECC level M, versions 1-10) ---------- */
+const QR_ECC_PER_BLOCK_M = [-1, 10, 16, 26, 18, 24, 16, 18, 22, 22, 26];
+const QR_NUM_BLOCKS_M    = [-1,  1,  1,  1,  2,  2,  4,  4,  4,  5,  5];
+
+function qrRawModules(ver){
+  let r = (16 * ver + 128) * ver + 64;
+  if (ver >= 2){
+    const na = Math.floor(ver / 7) + 2;
+    r -= (25 * na - 10) * na - 55;
+    if (ver >= 7) r -= 36;
+  }
+  return r;
+}
+function qrDataCodewords(ver){
+  return Math.floor(qrRawModules(ver) / 8) - QR_ECC_PER_BLOCK_M[ver] * QR_NUM_BLOCKS_M[ver];
+}
+function gfMul(x, y){
+  let z = 0;
+  for (let i = 7; i >= 0; i--){
+    z = (z << 1) ^ ((z >>> 7) * 0x11D);
+    z ^= ((y >>> i) & 1) * x;
+  }
+  return z;
+}
+function rsDivisor(degree){
+  const res = [];
+  for (let i = 0; i < degree - 1; i++) res.push(0);
+  res.push(1);
+  let root = 1;
+  for (let i = 0; i < degree; i++){
+    for (let j = 0; j < res.length; j++){
+      res[j] = gfMul(res[j], root);
+      if (j + 1 < res.length) res[j] ^= res[j + 1];
+    }
+    root = gfMul(root, 0x02);
+  }
+  return res;
+}
+function rsRemainder(data, divisor){
+  const res = divisor.map(() => 0);
+  data.forEach(b => {
+    const factor = b ^ res.shift();
+    res.push(0);
+    divisor.forEach((coef, i) => { res[i] ^= gfMul(coef, factor); });
+  });
+  return res;
+}
+function qrMake(text){
+  const bytes = Array.from(unescape(encodeURIComponent(String(text))), c => c.charCodeAt(0));
+  let ver = 0;
+  for (let v = 1; v <= 10; v++){
+    const ccBits = v < 10 ? 8 : 16;
+    if (4 + ccBits + bytes.length * 8 <= qrDataCodewords(v) * 8){ ver = v; break; }
+  }
+  if (!ver) return null; // too long for this compact encoder
+  const size = ver * 4 + 17;
+
+  // 1. data bits
+  const bits = [];
+  const pushBits = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1); };
+  pushBits(4, 4);
+  pushBits(bytes.length, ver < 10 ? 8 : 16);
+  bytes.forEach(b => pushBits(b, 8));
+  const capBits = qrDataCodewords(ver) * 8;
+  pushBits(0, Math.min(4, capBits - bits.length));
+  pushBits(0, (8 - bits.length % 8) % 8);
+  for (let pad = 0xEC; bits.length < capBits; pad ^= 0xEC ^ 0x11) pushBits(pad, 8);
+  const data = [];
+  for (let i = 0; i < bits.length; i += 8){
+    let v = 0; for (let j = 0; j < 8; j++) v = (v << 1) | bits[i + j];
+    data.push(v);
+  }
+
+  // 2. error correction + interleave
+  const nBlocks = QR_NUM_BLOCKS_M[ver], eccLen = QR_ECC_PER_BLOCK_M[ver];
+  const rawCw = Math.floor(qrRawModules(ver) / 8);
+  const numShort = nBlocks - rawCw % nBlocks;
+  const shortLen = Math.floor(rawCw / nBlocks);
+  const blocks = [];
+  const div = rsDivisor(eccLen);
+  for (let i = 0, k = 0; i < nBlocks; i++){
+    const dat = data.slice(k, k + shortLen - eccLen + (i < numShort ? 0 : 1));
+    k += dat.length;
+    const ecc = rsRemainder(dat, div);
+    if (i < numShort) dat.push(0);
+    blocks.push(dat.concat(ecc));
+  }
+  const all = [];
+  for (let i = 0; i < blocks[0].length; i++){
+    blocks.forEach((blk, j) => {
+      if (i != shortLen - eccLen || j >= numShort) all.push(blk[i]);
+    });
+  }
+
+  // 3. matrix
+  const mod = [], fn = [];
+  for (let y = 0; y < size; y++){ mod.push(new Array(size).fill(false)); fn.push(new Array(size).fill(false)); }
+  const setFn = (x, y, dark) => { mod[y][x] = dark; fn[y][x] = true; };
+  for (let i = 0; i < size; i++){ setFn(6, i, i % 2 == 0); setFn(i, 6, i % 2 == 0); }
+  const finder = (cx, cy) => {
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++){
+      const d = Math.max(Math.abs(dx), Math.abs(dy)), x = cx + dx, y = cy + dy;
+      if (x >= 0 && x < size && y >= 0 && y < size) setFn(x, y, d != 2 && d != 4);
+    }
+  };
+  finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+  // alignment
+  let ap = [];
+  if (ver > 1){
+    const na = Math.floor(ver / 7) + 2;
+    const step = Math.ceil((ver * 4 + 4) / (na * 2 - 2)) * 2;
+    ap = [6];
+    for (let pos = size - 7; ap.length < na; pos -= step) ap.splice(1, 0, pos);
+  }
+  for (let i = 0; i < ap.length; i++) for (let j = 0; j < ap.length; j++){
+    if ((i == 0 && j == 0) || (i == 0 && j == ap.length - 1) || (i == ap.length - 1 && j == 0)) continue;
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++)
+      setFn(ap[i] + dx, ap[j] + dy, Math.max(Math.abs(dx), Math.abs(dy)) != 1);
+  }
+  const bit = (x, i) => ((x >>> i) & 1) != 0;
+  const drawFormat = (mask) => {
+    const d = (0 << 3) | mask; // ECC level M = 00
+    let rem = d;
+    for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    const b = ((d << 10) | rem) ^ 0x5412;
+    for (let i = 0; i <= 5; i++) setFn(8, i, bit(b, i));
+    setFn(8, 7, bit(b, 6)); setFn(8, 8, bit(b, 7)); setFn(7, 8, bit(b, 8));
+    for (let i = 9; i < 15; i++) setFn(14 - i, 8, bit(b, i));
+    for (let i = 0; i < 8; i++) setFn(size - 1 - i, 8, bit(b, i));
+    for (let i = 8; i < 15; i++) setFn(8, size - 15 + i, bit(b, i));
+    setFn(8, size - 8, true);
+  };
+  drawFormat(0);
+  if (ver >= 7){
+    let rem = ver;
+    for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+    const b = (ver << 12) | rem;
+    for (let i = 0; i < 18; i++){
+      const a = size - 11 + i % 3, c = Math.floor(i / 3);
+      setFn(a, c, bit(b, i)); setFn(c, a, bit(b, i));
+    }
+  }
+  // codewords, zig-zag
+  let bi = 0;
+  for (let right = size - 1; right >= 1; right -= 2){
+    if (right == 6) right = 5;
+    for (let vert = 0; vert < size; vert++){
+      for (let j = 0; j < 2; j++){
+        const x = right - j;
+        const up = ((right + 1) & 2) == 0;
+        const y = up ? size - 1 - vert : vert;
+        if (!fn[y][x] && bi < all.length * 8){
+          mod[y][x] = bit(all[bi >>> 3], 7 - (bi & 7));
+          bi++;
+        }
+      }
+    }
+  }
+  // masks
+  const maskFn = [
+    (x, y) => (x + y) % 2 == 0,
+    (x, y) => y % 2 == 0,
+    (x, y) => x % 3 == 0,
+    (x, y) => (x + y) % 3 == 0,
+    (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 == 0,
+    (x, y) => x * y % 2 + x * y % 3 == 0,
+    (x, y) => (x * y % 2 + x * y % 3) % 2 == 0,
+    (x, y) => ((x + y) % 2 + x * y % 3) % 2 == 0
+  ];
+  const applyMask = (m) => {
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++)
+      if (!fn[y][x] && maskFn[m](x, y)) mod[y][x] = !mod[y][x];
+  };
+  const penalty = () => {
+    let p = 0;
+    const line = (get) => {
+      for (let a = 0; a < size; a++){
+        let run = 1;
+        for (let b = 1; b < size; b++){
+          if (get(a, b) == get(a, b - 1)) run++;
+          else { if (run >= 5) p += 3 + run - 5; run = 1; }
+        }
+        if (run >= 5) p += 3 + run - 5;
+        // finder-like 1:1:3:1:1 with 4 light modules either side
+        for (let b = 0; b + 11 <= size; b++){
+          const s = []; for (let k = 0; k < 11; k++) s.push(get(a, b + k) ? 1 : 0);
+          const j = s.join('');
+          if (j == '10111010000' || j == '00001011101') p += 40;
+        }
+      }
+    };
+    line((r, c) => mod[r][c]);
+    line((c, r) => mod[r][c]);
+    for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++){
+      const c = mod[y][x];
+      if (c == mod[y][x + 1] && c == mod[y + 1][x] && c == mod[y + 1][x + 1]) p += 3;
+    }
+    let dark = 0; mod.forEach(r => r.forEach(v => { if (v) dark++; }));
+    const total = size * size;
+    p += (Math.ceil(Math.abs(dark * 20 - total * 10) / total) - 1) * 10;
+    return p;
+  };
+  let best = 0, bestP = Infinity;
+  for (let m = 0; m < 8; m++){
+    applyMask(m); drawFormat(m);
+    const p = penalty();
+    if (p < bestP){ bestP = p; best = m; }
+    applyMask(m); // undo
+  }
+  applyMask(best); drawFormat(best);
+  return { size, modules: mod };
+}
+// SVG string (crisp black squares, 2-module white margin). Scales to its container.
+function qrSvg(text){
+  const q = qrMake(text);
+  if (!q) return '';
+  const pad = 2, n = q.size + pad * 2;
+  let d = '';
+  for (let y = 0; y < q.size; y++){
+    let x = 0;
+    while (x < q.size){
+      if (q.modules[y][x]){
+        let w = 1; while (x + w < q.size && q.modules[y][x + w]) w++;
+        d += 'M' + (x + pad) + ' ' + (y + pad) + 'h' + w + 'v1h-' + w + 'z';
+        x += w;
+      } else x++;
+    }
+  }
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + n + ' ' + n + '" shape-rendering="crispEdges" style="display:block;width:100%;height:100%"><rect width="' + n + '" height="' + n + '" fill="#fff"/><path d="' + d + '" fill="#000"/></svg>';
+}
+
+/* ---------- Code 128 (subset B) barcode ---------- */
+const C128 = ['212222','222122','222221','121223','121322','131222','122213','122312','132212','221213','221312','231212','112232','122132','122231','113222','123122','123221','223211','221132','221231','213212','223112','312131','311222','321122','321221','312212','322112','322211','212123','212321','232121','111323','131123','131321','112313','132113','132311','211313','231113','231311','112133','112331','132131','113123','113321','133121','313121','211331','231131','213113','213311','213131','311123','311321','331121','312113','312311','332111','314111','221411','431111','111224','111422','121124','121421','141122','141221','112214','112412','122114','122411','142112','142211','241211','221114','413111','241112','134111','111242','121142','121241','114212','124112','124211','411212','421112','421211','212141','214121','412121','111143','111341','131141','114113','114311','411113','411311','113141','114131','311141','411131','211412','211214','211232','2331112'];
+function code128Svg(text, heightCss){
+  const s = String(text).replace(/[^\x20-\x7E]/g, '-');
+  const codes = [104];
+  let sum = 104;
+  for (let i = 0; i < s.length; i++){ const v = s.charCodeAt(i) - 32; codes.push(v); sum += v * (i + 1); }
+  codes.push(sum % 103); codes.push(106);
+  const quiet = 8;
+  let x = quiet, rects = '';
+  codes.forEach(c => {
+    const p = C128[c];
+    for (let i = 0; i < p.length; i++){
+      const w = Number(p[i]);
+      if (i % 2 == 0) rects += '<rect x="' + x + '" y="0" width="' + w + '" height="1"/>';
+      x += w;
+    }
+  });
+  const total = x + quiet;
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + total + ' 1" preserveAspectRatio="none" shape-rendering="crispEdges" style="display:block;width:100%;height:' + (heightCss || '9mm') + '"><rect width="' + total + '" height="1" fill="#fff"/><g fill="#000">' + rects + '</g></svg>';
+}
+
+
+/* =====================================================================
+ * ORDER ITEM LINKS + PRINT SHIPPING LABEL (3 x 5 in, black & white)
+ * ---------------------------------------------------------------------
+ * 1. orderItemsLinksHtml(o): one-line product names on every order row,
+ *    each one a link to that product's page on the live storefront.
+ * 2. printOrderLabel(id): opens a print-ready 3:5 label for that order.
+ *    - Cash on Delivery (not yet paid): product, qty, amount + a big bold
+ *      "AMOUNT TO COLLECT" box.
+ *    - Prepaid: product name + qty only, no money on the label.
+ *    QR code (or Code 128 barcode when the order needs the space) holds
+ *    the order ID. Everything is drawn in pure black on white so it
+ *    prints cleanly on a thermal label printer.
+ * ===================================================================== */
+const LBL_STORE_URL = 'https://souqify-bh.com';
+const LBL_COMPANY   = 'AIN ZAHARA GENERAL TRADING W.L.L';
+const LBL_SUPPORT   = '+973 3518 4023';
+const LBL_WORDMARK  = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAArwAAABoAQAAAAA78R7+AAAGjklEQVR42rWZTW7cNhTHf+QItpAasZZZBLCOMMusGh2hR/ARsui6ZoGg6DJHcG+iBll06d5AAbzIogvZMFA50YhdiJRIDcmRxykXHksiH9/n/71HCs1Txr8vNv2qiXfySXR5wa5cNzNAWAgVm/0I3K7kQWvdwJWeRgOnOjIa8ObGR4vWA7CZX5ndtNa65q2ZdTp/41xrrXWP0ONa4Koza3q7tpVwD+yUKy2THhtPuh0AD1ZWxrVmKIDe1fENwO/2xRfienxwyI/jxvxm5rdDzIQrgK92arlcu0+mmt/Ue//KifBIRFeutO5aZ1R7+lEL52odVfQeN31It45SJ215bxDTkmwi3FntuIvaEGGrrtlCg8N6OzKUT4QNjdxj9SFEuNsj16ci79p7rpdrnWHF0Cqk/m5cXkRCWi2U545mzxc6wssBaf8vfIIhuKjDYWO8tHfcFZA+b0PAQdnTQMC0BcPIl3VU6WuzTzA1AoVyNbDcYVjA5kXjKu1qCDM1AOftL+ENc6vFKWR6OG0urG5a2CjRBMwySvMOUTvxP48MFPQTVJABr6AtJg28hldBD+1go+CNnxWGkKcDsoMGXs42u4SToCO3cAaceM44Y85ob+l8EICorTWFAhFxZAozYd8ZR7BovR0lwNaqXkacDRq43EO+bDElcwhnMAoJ2vyzDTFVm5dlcGODQvlE2HC/UY6082d/bGC0dQyr61j6H4zbZSGmlJEzi4RPB2rCIOSSvSpSbcyCyGD4GLAowxz3Ro0iwJS2QCXiNYpfCXWrC6zS6qSLodDsMnKhJuHZeKH/KpFp83GKitVuMpWlfcb3FdH7hPr95EO5L23vsNPHUEi4hId4JO2FrZNsEtkWQBY+LOR2bbK+HoL1cO1qVnr5rUkQ66ZVeUycdmGs6wV+xWM6PRoHg5C5WzKlpc2m3xCoKlqXIelWmtSUHDsqH1+kU2mmnaN1yrKoU8wOIzPgL77DKEE5Aktp24MVIZccBd889xORINXJQFERe1eL2u12JU+Bzk8IIeas4xaFldM0KQ7YZ/2QoxquV7j/ge+ZnwPkKOAt34HFxeNZov96BnFpcnr1bKLCjytbc908n121ZH4b7CaOGrlH+MxreXkOChUe4Y1KB9rxdryMtUlrcrM3oeRXBbvM2PF1tHINKS8V8RXqrUkS0laajcf2kMi/T3Dpd4E2ScRb3rhUamYtg7kDiWmk3UPU2SKbxx+6EDMSINJ/rdHxab/pgulM2iK9D3eoRyt6JHwSBsfSVUKRqgxihIVaVLdBqO+fzvFMsV0ltVhNuFwDMMMaziufcLFXFmcO583BxL1f60SyZptC3C6Va+92Cv7M7JR8YaBm4QiF2/slI7DlGqqdJWwKyGIZEr0Xjs2Kuv+aFg1KhqvXOmjmdlUhMJ6TydgBTOE4gi32HkCIijqNor1vPJE4F7Njxx18OpwTgEYGy2JtPVvPbiaMk+6uEn3TrE35NXRqZ+rGsXdzqshPLw/mms34uZXjMV0/GaiJxpaCnajhb5UK1LM3Gi4Usqt9DPgC8GVk1VQz/RysRQldsmoqMnouK+RYA3W+TWeHurEnHOO4fwX9NlmQmc5RtvduME3wKYwAHXDDVPbr32CXp/yiBAQlcjwLbYzfVWgFu9kN+9laBcAfwHuxBo8bPvgIfw0P1vEUO4U2Z2Y5QKvg44F6/73RyD08Wkol3MIHCxUV1O4lCjxcwueVGUQX8/VKAbvy0VXhR4Ns5s9QWJYOwXINd2JCsxz4nE84V4KePkoAnUObr+M42OqWHiAXM5r8DN1PKypw6Z0QzvtUHv6X84KP0KcyZDMsOC49jDN3hZm3TWU8fkhnEEIsWteX/tfx7dZsnUyq3cOCsKF46elaeD85wD8H0PixGGfLOnhC9crbTjq79RWrkF5ufc7P/AKmcl9uYLRcvcLR5JlH0G5gl249r1M2QlZULHLjGGZyh41fBBjFT7/Nmlp6vBLGvyE+t08DgLBPnYHuc3uf27g3zT1CawUXndANcuyZJhbHxy2uAFP1fGKwq0sWhaVt0mtLbrKQmK3zDudKRdQm9KwjFftG24o6MzoYHGG11i3mmtvecTuX4R3woz89dpMuQWjvXue8e1t7VYKTsk/V4dCbeqsnjYFTrXyRIhyLp3fnn0vO20OT7o44rioil8BJoF952rE7jBZHqEJLOO3+B1UItablO4Jj7grnljU25xjCiMOefJcdc97zbYVX/AcHVRJ09crNpAAAAABJRU5ErkJggg==';
+const LBL_ICON      = 'data:image/png;base64,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';
+
+function lblEsc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function productPageUrl(id){ return LBL_STORE_URL + '/#/product/' + encodeURIComponent(id); }
+
+// One line per ordered product. The name is a link to that product's page
+// (opens in a new tab), long names are cut with "…" (hover shows the full
+// name), and the quantity always stays visible on the right.
+function orderItemsLinksHtml(o){
+  const items = parseItems(o);
+  if(!items.length) return '<div class="oitems"><span class="muted">No items</span></div>';
+  return '<div class="oitems">' + items.map(i => {
+    const name = lblEsc(i.name || 'Product');
+    const nameEl = i.id
+      ? `<a class="oitem-name" href="${productPageUrl(i.id)}" target="_blank" rel="noopener" title="Open product page: ${name}">${name}</a>`
+      : `<span class="oitem-name" title="${name}">${name}</span>`;
+    const color = i.color ? `<span class="oitem-col">${lblEsc(i.color)}</span>` : '';
+    return `<div class="oitem">${nameEl}${color}<span class="oitem-qty">×${lblEsc(i.qty)}</span></div>`;
+  }).join('') + '</div>';
+}
+
+/* ---------------- label data ---------------- */
+function lblMoney(n){ return (Number(n) || 0).toFixed(3); }
+function lblRound(n){ return Math.round((Number(n) || 0) * 1000) / 1000; }
+function lblDate(v){
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? '' : d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function lblBuildData(o){
+  const items = parseItems(o).map(i => ({
+    name: String(i.name || 'Item'), color: i.color ? String(i.color) : '',
+    qty: Number(i.qty) || 1, price: Number(i.price) || 0
+  }));
+  const method = String(o.paymentMethod || '').toLowerCase();
+  const isCodMethod = method.indexOf('cod') !== -1 || method.indexOf('cash on delivery') !== -1;
+  // Cash is only collected when it is a COD order that has not been marked paid yet.
+  const cod = isCodMethod && o.paymentStatus !== 'paid';
+
+  const subtotal = lblRound(items.reduce((s, i) => s + i.price * i.qty, 0));
+  const total    = Number(o.total) || 0;
+  const promo    = Number(o.promoDiscount) || 0;
+  const wallet   = Number(o.walletUsed) || 0;
+  const paid     = Number(o.paidAmount) || 0;
+  const fees     = lblRound(total - subtotal); // delivery charge + platform fee
+  const base = (o.amountCollected !== undefined && o.amountCollected !== '' && o.amountCollected !== null)
+    ? Number(o.amountCollected) : Math.max(0, total - promo - wallet);
+  const collect = Math.max(0, lblRound(base - paid));
+
+  const extras = [];
+  if(cod){
+    if(fees > 0.0005 || promo > 0 || wallet > 0 || paid > 0){
+      extras.push(['Items subtotal', lblMoney(subtotal)]);
+      if(fees > 0.0005) extras.push(['Delivery & service fees', lblMoney(fees)]);
+      if(promo > 0)     extras.push(['Promo discount', '- ' + lblMoney(promo)]);
+      if(wallet > 0)    extras.push(['Wallet used', '- ' + lblMoney(wallet)]);
+      if(paid > 0)      extras.push(['Already paid', '- ' + lblMoney(paid)]);
+    }
+  }
+  return { o, items, cod, extras, collect };
+}
+
+/* ---------------- one label (one 3 x 5 in sheet) ---------------- */
+function lblSheetHtml(o, codeMode){
+  const d = lblBuildData(o);
+  const weight = d.items.length + (d.cod ? d.extras.length : 0);
+  const useQr = codeMode === 'qr' || (codeMode !== 'barcode' && weight <= 4);
+
+  const MAX_ROWS = 14;
+  const shown = d.items.slice(0, MAX_ROWS);
+  const more = d.items.length - shown.length;
+  const rows = shown.map(i => `
+      <tr>
+        <td><div class="nm">${lblEsc(i.name)}${i.color ? ` <span class="cl">(${lblEsc(i.color)})</span>` : ''}</div></td>
+        <td class="c-qty">${i.qty}</td>
+        ${d.cod ? `<td class="c-amt">${lblMoney(i.price * i.qty)}</td>` : ''}
+      </tr>`).join('') +
+    (more > 0 ? `<tr class="more"><td colspan="${d.cod ? 3 : 2}">+ ${more} more item(s)</td></tr>` : '');
+
+  const addr = String(o.address || '');
+  const payBox = d.cod
+    ? `<div class="pay cod"><div class="big">COD</div><div class="sm">CASH ON DELIVERY</div></div>`
+    : `<div class="pay pre"><div class="big">PREPAID</div><div class="sm">NO CASH TO COLLECT</div></div>`;
+  const totalQty = d.items.reduce((s, i) => s + i.qty, 0);
+  const printedAt = new Date().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+  return `
+  <div class="sheet">
+   <div class="lb">
+    <div class="hd">
+      <div class="brand">
+        <img src="${LBL_ICON}" alt="">
+        <div><div class="bn">SOUQIFY-BH</div><div class="tg">SHOP MORE. PAY LESS.</div></div>
+      </div>
+      ${payBox}
+    </div>
+    <div class="ot${useQr ? '' : ' bc'}">
+      <div class="l">
+        <div class="a">
+          <div class="k">Ordered through</div>
+          <img class="wm" src="${LBL_WORDMARK}" alt="Souqify-bh">
+        </div>
+        <div class="b">
+          <div class="k">Order ID</div>
+          <div class="oid">${lblEsc(o.id)}</div>
+          <div class="meta">${lblEsc(lblDate(o.timestamp))} &nbsp;|&nbsp; ${d.items.length} product${d.items.length === 1 ? '' : 's'}, ${totalQty} pc${totalQty === 1 ? '' : 's'}</div>
+        </div>
+      </div>
+      ${useQr ? `<div class="qr">${qrSvg(o.id)}</div>` : ''}
+    </div>
+    <div class="ship${addr.length > 120 ? ' long' : ''}">
+      <div class="k">Ship to</div>
+      <div class="cn">${lblEsc(o.customerName || '-')}</div>
+      <div class="ad">${lblEsc(addr || '-')}</div>
+      <div class="ph">Tel: ${lblEsc(o.phone || '-')}</div>
+    </div>
+    <div class="sold"><b>Sold by:</b> Souqify-bh &middot; ${lblEsc(LBL_COMPANY)}<br>Support (WhatsApp): ${lblEsc(LBL_SUPPORT)} &middot; souqify-bh.com</div>
+    <div class="items">
+      <table class="it">
+        <thead><tr><th>SKU / PRODUCT</th><th class="c-qty">QTY</th>${d.cod ? '<th class="c-amt">AMT (BD)</th>' : ''}</tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+    ${d.cod && d.extras.length ? `<div class="sum">${d.extras.map(e => `<div><span>${lblEsc(e[0])}</span><span>${lblEsc(e[1])}</span></div>`).join('')}</div>` : ''}
+    ${d.cod ? `<div class="collect"><div class="k2">AMOUNT TO BE<br>COLLECTED (COD)</div><div class="amt">BD ${lblMoney(d.collect)}</div></div>` : ''}
+    <div class="ft${useQr ? '' : ' bc'}">
+      ${useQr ? '' : code128Svg(o.id, '7.5mm')}
+      <div class="idt"><span>${lblEsc(o.id)}</span><span class="pr">Printed ${lblEsc(printedAt)}</span></div>
+    </div>
+   </div>
+  </div>`;
+}
+
+const LBL_CSS = `
+@page{size:76.2mm 127mm;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sheet{width:76.2mm;height:126.6mm;padding:1.5mm;background:#fff;page-break-after:always;break-after:page;overflow:hidden}
+.sheet:last-of-type{page-break-after:auto;break-after:auto}
+.lb{height:100%;border:.5mm solid #000;display:flex;flex-direction:column}
+.k{font-size:5.6pt;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+.hd{display:flex;flex:none;height:14mm;border-bottom:.4mm solid #000}
+.brand{flex:1;min-width:0;display:flex;align-items:center;gap:1.8mm;padding:0 2mm}
+.brand img{height:9mm;width:auto;display:block}
+.bn{font-size:12.5pt;font-weight:900;letter-spacing:.03em;line-height:1}
+.tg{font-size:5.2pt;font-weight:700;letter-spacing:.13em;margin-top:.9mm}
+.pay{width:26mm;flex:none;border-left:.4mm solid #000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.pay.cod{background:#000;color:#fff}
+.pay .big{font-size:19pt;font-weight:900;line-height:1;letter-spacing:.02em}
+.pay.pre .big{font-size:13pt}
+.pay .sm{font-size:4.8pt;font-weight:700;letter-spacing:.06em;margin-top:.9mm}
+.ot{flex:none;display:flex;align-items:center;gap:2mm;padding:1.5mm 2mm;border-bottom:.4mm solid #000}
+.ot .l{flex:1;min-width:0}
+.ot img.wm{width:33mm;display:block;margin:.6mm 0 1.5mm}
+.ot.bc{padding:1.2mm 2mm}
+.ot.bc .l{display:flex;align-items:flex-end;justify-content:space-between;gap:2mm}
+.ot.bc img.wm{width:29mm;margin:.6mm 0 0}
+.ot.bc .b{text-align:right}
+.ot.bc .oid{font-size:8.6pt;word-break:normal;white-space:nowrap}
+.oid{font-size:9pt;font-weight:900;letter-spacing:.02em;line-height:1.1;word-break:break-all}
+.meta{font-size:6.6pt;font-weight:600;margin-top:.7mm}
+.qr{width:22mm;height:22mm;flex:none}
+.ship{flex:none;padding:1.5mm 2mm;border-bottom:.4mm solid #000}
+.ship .cn{font-size:11pt;font-weight:900;line-height:1.1;margin-top:.5mm}
+.ship .ad{font-size:8.6pt;font-weight:600;line-height:1.25;margin-top:.5mm}
+.ship.long .ad{font-size:7.4pt}
+.ship .ph{font-size:9.5pt;font-weight:900;margin-top:.8mm}
+.sold{flex:none;padding:1mm 2mm;border-bottom:.4mm solid #000;font-size:5.8pt;line-height:1.3}
+.items{flex:1;min-height:0;overflow:hidden;padding:0 2mm}
+table.it{width:100%;border-collapse:collapse}
+table.it th{font-size:5.8pt;font-weight:700;letter-spacing:.08em;text-align:left;border-bottom:.3mm solid #000;padding:1.1mm 0 .7mm}
+table.it td{font-size:7.8pt;font-weight:600;line-height:1.15;padding:.9mm 0;border-bottom:.15mm dotted #000;vertical-align:top}
+.c-qty{width:8mm;text-align:center!important;font-weight:900!important}
+.c-amt{width:17mm;text-align:right!important;font-weight:900!important;white-space:nowrap}
+.nm{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;padding-right:1mm}
+.cl{font-weight:400}
+tr.more td{font-style:italic;font-weight:700}
+.sum{flex:none;padding:.6mm 2mm .9mm;font-size:6.6pt;font-weight:600}
+.sum div{display:flex;justify-content:space-between;line-height:1.35}
+.collect{flex:none;display:flex;align-items:center;justify-content:space-between;padding:1.3mm 2mm;border-top:.7mm solid #000;border-bottom:.4mm solid #000}
+.collect .k2{font-size:6.6pt;font-weight:900;letter-spacing:.05em;line-height:1.2}
+.collect .amt{font-size:17pt;font-weight:900;letter-spacing:.01em;white-space:nowrap}
+.ft{flex:none;padding:1.2mm 2mm 1.3mm}
+.ft .idt{display:flex;justify-content:space-between;align-items:baseline;font-size:6.6pt;font-weight:700;letter-spacing:.06em;margin-top:.5mm}
+.ft .pr{font-size:5pt;font-weight:400;letter-spacing:0}
+.ft.bc{padding-top:1.4mm}
+.sheet.t1 table.it td{font-size:7pt;padding:.6mm 0}
+.sheet.t2 table.it td{font-size:6.4pt;padding:.4mm 0}.sheet.t2 .nm{-webkit-line-clamp:1}
+.sheet.t3 table.it td{font-size:5.6pt;padding:.2mm 0}.sheet.t3 .nm{-webkit-line-clamp:1}
+.bar{display:none}
+@media screen{
+  body{background:#d9d9d9;padding:56px 0 24px}
+  .sheet{margin:14px auto;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+  .bar{display:flex;position:fixed;top:0;left:0;right:0;z-index:5;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 16px;background:#1C1C1E;color:#fff;font:600 13px Arial,Helvetica,sans-serif}
+  .bar span{opacity:.75;font-weight:400}
+  .bar select,.bar button{font:600 13px Arial,Helvetica,sans-serif;padding:6px 12px;border-radius:7px;border:0;cursor:pointer}
+  .bar button{background:#A5BA4A;color:#181B09}
+}
+@media print{.bar{display:none!important}body{padding:0;background:#fff}.sheet{margin:0}}
+`;
+
+// Runs inside the label window (serialised with toString, so it must not
+// reference anything from the admin page). Shrinks the item list step by
+// step until it fits its area; as a last resort it trims rows and shows
+// "+ N more item(s)" so the bold COD amount is never pushed off the label.
+function lblPopupBoot(cfg){
+  function fit(){
+    var sheets = document.querySelectorAll('.sheet');
+    for(var s = 0; s < sheets.length; s++){
+      var sh = sheets[s], it = sh.querySelector('.items');
+      if(!it) continue;
+      var levels = ['', 't1', 't2', 't3'], ok = false;
+      for(var l = 0; l < levels.length; l++){
+        sh.className = 'sheet' + (levels[l] ? ' ' + levels[l] : '');
+        if(it.scrollHeight <= it.clientHeight + 1){ ok = true; break; }
+      }
+      if(!ok){
+        var body = it.querySelector('tbody'), cols = it.querySelectorAll('th').length, hidden = 0;
+        var moreRow = body.querySelector('tr.more');
+        if(moreRow) body.removeChild(moreRow);
+        while(it.scrollHeight > it.clientHeight + 1 && body.rows.length > 1){
+          body.removeChild(body.rows[body.rows.length - 1]); hidden++;
+        }
+        var prevMore = parseInt((moreRow && moreRow.textContent.replace(/\D/g, '')) || '0', 10);
+        var tr = document.createElement('tr'); tr.className = 'more';
+        tr.innerHTML = '<td colspan="' + cols + '">+ ' + (hidden + prevMore) + ' more item(s)</td>';
+        body.appendChild(tr);
+        while(it.scrollHeight > it.clientHeight + 1 && body.rows.length > 2){
+          body.removeChild(body.rows[body.rows.length - 2]); hidden++;
+          tr.firstChild.textContent = '+ ' + (hidden + prevMore) + ' more item(s)';
+        }
+      }
+    }
+  }
+  window.lblRegen = function(mode){
+    try{ window.opener.openLabelWindow(cfg.ids, mode, false); }
+    catch(e){ alert('Please close this window and click "Print label" again.'); }
+  };
+  window.addEventListener('load', function(){
+    fit();
+    if(cfg.autoprint) setTimeout(function(){ window.print(); }, 250);
+  });
+}
+
+// Opens (or refreshes) the label window for one or more orders.
+// codeMode: 'auto' (QR when there is room, barcode when there are many
+// items), 'qr' or 'barcode'.
+function openLabelWindow(ids, codeMode, autoprint){
+  codeMode = codeMode || 'auto';
+  const orders = ids.map(id => ORDERS.find(o => o.id === id)).filter(Boolean);
+  if(!orders.length){ alert('Order not found. Please refresh the orders list.'); return; }
+  const w = window.open('', 'souqifyLabels');
+  if(!w){ alert('Your browser blocked the label window. Please allow pop-ups for this page and try again.'); return; }
+  const cfg = JSON.stringify({ ids: orders.map(o => o.id), autoprint: !!autoprint }).replace(/</g, '\\u003c');
+  const sel = m => `<option value="${m}"${m === codeMode ? ' selected' : ''}>${{auto:'Auto (QR, or barcode if many items)', qr:'QR code', barcode:'Barcode'}[m]}</option>`;
+  const html = '<!doctype html><html><head><meta charset="utf-8"><title>Label ' + lblEsc(orders.map(o => o.id).join(', ')) + '</title>' +
+    '<style>' + LBL_CSS + '</style></head><body>' +
+    '<div class="bar"><b>Souqify-bh shipping label</b><span>' + orders.length + ' label' + (orders.length === 1 ? '' : 's') + ' &middot; 3 &times; 5 in (76 &times; 127 mm)</span>' +
+    '<label>Code: <select onchange="lblRegen(this.value)">' + ['auto', 'qr', 'barcode'].map(sel).join('') + '</select></label>' +
+    '<button onclick="window.print()">&#128424; Print</button></div>' +
+    orders.map(o => lblSheetHtml(o, codeMode)).join('') +
+    '<script>(' + lblPopupBoot.toString() + ')(' + cfg + ');<\/script></body></html>';
+  w.document.open(); w.document.write(html); w.document.close();
+  try{ w.focus(); }catch(e){}
+}
+function printOrderLabel(id){ openLabelWindow([id], 'auto', true); }
+
 </script>
 </body>
 </html>
