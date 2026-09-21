@@ -1430,8 +1430,8 @@ function renderOrderRows(){
           </select>
         </td>
         <td style="min-width:170px;">
-          <input type="text" id="trackNum_${o.id}" placeholder="Tracking #" value="${o.trackingNumber||''}" style="width:100%;margin-bottom:4px;padding:6px 8px;font-size:11.5px;border:1.5px solid var(--line);border-radius:7px;font-family:inherit;">
-          <input type="text" id="trackUrl_${o.id}" placeholder="Tracking link" value="${o.trackingUrl||''}" style="width:100%;margin-bottom:5px;padding:6px 8px;font-size:11.5px;border:1.5px solid var(--line);border-radius:7px;font-family:inherit;">
+          <input type="text" id="trackNum_${o.id}" placeholder="Tracking ID" value="${o.trackingNumber || o.id}" style="width:100%;margin-bottom:4px;padding:6px 8px;font-size:11.5px;border:1.5px solid var(--line);border-radius:7px;font-family:inherit;">
+          <input type="text" id="trackUrl_${o.id}" placeholder="Tracking link" value="${o.trackingUrl || 'https://souqify-bh.com/track'}" style="width:100%;margin-bottom:5px;padding:6px 8px;font-size:11.5px;border:1.5px solid var(--line);border-radius:7px;font-family:inherit;">
           <button class="ghost small" onclick="saveTracking('${o.id}')">Save</button>
         </td>
         <td style="min-width:150px;">
@@ -1483,9 +1483,28 @@ function toggleDetails(id){ document.getElementById(id).classList.toggle('show')
 async function updateOrder(id, field, value){
   const payload = { action:'updateOrderStatus', password: ADMIN_PASSWORD, id };
   payload[field] = value;
+
+  // When moving an order to Shipped, include the tracking fields currently
+  // shown in the admin row as a final safety net. This guarantees the shipped
+  // email uses the saved/current Tracking ID and Souqify tracking link.
+  if(field === 'orderStatus' && String(value).toLowerCase() === 'shipped'){
+    const trackNumEl = document.getElementById('trackNum_' + id);
+    const trackUrlEl = document.getElementById('trackUrl_' + id);
+    payload.trackingNumber = (trackNumEl && trackNumEl.value.trim()) || id;
+    payload.trackingUrl = (trackUrlEl && trackUrlEl.value.trim()) || 'https://souqify-bh.com/track';
+  }
+
   await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
   const o = ORDERS.find(o => o.id === id);
-  if(o) o[field] = value;
+  if(o){
+    o[field] = value;
+    if(field === 'orderStatus' && String(value).toLowerCase() === 'shipped'){
+      const trackNumEl = document.getElementById('trackNum_' + id);
+      const trackUrlEl = document.getElementById('trackUrl_' + id);
+      o.trackingNumber = (trackNumEl && trackNumEl.value.trim()) || o.id;
+      o.trackingUrl = (trackUrlEl && trackUrlEl.value.trim()) || 'https://souqify-bh.com/track';
+    }
+  }
   if(field === 'orderStatus') syncStageBox(id);
   renderDashboard();
 }
