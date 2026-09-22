@@ -811,10 +811,24 @@
             <option value="shipped">Shipped</option>
             <option value="delivered">Delivered</option>
           </select>
+          <label class="toggle-pill" id="showCompletedPill" style="margin-left:auto;">
+            <input type="checkbox" id="showCompletedOrders" onchange="toggleCompletedSection()">
+            <span class="ic">✅</span> Show completed orders <span id="completedCountBadge" class="muted" style="font-weight:700;"></span>
+          </label>
         </div>
+        <h3 style="margin:2px 0 12px;font-size:13.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);">In progress</h3>
         <table>
           <thead><tr><th>Order</th><th>Customer</th><th>Total / Paid / Due</th><th>Payment mode</th><th>Order status</th><th>Payment status</th><th>Tracking</th><th></th></tr></thead>
           <tbody id="orderRows"></tbody>
+        </table>
+      </div>
+
+      <div class="card" id="completedOrdersCard" style="display:none;">
+        <h3 style="margin:0 0 4px;font-size:15px;">✅ Completed orders</h3>
+        <p class="muted" style="margin:0 0 12px;">Orders move here automatically once they're marked <strong>delivered</strong> and <strong>paid</strong>. Use "Send back to progress" if one needs more work (e.g. a return/exchange comes up).</p>
+        <table>
+          <thead><tr><th>Order</th><th>Customer</th><th>Total / Paid / Due</th><th>Payment mode</th><th>Order status</th><th>Payment status</th><th>Tracking</th><th></th></tr></thead>
+          <tbody id="completedOrderRows"></tbody>
         </table>
       </div>
     </div>
@@ -1405,25 +1419,23 @@ function applyOrders(data){
 }
 function parseItems(o){ try{ return JSON.parse(o.items); }catch(e){ return []; } }
 
-function renderOrderRows(){
-  const q = (document.getElementById('orderSearch').value || '').toLowerCase();
-  const status = document.getElementById('orderStatusFilter').value;
-  let list = ORDERS.filter(o =>
-    (o.customerName||'').toLowerCase().includes(q) ||
-    (o.phone||'').toLowerCase().includes(q) ||
-    (o.id||'').toLowerCase().includes(q)
-  );
-  if(status) list = list.filter(o => o.orderStatus === status);
+// An order is "completed" once it has been delivered AND fully paid.
+// Everything else (new / confirmed / shipped, or delivered-but-unpaid)
+// stays in the "In progress" table above.
+function isCompletedOrder(o){
+  return o.orderStatus === 'delivered' && o.paymentStatus === 'paid';
+}
 
-  document.getElementById('orderRows').innerHTML = list.length ? list.map((o,idx) => {
-    const items = parseItems(o);
-    return `
+function orderRowHtml(o, domIdx, completed){
+  const items = parseItems(o);
+  const detailsId = (completed ? 'odc' : 'odp') + domIdx;
+  return `
       <tr>
         <td>
-          <a href="javascript:void(0)" onclick="toggleDetails('od${idx}')" style="font-weight:700;">${o.id}</a>
+          <a href="javascript:void(0)" onclick="toggleDetails('${detailsId}')" style="font-weight:700;">${o.id}</a>
           <div class="muted">${new Date(o.timestamp).toLocaleString()}</div>
           ${orderItemsLinksHtml(o)}
-          <div class="order-details" id="od${idx}">
+          <div class="order-details" id="${detailsId}">
             <div class="oi"><span>Phone</span><span>${o.phone||'-'}</span></div>
             <div class="oi"><span>Address</span><span style="text-align:right;max-width:220px;">${o.address||'-'}</span></div>
             <div class="oi"><span>Notes</span><span>${o.notes||'-'}</span></div>
@@ -1462,8 +1474,9 @@ function renderOrderRows(){
           <button class="ghost small" onclick="saveTracking('${o.id}')">Save</button>
         </td>
         <td style="min-width:150px;">
+          ${completed ? `<button class="ghost small" style="width:100%;margin-bottom:4px;" onclick="sendOrderBackToProgress('${o.id}')">↩ Send back to progress</button>` : ''}
           <button class="primary small" style="width:100%;margin-bottom:4px;" onclick="printOrderLabel('${o.id}')">🖨 Print label</button>
-          <button class="ghost small" onclick="toggleDetails('od${idx}')">Details</button>
+          <button class="ghost small" onclick="toggleDetails('${detailsId}')">Details</button>
           <select id="sampleType_${o.id}" style="width:100%;margin-top:4px;padding:6px 8px;font-size:11.5px;border:1.5px solid var(--line);border-radius:7px;font-family:inherit;">
             <option value="confirmation">Sample: Order confirmation</option>
             <option value="confirmed">Sample: Order confirmed</option>
@@ -1476,7 +1489,53 @@ function renderOrderRows(){
         </td>
       </tr>
     `;
-  }).join('') : `<tr class="empty-row"><td colspan="8">No orders match yet.</td></tr>`;
+}
+
+function renderOrderRows(){
+  const q = (document.getElementById('orderSearch').value || '').toLowerCase();
+  const status = document.getElementById('orderStatusFilter').value;
+  let list = ORDERS.filter(o =>
+    (o.customerName||'').toLowerCase().includes(q) ||
+    (o.phone||'').toLowerCase().includes(q) ||
+    (o.id||'').toLowerCase().includes(q)
+  );
+  if(status) list = list.filter(o => o.orderStatus === status);
+
+  const progress = list.filter(o => !isCompletedOrder(o));
+  const completed = list.filter(o => isCompletedOrder(o));
+
+  document.getElementById('orderRows').innerHTML = progress.length
+    ? progress.map((o,idx) => orderRowHtml(o, idx, false)).join('')
+    : `<tr class="empty-row"><td colspan="8">No orders match yet.</td></tr>`;
+
+  document.getElementById('completedOrderRows').innerHTML = completed.length
+    ? completed.map((o,idx) => orderRowHtml(o, idx, true)).join('')
+    : `<tr class="empty-row"><td colspan="8">No completed orders match yet.</td></tr>`;
+
+  const badge = document.getElementById('completedCountBadge');
+  if(badge) badge.textContent = completed.length ? `(${completed.length})` : '';
+}
+
+// Toggles the "Completed orders" card open/closed. Purely a display
+// toggle — it never changes any order's data.
+function toggleCompletedSection(){
+  const cb = document.getElementById('showCompletedOrders');
+  const card = document.getElementById('completedOrdersCard');
+  const pill = document.getElementById('showCompletedPill');
+  if(!cb || !card) return;
+  card.style.display = cb.checked ? '' : 'none';
+  if(pill) pill.classList.toggle('on', cb.checked);
+}
+
+// Manually moves a completed (delivered + paid) order back into the
+// "In progress" table — e.g. a return/exchange comes up after delivery
+// and it needs another look. Only the order status changes (back to
+// "confirmed"); payment status/amount are left exactly as they are.
+async function sendOrderBackToProgress(id){
+  const o = ORDERS.find(o => o.id === id);
+  if(!o) return;
+  if(!confirm(`Send order ${id} back to "Confirmed" in the progress list?`)) return;
+  await updateOrder(id, 'orderStatus', 'confirmed');
 }
 async function deleteOrder(id){
   if(!confirm(`Delete order ${id}? This can't be undone. Only this order is removed, every other order stays exactly as it is.`)) return;
@@ -1533,6 +1592,9 @@ async function updateOrder(id, field, value){
     }
   }
   if(field === 'orderStatus') syncStageBox(id);
+  // Order status can move a row between "In progress" and "Completed" —
+  // re-render both tables so it lands in the right one immediately.
+  renderOrderRows();
   renderDashboard();
 }
 // Marking an order "paid" auto-fills paidAmount to the full total on the
