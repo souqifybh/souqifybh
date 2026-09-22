@@ -198,12 +198,34 @@ function fmtDay(ymd){
   return new Date(p[0], p[1] - 1, p[2]).toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
 }
 
-function paymentLine(o){
-  const paid = o.paymentStatus === 'paid';
-  if(o.paymentMode === 'cod') return paid ? 'Cash on Delivery · Paid' : 'Cash on Delivery';
-  if(paid) return 'Prepaid · Paid';
-  if(o.paymentStatus === 'awaiting_verification') return 'Prepaid · payment being verified';
-  return 'Prepaid';
+function indianGroup(intStr){
+  if(intStr.length <= 3) return intStr;
+  const last = intStr.slice(-3);
+  const rest = intStr.slice(0, -3).replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+  return rest + ',' + last;
+}
+function fmtMoney(amount, currency){
+  const n = Number(amount) || 0;
+  if(currency === 'INR'){
+    const neg = n < 0 ? '-' : '';
+    const fixed = Math.abs(n).toFixed(2);
+    const parts = fixed.split('.');
+    const intPart = indianGroup(parts[0]);
+    return neg + '₹' + intPart + (parts[1] === '00' ? '' : '.' + parts[1]);
+  }
+  return n.toFixed(3) + ' BHD';
+}
+function paymentStatusLabel(o){
+  const s = String(o.paymentStatus || '').toLowerCase();
+  if(s === 'paid') return 'Paid';
+  if(s === 'awaiting_verification') return 'Awaiting verification';
+  if(s === 'cancelled') return 'Cancelled';
+  if(!s || s === 'pending') return 'Pending';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+function paymentMethodLabel(o){
+  if(o.paymentMethod) return o.paymentMethod;
+  return o.paymentMode === 'cod' ? 'Cash on Delivery (COD)' : 'Prepaid';
 }
 
 function render(o){
@@ -244,7 +266,9 @@ function render(o){
 
   const rows = [];
   if(o.isGift && o.deliveryDate) rows.push(['Delivery date', fmtDay(o.deliveryDate) + (o.deliveryTimeSlot ? ' · ' + o.deliveryTimeSlot : '')]);
-  rows.push(['Payment', paymentLine(o)]);
+  rows.push(['Order value', fmtMoney(o.total, o.currency)]);
+  rows.push(['Payment status', paymentStatusLabel(o)]);
+  rows.push(['Payment method', paymentMethodLabel(o)]);
   if(o.trackingNumber) rows.push(['Tracking number', o.trackingNumber]);
 
   const cta = [];
