@@ -200,7 +200,7 @@ function fmtDay(ymd){
 
 function paymentLine(o){
   const paid = o.paymentStatus === 'paid';
-  if(o.paymentMode === 'cod') return paid ? 'Cash on Delivery · Paid' : 'Cash on Delivery · pay when you receive it';
+  if(o.paymentMode === 'cod') return paid ? 'Cash on Delivery · Paid' : 'Cash on Delivery';
   if(paid) return 'Prepaid · Paid';
   if(o.paymentStatus === 'awaiting_verification') return 'Prepaid · payment being verified';
   return 'Prepaid';
