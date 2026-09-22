@@ -938,20 +938,29 @@ let PRODUCTS = [];
 let ORDERS = [];
 
 /* ---------------- auth ---------------- */
+// Login is now TWO requests instead of one big one, fired so the panel
+// becomes usable as soon as the first (small/fast) one lands:
+//   1. adminBootstrapCore  -> password check + Products/Orders/Settings only.
+//      This is the data the Dashboard/Products/Orders tabs need, and it's
+//      by far the cheapest to read, so the login screen clears almost
+//      immediately instead of waiting on every sheet in the workbook.
+//   2. adminBootstrapExtra -> Customers/Subscribers/Campaigns/PromoCodes/
+//      Media/Returns/GiveawayEntries. Fired in parallel (not awaited before
+//      unlocking the UI) and quietly fills in the other tabs once it lands.
+// Net effect: you see the admin panel and can start working before the
+// slower, rarely-opened tabs have even finished loading.
 function login(){
   ADMIN_PASSWORD = document.getElementById('pwInput').value;
   document.getElementById('loginMsg').textContent = 'Checking…';
-  // Single request: checks the password AND fetches every sheet the panel
-  // needs in one Apps Script execution, instead of 1 (old password check)
-  // + 9 (old parallel loadAll) + 1 (old loadReturns) = 11 round trips.
-  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrap', password: ADMIN_PASSWORD }) })
+  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapCore', password: ADMIN_PASSWORD }) })
     .then(r => r.json())
     .then(data => {
       if(data.ok){
         sessionStorage.setItem('gm_admin_pw', ADMIN_PASSWORD);
         document.getElementById('loginScreen').style.display='none';
         document.getElementById('shell').classList.add('show');
-        applyBootstrap(data);
+        applyCoreBootstrap(data);
+        loadExtra(); // fire-and-forget: fills Customers/Subscribers/etc in the background
       } else {
         document.getElementById('loginMsg').textContent = data.error || 'Incorrect password.';
       }
@@ -965,22 +974,35 @@ function switchTab(tab){
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+tab));
 }
 
-// One round trip that returns everything the panel needs at once (see
-// adminBootstrap_ in Code.gs). Used for both the initial login and the
-// "↻ Refresh" button, so both are now fast instead of firing off ~10
-// separate requests.
+// "↻ Refresh": fires the core and extra requests in parallel (two lighter
+// Apps Script executions running concurrently) rather than one call that
+// reads all ten sheets back-to-back in a single execution.
 async function loadAll(){
-  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrap', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
-  if(!data.ok){ return; }
-  applyBootstrap(data);
+  const [coreRes, extraRes] = await Promise.all([
+    fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapCore', password: ADMIN_PASSWORD }) }),
+    fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapExtra', password: ADMIN_PASSWORD }) })
+  ]);
+  const core = await coreRes.json();
+  const extra = await extraRes.json();
+  if(core.ok) applyCoreBootstrap(core);
+  if(extra.ok) applyExtraBootstrap(extra);
 }
 
-function applyBootstrap(data){
+// Products, Orders, Settings + the dashboard/promo numbers that depend on
+// them. Everything the panel needs to be usable right away.
+function applyCoreBootstrap(data){
   applyProducts(data);
   applyOrders(data);
-  applyCustomers(data);
   applySettings(data.settings || {});
+  renderDashboard();
+  renderPromoCodes();
+}
+
+// Customers/Subscribers/Campaigns/PromoCodes/Media/Returns/Giveaway. Safe
+// to apply whenever it lands. re-renders the dashboard/promo numbers again
+// afterwards since those also read from Customers/Returns.
+function applyExtraBootstrap(data){
+  applyCustomers(data);
   applySubscribers(data);
   applyCampaigns(data);
   applyPromoCodes(data);
@@ -988,7 +1010,12 @@ function applyBootstrap(data){
   applyReturns(data);
   applyGiveaway(data);
   renderDashboard();
-  renderPromoCodes(); // re-render now that ORDERS has definitely finished loading, for accurate redemption counts
+  renderPromoCodes();
+}
+async function loadExtra(){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapExtra', password: ADMIN_PASSWORD }) });
+  const data = await res.json();
+  if(data.ok) applyExtraBootstrap(data);
 }
 
 /* ---------------- image slot builder ---------------- */
@@ -2925,7 +2952,7 @@ function lblSheetHtml(o, codeMode){
     <div class="hd">
       <div class="brand">
         <img src="${LBL_ICON}" alt="">
-        <div><div class="bn">SOUQIFY-BH</div><div class="tg">SHOP MORE. PAY LESS.</div></div>
+        <div><img class="bnimg" src="${LBL_WORDMARK}" alt="Souqify-bh"><div class="tg">SHOP MORE. PAY LESS.</div></div>
       </div>
       ${payBox}
     </div>
@@ -2982,7 +3009,7 @@ html,body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;-web
 .hd{display:flex;flex:none;height:14mm;border-bottom:.4mm solid #000}
 .brand{flex:1;min-width:0;display:flex;align-items:center;gap:1.8mm;padding:0 2mm}
 .brand img{height:9mm;width:auto;display:block}
-.bn{font-size:12.5pt;font-weight:900;letter-spacing:.03em;line-height:1}
+.brand img.bnimg{height:auto;width:26mm;max-width:60%}
 .tg{font-size:5.2pt;font-weight:700;letter-spacing:.13em;margin-top:.9mm}
 .pay{width:26mm;flex:none;border-left:.4mm solid #000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
 .pay.cod{background:#000;color:#fff}
