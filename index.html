@@ -351,6 +351,71 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .search-suggest-more:hover{background:var(--paper-soft);}
   @media (max-width:760px){ .search-suggest{max-height:60vh;} }
   @media (max-width:760px){ .header-search-bar{padding:0 16px 14px;} }
+  /* Search-submit icon inside the header search input */
+  .header-search-inputwrap input{padding-right:44px;}
+  .header-search-go{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%); background:none; border:none;
+    font-size:17px; cursor:pointer; color:var(--ink-soft); width:32px; height:32px; display:flex;
+    align-items:center; justify-content:center; padding:0; z-index:2;
+  }
+  .header-search-go:hover{color:var(--ink);}
+  /* "Add to cart" -> "Go to cart" state once the product is already in the cart */
+  .add-btn.in-cart{background:#2E7D32;border-color:#2E7D32;color:#fff;}
+  .add-btn.in-cart:hover{background:#256a2a;}
+  #pdpAddBtn.in-cart{background:#2E7D32;border-color:#2E7D32;}
+  /* Search-results heading shown on the All Products page */
+  .ap-search-heading{display:none;padding:2px 16px 0;font-size:14px;font-weight:800;color:var(--ink);}
+  .ap-search-heading .q{color:var(--blush-ink);}
+  /* Empty search-results state: a dimmed product grid behind a centered message */
+  .ap-empty-wrap{position:relative;min-height:280px;}
+  .ap-empty-bg-grid{
+    position:absolute; inset:0; opacity:.16; filter:grayscale(55%); pointer-events:none; user-select:none;
+    display:grid; grid-template-columns:repeat(2,1fr); gap:12px; overflow:hidden;
+  }
+  @media (min-width:761px){ .ap-empty-bg-grid{grid-template-columns:repeat(4,1fr);} }
+  .ap-empty-overlay{
+    position:relative; z-index:1; min-height:280px; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; text-align:center; gap:10px; padding:24px;
+  }
+  .ap-empty-icon{font-size:38px;opacity:.55;}
+  .ap-empty-title{font-size:14px;font-weight:700;color:var(--ink-soft);max-width:300px;line-height:1.5;}
+  .ap-empty-title .q{color:var(--ink);font-weight:800;}
+
+  /* ---------- Floating draggable cart button (home / products / product pages) ---------- */
+  .floating-cart-btn{
+    position:fixed; right:14px; bottom:130px; z-index:2400; display:flex; flex-direction:column;
+    align-items:center; gap:5px; cursor:grab; touch-action:none; user-select:none; -webkit-user-select:none;
+  }
+  .floating-cart-btn.dragging{cursor:grabbing;}
+  .floating-cart-btn.hide{display:none !important;}
+  .fcb-icon{
+    position:relative; width:44px; height:44px; border-radius:50%; background:#fff;
+    box-shadow:0 6px 16px rgba(28,28,30,0.22); border:2px solid var(--blush-deep,#2E7D32);
+    display:flex; align-items:center; justify-content:center; font-size:20px;
+  }
+  .fcb-badge{
+    position:absolute; top:-5px; right:-5px; min-width:17px; height:17px; padding:0 4px; border-radius:9px;
+    background:#e53935; color:#fff; font-size:10.5px; font-weight:800; display:flex; align-items:center;
+    justify-content:center; border:2px solid #fff;
+  }
+  .fcb-ship{
+    position:relative; overflow:hidden; background:#2E7D32; color:#fff; font-size:9px; font-weight:800;
+    padding:3px 7px; border-radius:9px; white-space:nowrap; min-width:78px; text-align:center;
+    box-shadow:0 3px 8px rgba(0,0,0,0.18); letter-spacing:.01em;
+  }
+  .fcb-ship-text{position:relative; z-index:1;}
+  .fcb-van{
+    position:absolute; top:50%; left:100%; transform:translateY(-50%); font-size:11px; z-index:2;
+    animation: fcbVanMove 3s linear infinite;
+  }
+  @keyframes fcbVanMove{
+    0%{left:105%;}
+    100%{left:-25%;}
+  }
+  @media (max-width:760px){
+    .floating-cart-btn{right:10px;bottom:96px;}
+    .fcb-icon{width:40px;height:40px;font-size:18px;}
+  }
   @media (max-width:760px){
     nav{position:relative;justify-content:center;padding:14px 16px;}
     .nav-left-mobile{display:flex;gap:8px;position:absolute;left:14px;top:50%;transform:translateY(-50%);}
@@ -1283,7 +1348,8 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   </nav>
   <div class="header-search-bar" id="headerSearchBar">
     <div class="header-search-inputwrap">
-      <input type="text" id="searchInput" autocomplete="off" data-i18n-placeholder="searchPlaceholder" placeholder="Search products…" oninput="onHeaderSearchInput()" onfocus="onHeaderSearchInput()">
+      <input type="text" id="searchInput" autocomplete="off" data-i18n-placeholder="searchPlaceholder" placeholder="Search products…" oninput="onHeaderSearchInput()" onfocus="onHeaderSearchInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();submitHeaderSearch();}">
+      <button class="header-search-go" onclick="submitHeaderSearch()" aria-label="Search">🔍</button>
       <div class="search-suggest" id="searchSuggest"></div>
     </div>
     <button class="header-search-close" onclick="closeHeaderSearch()" aria-label="Close search">✕</button>
@@ -1509,6 +1575,15 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartDeliveryCharge">Delivery charge</span><span id="cartDeliveryCharge">0.000 BHD</span></div>
     <div class="total-row"><span data-i18n="cartTotal">Total</span><span id="cartTotal">0.000 BHD</span></div>
     <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled data-i18n="cartCheckout">Proceed to checkout</button>
+  </div>
+</div>
+
+<!-- Floating draggable cart button: home / all-products / product pages only -->
+<div class="floating-cart-btn" id="floatingCartBtn" aria-label="Cart">
+  <div class="fcb-icon">🛒<span class="fcb-badge" id="fcbCount">0</span></div>
+  <div class="fcb-ship">
+    <span class="fcb-ship-text">Free shipping 🇧🇭</span>
+    <span class="fcb-van">🚚</span>
   </div>
 </div>
 
@@ -1799,6 +1874,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <div class="ap-chips" id="apCategoryChips"></div>
     <button class="ap-sort-btn" onclick="openSortOverlay()">⇅ <span id="apSortLabel">Sort</span></button>
   </div>
+  <div class="ap-search-heading" id="apSearchHeading"></div>
   <div class="ap-count" id="apResultCount"></div>
   <div class="ap-grid" id="apGrid"></div>
   <footer class="ap-footer">
@@ -3020,6 +3096,7 @@ const I18N = {
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
     addBtn:'Add', freeDeliveryBadge:'Free Delivery in Bahrain', codBadge:'Cash on Delivery', chipAll:'All', catGeneral:'General',
     saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet. Try another search.', viewAllResults:'View all matching products',
+    goToCartBtn:'Go to cart', searchResultsFor:'Search results for "{q}"', noResultsForQuery:'No results found for "{q}"',
     productsAvailable:'{n} products available now', productAvailable:'1 product available now',
     inStock:'✓ In stock', outOfStock:'✕ Out of stock', onlyLeftStock:'⚠ Only {n} left in stock', saveLabel:'Save',
     activityViewerSingular:'1 person viewing now', activityViewerPlural:'{n} people viewing now',
@@ -3099,6 +3176,7 @@ const I18N = {
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
     addBtn:'أضف', freeDeliveryBadge:'توصيل مجاني في البحرين', codBadge:'الدفع عند الاستلام', chipAll:'الكل', catGeneral:'عام',
     saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة. جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
+    goToCartBtn:'الذهاب إلى السلة', searchResultsFor:'نتائج البحث عن "{q}"', noResultsForQuery:'لا توجد نتائج لـ "{q}"',
     productsAvailable:'{n} منتج متوفر الآن', productAvailable:'منتج واحد متوفر الآن',
     inStock:'✓ متوفر', outOfStock:'✕ غير متوفر', onlyLeftStock:'⚠ {n} فقط متبقي في المخزون', saveLabel:'وفّر',
     activityViewerSingular:'يشاهده شخص واحد الآن', activityViewerPlural:'يشاهده {n} أشخاص الآن',
@@ -3563,7 +3641,8 @@ function closeAllProductsPage(){
 }
 function renderAllProductsGrid(){
   const searchEl = document.getElementById('apSearchInput');
-  const q = searchEl ? searchEl.value.toLowerCase() : '';
+  const qRaw = searchEl ? searchEl.value : '';
+  const q = qRaw.toLowerCase();
   let filtered = PRODUCTS.filter(p =>
     !isGiftOnlyProduct(p) &&
     (activeCategory === 'All' || p.category === activeCategory) &&
@@ -3575,11 +3654,31 @@ function renderAllProductsGrid(){
   const countEl = document.getElementById('apResultCount');
   const grid = document.getElementById('apGrid');
   if(!grid) return;
+  updateApSearchHeading(qRaw);
   if(countEl) countEl.textContent = filtered.length ? `${filtered.length} product${filtered.length===1?'':'s'}` : '';
   const sortLabelEl = document.getElementById('apSortLabel');
   if(sortLabelEl) sortLabelEl.textContent = SORT_LABELS[sortMode] || 'Sort';
   if(!filtered.length){
-    grid.innerHTML = `<div class="empty">${PRODUCTS.length ? T('noProductsMatch') : T('noProductsLoaded')}</div>`;
+    const trimmed = qRaw.trim();
+    if(!PRODUCTS.length){
+      grid.innerHTML = `<div class="empty">${T('noProductsLoaded')}</div>`;
+    } else if(trimmed){
+      // Show a dimmed backdrop of products behind a clear "no results" message,
+      // instead of just a blank grid, so a searched keyword always gets a
+      // visible, styled response.
+      const bgItems = PRODUCTS.filter(p => !isGiftOnlyProduct(p)).slice(0, 8);
+      const bgHtml = bgItems.length ? `<div class="ap-empty-bg-grid">${bgItems.map(p => productCardHtml(p, { hideValueAmount:true })).join('')}</div>` : '';
+      grid.innerHTML = `
+        <div class="ap-empty-wrap">
+          ${bgHtml}
+          <div class="ap-empty-overlay">
+            <div class="ap-empty-icon">🔍</div>
+            <div class="ap-empty-title">${(T('noResultsForQuery') || 'No results found for "{q}"').replace('{q}', `<span class="q">${escapeHtmlClient(trimmed)}</span>`)}</div>
+          </div>
+        </div>`;
+    } else {
+      grid.innerHTML = `<div class="empty">${T('noProductsMatch')}</div>`;
+    }
     return;
   }
   const needsReveal = renderCardSection(grid, filtered, { hideValueAmount:true });
@@ -3587,6 +3686,36 @@ function renderAllProductsGrid(){
   translateProductsIfNeeded(filtered);
   const cartCountEl = document.getElementById('apCartCount');
   if(cartCountEl) cartCountEl.textContent = CART.reduce((s,i) => s + i.qty, 0);
+}
+// Header search's own "go" flow: submitting a keyword search takes the
+// shopper straight to a results view (heading + matching grid, or a clear
+// "no results" state) instead of only offering a suggestion dropdown to pick
+// from.
+function submitHeaderSearch(){
+  const input = document.getElementById('searchInput');
+  const q = input ? input.value.trim() : '';
+  if(!q) return;
+  trackRecentSearch(q);
+  closeSearchSuggestions();
+  closeHeaderSearch();
+  activeCategory = 'All';
+  openAllProductsPage();
+  const apInput = document.getElementById('apSearchInput');
+  if(apInput) apInput.value = q;
+  renderAllProductsGrid();
+  renderSuggestedForYou();
+}
+function updateApSearchHeading(q){
+  const heading = document.getElementById('apSearchHeading');
+  if(!heading) return;
+  const trimmed = (q || '').trim();
+  if(trimmed){
+    heading.style.display = 'block';
+    heading.innerHTML = (T('searchResultsFor') || 'Search results for "{q}"').replace('{q}', `<span class="q">${escapeHtmlClient(trimmed)}</span>`);
+  } else {
+    heading.style.display = 'none';
+    heading.innerHTML = '';
+  }
 }
 function openSortOverlay(){
   document.querySelectorAll('.sort-option').forEach(el => el.classList.toggle('active', el.dataset.sort === sortMode));
@@ -3734,10 +3863,15 @@ function cardBadgesHtml(p, opts){
 function rightBadgesHtml(p, opts){
   return '';
 }
+// True when this product (any color/variant) already has a line in the cart.
+function isProductInCart(id){
+  return CART.some(i => i.id === id);
+}
 function cardBodyHtml(p){
   const stock = Number(p.stock);
   const outOfStock = stock <= 0;
   const lowStock = !outOfStock && stock <= 5;
+  const inCart = !outOfStock && isProductInCart(p.id);
   return `
         <div class="cat">${catLabel(p.category)}</div>
         <div class="name">${pName(p)}</div>
@@ -3748,7 +3882,9 @@ function cardBodyHtml(p){
           ${priceHtml(p)}
           ${outOfStock
             ? `<button class="add-btn" disabled onclick="event.stopPropagation()">${T('outOfStockBtn')}</button>`
-            : `<button class="add-btn" onclick="event.stopPropagation();popButton(this);addToCart('${p.id}',1,event)">${T('addBtn')}</button>`}
+            : inCart
+              ? `<button class="add-btn in-cart" onclick="event.stopPropagation();openCart()">${T('goToCartBtn')}</button>`
+              : `<button class="add-btn" onclick="event.stopPropagation();popButton(this);addToCart('${p.id}',1,event)">${T('addBtn')}</button>`}
         </div>
         <div class="free-delivery"><span class="van">🚚</span> ${T('freeDeliveryBadge')}</div>
   `;
@@ -3773,7 +3909,7 @@ function cardSignature(p, opts){
   opts = opts || {};
   return [p.id, currentLang, (p.images && p.images[0]) || '', pName(p), p.price, p.compareAtPrice, p.stock,
     p.category, p.featured?1:0, p.bestseller?1:0, p.valueAmount||0, p.reviewCount, p.avgRating, pShortDesc(p),
-    opts.hideFeatured?1:0, opts.hideValueAmount?1:0, opts.featuredStar?1:0].join('|');
+    opts.hideFeatured?1:0, opts.hideValueAmount?1:0, opts.featuredStar?1:0, isProductInCart(p.id)?1:0].join('|');
 }
 // Updates an existing card element's content in place. Crucially, the
 // <img> element itself is only touched (its src re-set) when the image
@@ -3979,6 +4115,19 @@ function saveCart(){
   renderCart();
   const badge = document.getElementById('cartCount');
   badge.classList.remove('pulse'); void badge.offsetWidth; badge.classList.add('pulse');
+  refreshCartAwareUI();
+}
+// Re-syncs everything on screen whose "Add to cart" / "Go to cart" state, or
+// cart-count badge, depends on what's currently in the cart. Each call is
+// isolated with safeCall so nothing on a page where a section is missing
+// (e.g. all-products overlay closed) breaks the rest.
+function refreshCartAwareUI(){
+  safeCall(renderFeatured);
+  safeCall(renderBestsellers);
+  safeCall(renderValuePicks);
+  safeCall(() => { const ov = document.getElementById('apOverlay'); if(ov && ov.classList.contains('show')) renderAllProductsGrid(); });
+  safeCall(() => { const ov = document.getElementById('pdpOverlay'); if(ov && ov.classList.contains('show')) updatePdpAddBtnState(); });
+  safeCall(updateFloatingCartCount);
 }
 function cartTotal(){ return CART.reduce((s,i) => s + i.price*i.qty, 0); }
 function round3Local_(n){ return Math.round(Number(n||0) * 1000) / 1000; }
@@ -4194,8 +4343,8 @@ function openProduct(id){
   if(p.stock > 5){ stockEl.textContent = T('inStock'); stockEl.className = 'pdp-stock in'; }
   else if(p.stock > 0){ stockEl.textContent = T('onlyLeftStock').replace('{n}', p.stock); stockEl.className = 'pdp-stock low blink-stock'; }
   else{ stockEl.textContent = T('outOfStock'); stockEl.className = 'pdp-stock low'; }
-  document.getElementById('pdpAddBtn').disabled = p.stock <= 0;
   document.getElementById('pdpBuyBtn').disabled = p.stock <= 0;
+  updatePdpAddBtnState();
 
   document.getElementById('pdpBadges').innerHTML = [
     p.featured ? `<span class="card-badge featured" style="position:static;">${T('featuredBadge')}</span>` : '',
@@ -4379,6 +4528,113 @@ function zoomToggleAt(){
   });
 })();
 
+/* ================= Floating draggable cart button ================= */
+/* Shown on the home page, the all-products page and the product page;
+   hidden whenever the cart drawer, checkout, my-orders, auth or any modal
+   that sits on top of those three would otherwise overlap it. */
+function updateFloatingCartCount(){
+  const el = document.getElementById('fcbCount');
+  if(el) el.textContent = String(CART.reduce((s,i) => s + i.qty, 0));
+}
+function updateFloatingCartVisibility(){
+  const btn = document.getElementById('floatingCartBtn');
+  if(!btn) return;
+  const isShown = id => { const el = document.getElementById(id); return !!(el && el.classList.contains('show')); };
+  const hide = isShown('drawer') || isShown('checkoutOverlay') || isShown('ordersOverlay') ||
+    isShown('authOverlay') || isShown('addrModalOverlay') || isShown('sortOverlay') || isShown('imgZoomOverlay');
+  btn.classList.toggle('hide', hide);
+}
+(function setupFloatingCartButton(){
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('floatingCartBtn');
+    if(!btn) return;
+    updateFloatingCartCount();
+
+    const POS_KEY = 'gm_fcb_pos';
+    function clampToViewport(x, y){
+      const w = btn.offsetWidth || 60, h = btn.offsetHeight || 76;
+      const maxX = window.innerWidth - w - 6;
+      const maxY = window.innerHeight - h - 6;
+      return { x: Math.min(Math.max(6, x), Math.max(6, maxX)), y: Math.min(Math.max(6, y), Math.max(6, maxY)) };
+    }
+    function loadSavedPosition(){
+      try{
+        const saved = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
+        if(saved && typeof saved.left === 'number' && typeof saved.top === 'number'){
+          const c = clampToViewport(saved.left, saved.top);
+          btn.style.left = c.x + 'px'; btn.style.top = c.y + 'px';
+          btn.style.right = 'auto'; btn.style.bottom = 'auto';
+        }
+      }catch(e){ /* private mode / quota — fall back to default CSS position */ }
+    }
+    function savePosition(left, top){
+      try{ localStorage.setItem(POS_KEY, JSON.stringify({ left, top })); }catch(e){}
+    }
+
+    let dragging = false, moved = false, startX = 0, startY = 0, origX = 0, origY = 0;
+    function onDown(e){
+      dragging = true; moved = false;
+      const pt = e.touches ? e.touches[0] : e;
+      const rect = btn.getBoundingClientRect();
+      startX = pt.clientX; startY = pt.clientY;
+      origX = rect.left; origY = rect.top;
+      btn.classList.add('dragging');
+    }
+    function onMove(e){
+      if(!dragging) return;
+      if(e.cancelable) e.preventDefault();
+      const pt = e.touches ? e.touches[0] : e;
+      const dx = pt.clientX - startX, dy = pt.clientY - startY;
+      if(Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+      const c = clampToViewport(origX + dx, origY + dy);
+      btn.style.left = c.x + 'px'; btn.style.top = c.y + 'px';
+      btn.style.right = 'auto'; btn.style.bottom = 'auto';
+    }
+    function onUp(){
+      if(!dragging) return;
+      dragging = false;
+      btn.classList.remove('dragging');
+      if(moved){
+        // Snap to whichever side of the screen it's closer to, like a
+        // typical floating action button.
+        const rect = btn.getBoundingClientRect();
+        const goLeft = (rect.left + rect.width / 2) < (window.innerWidth / 2);
+        const targetLeft = goLeft ? 8 : window.innerWidth - rect.width - 8;
+        const c = clampToViewport(targetLeft, rect.top);
+        btn.style.left = c.x + 'px'; btn.style.top = c.y + 'px';
+        savePosition(c.x, c.y);
+      }
+    }
+    btn.addEventListener('mousedown', onDown);
+    btn.addEventListener('touchstart', onDown, { passive:true });
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('touchmove', onMove, { passive:false });
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchend', onUp);
+    btn.addEventListener('click', (e) => {
+      if(moved){ e.stopPropagation(); e.preventDefault(); moved = false; return; }
+      openCart();
+    });
+    window.addEventListener('resize', () => {
+      const rect = btn.getBoundingClientRect();
+      const c = clampToViewport(rect.left, rect.top);
+      if(btn.style.left){ btn.style.left = c.x + 'px'; btn.style.top = c.y + 'px'; }
+    });
+
+    loadSavedPosition();
+    updateFloatingCartVisibility();
+
+    // Watch every overlay that should hide this button, so visibility stays
+    // correct no matter which function opened/closed it.
+    const watchIds = ['drawer','checkoutOverlay','ordersOverlay','authOverlay','addrModalOverlay','sortOverlay','imgZoomOverlay'];
+    watchIds.forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      new MutationObserver(updateFloatingCartVisibility).observe(el, { attributes:true, attributeFilter:['class'] });
+    });
+  });
+})();
+
 function pdpChangeQty(delta){
   const stock = PDP_PRODUCT ? Number(PDP_PRODUCT.stock) : Infinity;
   const cap = stock > 0 ? stock : 1;
@@ -4388,6 +4644,28 @@ function pdpChangeQty(delta){
 function pdpAddToCart(evt){
   if(!PDP_PRODUCT) return;
   addToCart(PDP_PRODUCT.id, PDP_QTY, evt, PDP_SELECTED_COLOR);
+}
+// Swaps the PDP's "Add to cart" button into a "Go to cart" button once this
+// product is already sitting in the cart (any color), and back again if it's
+// removed — mirrors the same behavior on the home/products grid cards.
+function updatePdpAddBtnState(){
+  const p = PDP_PRODUCT;
+  const addBtn = document.getElementById('pdpAddBtn');
+  if(!p || !addBtn) return;
+  if(p.stock <= 0){
+    addBtn.disabled = true;
+    addBtn.classList.remove('in-cart');
+    addBtn.textContent = T('pdpAddToCart');
+    addBtn.onclick = function(evt){ popButton(addBtn); pdpAddToCart(evt); };
+    return;
+  }
+  const inCart = isProductInCart(p.id);
+  addBtn.disabled = false;
+  addBtn.classList.toggle('in-cart', inCart);
+  addBtn.textContent = inCart ? T('goToCartBtn') : T('pdpAddToCart');
+  addBtn.onclick = inCart
+    ? function(){ openCart(); }
+    : function(evt){ popButton(addBtn); pdpAddToCart(evt); };
 }
 function pdpBuyNow(){
   if(!PDP_PRODUCT) return;
