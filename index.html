@@ -166,6 +166,19 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .signup-perks-banner .spb-sub{font-size:11px;font-weight:600;color:rgba(255,255,255,0.92);}
   .guest-link{display:block;text-align:center;font-size:13px;font-weight:700;color:var(--ink-soft);margin-top:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
   .guest-link:hover{color:var(--ink);}
+  .login-email-chip{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--paper-soft);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;margin-bottom:14px;word-break:break-all;}
+  .login-email-chip a{color:var(--blush-ink);font-weight:700;cursor:pointer;flex-shrink:0;}
+  .login-method-tabs{display:flex;gap:6px;background:var(--paper-soft);border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px;}
+  .login-method-tabs button{flex:1;border:none;background:transparent;border-radius:9px;padding:9px 6px;font-size:12.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;font-family:inherit;}
+  .login-method-tabs button.active{background:var(--ink);color:#fff;}
+  .otp-hint{font-size:13px;color:var(--ink-soft);margin:0 0 12px;line-height:1.5;word-break:break-word;}
+  .otp-input{text-align:center;font-size:22px !important;letter-spacing:8px;font-weight:800;}
+  .otp-resend{display:block;text-align:center;font-size:12.5px;font-weight:700;color:var(--blush-ink);margin-top:12px;cursor:pointer;}
+  .otp-resend.disabled{color:var(--ink-soft);cursor:default;pointer-events:none;}
+  .prof-pw-box{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
+  .prof-pw-box h4{margin:0 0 4px;font-size:14px;}
+  .prof-pw-box p.hint{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;line-height:1.5;}
+  .confirm-acct-note{display:none;background:var(--paper-soft);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-size:12.5px;color:var(--ink-soft);margin:12px 0 0;line-height:1.55;}
   .reg-subscribe-check{display:flex;align-items:flex-start;gap:9px;margin:2px 0 14px;padding:11px 12px;background:var(--paper-soft);border:1px solid var(--line);border-radius:11px;}
   .reg-subscribe-check input{margin-top:2px;flex-shrink:0;width:16px;height:16px;accent-color:var(--blush-deep);cursor:pointer;}
   .reg-subscribe-check label{font-size:12.5px;line-height:1.5;color:var(--ink);cursor:pointer;font-weight:600;}
@@ -1593,7 +1606,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <div id="checkoutStep1">
       <h3 data-i18n="checkoutTitle">Checkout</h3>
       <div class="guest-banner" id="guestBanner" style="display:none;">
-        <span data-i18n="guestBannerText">Checking out as a guest.</span> <a href="javascript:void(0)" onclick="switchToLogin()" data-i18n="guestBannerLogin">Log in</a> <span data-i18n="guestBannerSuffix">for faster checkout & order tracking.</span>
+        <span data-i18n="guestBannerText">New here? We'll create your account from these details.</span> <a href="javascript:void(0)" onclick="switchToLogin()" data-i18n="guestBannerLogin">Log in</a> <span data-i18n="guestBannerSuffix">if you already have one.</span>
       </div>
       <div class="signup-perks-banner" id="guestPerksBanner" style="display:none;cursor:pointer;" onclick="switchToLogin()">
         <span class="spb-icon">🎁</span>
@@ -1642,7 +1655,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
         </div>
       </div>
       <div class="promo-register-notice" id="promoRegisterNotice" style="display:none;" onclick="switchToLogin()">
-        <span>🔒</span><span data-i18n-html="promoRegisterNotice">Promo codes &amp; member offers are for <b>registered customers</b>. Create a free account to unlock discounts on this order.</span>
+        <span>🔒</span><span data-i18n-html="promoRegisterNotice">Promo codes &amp; member offers unlock with an account. We'll create yours automatically with this order. <b>Already a member? Tap to log in.</b></span>
       </div>
       <div class="field" id="walletUseWrap" style="display:none;background:#FFF8F5;border:1px solid var(--line);border-radius:10px;padding:12px 14px;">
         <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;cursor:pointer;margin:0;">
@@ -1692,6 +1705,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
         <div class="checkmark">✓</div>
         <h3 id="confirmTitle" data-i18n="confirmTitle">Order received</h3>
         <p id="confirmText" style="color:var(--ink-soft);font-size:14px;"></p>
+        <p class="confirm-acct-note" id="confirmAcctNote"></p>
         <a class="wa-btn" id="confirmWaBtn" href="#" target="_blank" style="display:none;" data-i18n="confirmWaBtn">📲 Continue on WhatsApp</a><br>
         <p style="font-size:12px;color:var(--ink-soft);margin-top:12px;"><span data-i18n="confirmAnyQuery">Any query?</span> <a id="confirmWaQueryLink" href="#" target="_blank" style="color:var(--blush-ink);font-weight:700;" data-i18n="footerWhatsapp">WhatsApp us</a></p>
         <button class="submit-btn" style="margin-top:8px;" onclick="closeCheckout()" data-i18n="confirmDone">Done</button>
@@ -1728,11 +1742,31 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <div id="authLoginPanel">
       <h3 data-i18n="loginTitle">Log in</h3>
       <p style="color:var(--ink-soft);font-size:13px;margin:-8px 0 16px;" data-i18n="loginSub">An account keeps your order history and delivery details ready for next time.</p>
-      <div class="field"><label data-i18n="fieldEmail">Email</label><input type="email" id="loginEmail" placeholder="you@email.com"></div>
-      <div class="field"><label data-i18n="fieldPassword">Password</label><input type="password" id="loginPassword" placeholder="••••••••"></div>
-      <a class="forgot-link" href="javascript:void(0)" onclick="openForgotPassword()" data-i18n="forgotPasswordLink">Forgot password?</a>
-      <p class="auth-error" id="loginError"></p>
-      <button class="submit-btn" onclick="doLogin()" data-i18n="loginBtn">Log in</button>
+      <div id="loginStepEmail">
+        <div class="field"><label data-i18n="fieldEmail">Email</label><input type="email" id="loginEmail" placeholder="you@email.com" autocomplete="email" onkeydown="if(event.key==='Enter')loginContinue()"></div>
+        <p class="auth-error" id="loginError"></p>
+        <button class="submit-btn" id="loginContinueBtn" onclick="loginContinue()" data-i18n="continueBtn">Continue</button>
+      </div>
+      <div id="loginStepMethod" style="display:none;">
+        <div class="login-email-chip"><span id="loginEmailShown"></span><a href="javascript:void(0)" onclick="loginChangeEmail()" data-i18n="changeEmail">Change</a></div>
+        <div class="login-method-tabs" id="loginMethodTabs" style="display:none;">
+          <button type="button" id="loginTabPw" onclick="setLoginMethod('password')" data-i18n="loginWithPassword">Login with password</button>
+          <button type="button" id="loginTabOtp" onclick="setLoginMethod('otp')" data-i18n="loginWithOtp">Login with OTP</button>
+        </div>
+        <div id="loginOtpBlock">
+          <p class="otp-hint"><span data-i18n="otpSentTo">We've emailed a 6-digit code to</span> <strong id="otpSentEmail"></strong></p>
+          <div class="field"><label data-i18n="enterOtp">Enter the 6-digit code</label><input type="text" id="loginOtpCode" class="otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······" onkeydown="if(event.key==='Enter')doVerifyLoginOtp()"></div>
+          <p class="auth-error" id="otpError"></p>
+          <button class="submit-btn" onclick="doVerifyLoginOtp()" data-i18n="verifyOtpBtn">Verify &amp; log in</button>
+          <a class="otp-resend" id="otpResendLink" href="javascript:void(0)" onclick="resendLoginOtp()" data-i18n="resendOtp">Resend code</a>
+        </div>
+        <div id="loginPwBlock" style="display:none;">
+          <div class="field"><label data-i18n="fieldPassword">Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
+          <a class="forgot-link" href="javascript:void(0)" onclick="openForgotPassword()" data-i18n="forgotPasswordLink">Forgot password?</a>
+          <p class="auth-error" id="loginPwError"></p>
+          <button class="submit-btn" onclick="doLogin()" data-i18n="loginBtn">Log in</button>
+        </div>
+      </div>
       <p style="text-align:center;font-size:13px;margin-top:14px;color:var(--ink-soft);"><span data-i18n="newHere">New here?</span> <a href="javascript:void(0)" onclick="showAuthPanel('register')" style="color:var(--blush-ink);font-weight:700;" data-i18n="createAccount">Create an account</a></p>
       <div class="signup-perks-banner" id="signupPerksLogin">
         <span class="spb-icon">🎁</span>
@@ -1741,7 +1775,6 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
           <span class="spb-sub" data-i18n="signupPerksSub">Plus refer &amp; earn 0.200 BHD per successful referral</span>
         </div>
       </div>
-      <a class="guest-link" href="javascript:void(0)" onclick="continueAsGuest()" data-i18n="continueGuest">Continue without an account</a>
     </div>
 
     <div id="authForgotPanel" style="display:none;">
@@ -1784,7 +1817,6 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
           <span class="spb-sub" data-i18n="signupPerksSub">Plus refer &amp; earn 0.200 BHD per successful referral</span>
         </div>
       </div>
-      <a class="guest-link" href="javascript:void(0)" onclick="continueAsGuest()" data-i18n="continueGuest">Continue without an account</a>
     </div>
   </div>
 </div>
@@ -1855,7 +1887,20 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
       <p class="auth-error" id="profError"></p>
       <p id="profSuccess" style="color:#2E7D32;font-size:13px;font-weight:600;min-height:16px;"></p>
       <button class="submit-btn" onclick="saveProfile()">Save changes</button>
-      <p style="text-align:center;font-size:13px;margin-top:14px;color:var(--ink-soft);">Want to change your password? <a href="javascript:void(0)" onclick="closeMyOrders();openForgotPassword();" style="color:var(--blush-ink);font-weight:700;">Reset it by email</a></p>
+      <div class="prof-pw-box" id="profPwBox">
+        <h4 id="profPwTitle">Password</h4>
+        <p class="hint" id="profPwHint"></p>
+        <button class="submit-btn" id="profPwStartBtn" onclick="startSetPassword()" style="background:var(--paper-soft);color:var(--ink);border:1px solid var(--line);">Set a password</button>
+        <div id="profPwForm" style="display:none;">
+          <p class="otp-hint">We've emailed a 6-digit code to <strong id="profPwEmail"></strong></p>
+          <div class="field"><label>6-digit code</label><input type="text" id="profPwOtp" class="otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······"></div>
+          <div class="field"><label>New password <span style="font-weight:500;color:var(--ink-soft);">(min 6 characters)</span></label><input type="password" id="profPwNew" placeholder="••••••••" autocomplete="new-password"></div>
+          <p class="auth-error" id="profPwError"></p>
+          <p id="profPwSuccess" style="color:#2E7D32;font-size:13px;font-weight:600;min-height:16px;"></p>
+          <button class="submit-btn" onclick="savePasswordWithOtp()">Save password</button>
+          <a class="otp-resend" id="profPwResend" href="javascript:void(0)" onclick="startSetPassword()">Resend code</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2852,6 +2897,52 @@ function loadProfile(){
   document.getElementById('profEmail').value = CUSTOMER.email || '';
   document.getElementById('profError').textContent = '';
   document.getElementById('profSuccess').textContent = '';
+  const noPw = CUSTOMER.hasPassword === false;
+  document.getElementById('profPwTitle').textContent = noPw ? 'Set a password' : 'Change password';
+  document.getElementById('profPwHint').textContent = noPw
+    ? 'Your account signs in with a one-time code we email you. Add a password too if you\'d like the option to log in with it.'
+    : 'For your security we\'ll email you a one-time code before you can choose a new password.';
+  document.getElementById('profPwStartBtn').textContent = noPw ? 'Set a password' : 'Change password';
+  document.getElementById('profPwStartBtn').style.display = 'block';
+  document.getElementById('profPwForm').style.display = 'none';
+  document.getElementById('profPwError').textContent = '';
+  document.getElementById('profPwSuccess').textContent = '';
+}
+async function startSetPassword(){
+  if(!CUSTOMER) return;
+  const errEl = document.getElementById('profPwError');
+  errEl.textContent = '';
+  document.getElementById('profPwSuccess').textContent = '';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'requestLoginOtp', email: CUSTOMER.email, purpose:'setPassword' }) });
+    const data = await res.json();
+    if(!data.ok){ errEl.textContent = data.error || 'Could not send the code.'; if(!data.retryAfter) return; }
+    document.getElementById('profPwEmail').textContent = CUSTOMER.email;
+    document.getElementById('profPwStartBtn').style.display = 'none';
+    document.getElementById('profPwForm').style.display = 'block';
+    startOtpCooldown('profPwResend', 45);
+  }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }
+}
+async function savePasswordWithOtp(){
+  if(!CUSTOMER) return;
+  const otp = document.getElementById('profPwOtp').value.trim();
+  const newPassword = document.getElementById('profPwNew').value;
+  const errEl = document.getElementById('profPwError');
+  const okEl = document.getElementById('profPwSuccess');
+  errEl.textContent = ''; okEl.textContent = '';
+  if(!/^\d{6}$/.test(otp)){ errEl.textContent = 'Please enter the 6-digit code from your email.'; return; }
+  if(!newPassword || newPassword.length < 6){ errEl.textContent = 'Password must be at least 6 characters.'; return; }
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'setPasswordWithOtp', email: CUSTOMER.email, otp, newPassword }) });
+    const data = await res.json();
+    if(!data.ok){ errEl.textContent = data.error || 'Could not save your password.'; return; }
+    CUSTOMER.hasPassword = true;
+    localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+    document.getElementById('profPwOtp').value = '';
+    document.getElementById('profPwNew').value = '';
+    loadProfile();
+    document.getElementById('profPwSuccess').textContent = '✓ Password saved. You can now log in with your email + password or with an OTP.';
+  }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }
 }
 async function saveProfile(){
   if(!CUSTOMER) return;
@@ -2908,6 +2999,7 @@ function showAuthPanel(panel){
   document.getElementById('authResetPanel').style.display = panel === 'reset' ? 'block' : 'none';
   document.getElementById('loginError').textContent = '';
   document.getElementById('regError').textContent = '';
+  if(panel === 'login') resetLoginSteps();
   if(panel === 'register'){
     const refField = document.getElementById('regReferralCode');
     const pending = localStorage.getItem('gm_pending_referral');
@@ -2948,10 +3040,119 @@ async function doResetPassword(){
     alert('Your password has been reset and you are now logged in.');
   }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }
 }
-async function doLogin(){
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
+/* ---------- email-first login: OTP for everyone, password only if the account has one ---------- */
+let LOGIN_EMAIL = '';
+let LOGIN_HAS_PW = false;
+let LOGIN_OTP_SENT_FOR = '';
+const OTP_TIMERS = {};
+
+function resetLoginSteps(){
+  LOGIN_EMAIL = ''; LOGIN_HAS_PW = false; LOGIN_OTP_SENT_FOR = '';
+  const set = (id, disp) => { const el = document.getElementById(id); if(el) el.style.display = disp; };
+  set('loginStepEmail','block'); set('loginStepMethod','none');
+  ['loginOtpCode','loginPassword'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  ['otpError','loginPwError'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = ''; });
+}
+function loginChangeEmail(){
+  resetLoginSteps();
+  const el = document.getElementById('loginEmail'); if(el) el.focus();
+}
+async function loginContinue(){
+  const emailEl = document.getElementById('loginEmail');
   const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginContinueBtn');
+  const email = emailEl.value.trim().toLowerCase();
+  errEl.textContent = '';
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ errEl.textContent = 'Please enter a valid email.'; return; }
+  btn.disabled = true;
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'getLoginOptions', email }) });
+    const data = await res.json();
+    if(!data.ok){ errEl.textContent = data.error || 'Could not continue.'; return; }
+    if(!data.exists){ errEl.textContent = T('noAccountYet'); return; }
+    LOGIN_EMAIL = email;
+    LOGIN_HAS_PW = !!data.hasPassword;
+    document.getElementById('loginEmailShown').textContent = email;
+    document.getElementById('otpSentEmail').textContent = email;
+    document.getElementById('loginStepEmail').style.display = 'none';
+    document.getElementById('loginStepMethod').style.display = 'block';
+    document.getElementById('loginMethodTabs').style.display = LOGIN_HAS_PW ? 'flex' : 'none';
+    // Password accounts start on the password tab (no email sent unless they
+    // pick OTP). OTP-only accounts get their code emailed straight away.
+    setLoginMethod(LOGIN_HAS_PW ? 'password' : 'otp');
+  }catch(err){
+    errEl.textContent = 'Could not reach the server. Check your connection and try again.';
+  }finally{
+    btn.disabled = false;
+  }
+}
+function setLoginMethod(method){
+  const isOtp = method === 'otp';
+  document.getElementById('loginOtpBlock').style.display = isOtp ? 'block' : 'none';
+  document.getElementById('loginPwBlock').style.display = isOtp ? 'none' : 'block';
+  document.getElementById('loginTabOtp').classList.toggle('active', isOtp);
+  document.getElementById('loginTabPw').classList.toggle('active', !isOtp);
+  document.getElementById('otpError').textContent = '';
+  document.getElementById('loginPwError').textContent = '';
+  if(isOtp && LOGIN_OTP_SENT_FOR !== LOGIN_EMAIL) sendLoginOtp();
+}
+async function sendLoginOtp(){
+  const errEl = document.getElementById('otpError');
+  errEl.textContent = '';
+  LOGIN_OTP_SENT_FOR = LOGIN_EMAIL;
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'requestLoginOtp', email: LOGIN_EMAIL, purpose:'login' }) });
+    const data = await res.json();
+    if(!data.ok){
+      errEl.textContent = data.error || 'Could not send the code.';
+      if(!data.retryAfter){ LOGIN_OTP_SENT_FOR = ''; return; }
+    }
+    startOtpCooldown('otpResendLink', data.retryAfter && !data.ok ? data.retryAfter : 45);
+    const codeEl = document.getElementById('loginOtpCode'); if(codeEl) codeEl.focus();
+  }catch(err){
+    LOGIN_OTP_SENT_FOR = '';
+    errEl.textContent = 'Could not reach the server. Check your connection and try again.';
+  }
+}
+function resendLoginOtp(){ LOGIN_OTP_SENT_FOR = ''; sendLoginOtp(); }
+function startOtpCooldown(linkId, seconds){
+  const link = document.getElementById(linkId);
+  if(!link) return;
+  if(OTP_TIMERS[linkId]) clearInterval(OTP_TIMERS[linkId]);
+  let left = seconds;
+  const base = (linkId === 'otpResendLink') ? T('resendOtpIn') : 'Resend code in';
+  const idle = (linkId === 'otpResendLink') ? T('resendOtp') : 'Resend code';
+  link.classList.add('disabled');
+  link.textContent = `${base} ${left}s`;
+  OTP_TIMERS[linkId] = setInterval(() => {
+    left--;
+    if(left <= 0){
+      clearInterval(OTP_TIMERS[linkId]);
+      link.classList.remove('disabled');
+      link.textContent = idle;
+    } else {
+      link.textContent = `${base} ${left}s`;
+    }
+  }, 1000);
+}
+async function doVerifyLoginOtp(){
+  const otp = document.getElementById('loginOtpCode').value.trim();
+  const errEl = document.getElementById('otpError');
+  errEl.textContent = '';
+  if(!/^\d{6}$/.test(otp)){ errEl.textContent = 'Please enter the 6-digit code from your email.'; return; }
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'verifyLoginOtp', email: LOGIN_EMAIL, otp }) });
+    const data = await res.json();
+    if(!data.ok){ errEl.textContent = data.error || 'That code did not work.'; return; }
+    onAuthSuccess(data.customer);
+  }catch(err){
+    errEl.textContent = 'Could not reach the server. Check your connection and try again.';
+  }
+}
+async function doLogin(){
+  const email = (LOGIN_EMAIL || document.getElementById('loginEmail').value).trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginPwError');
   errEl.textContent = '';
   if(!email || !password){ errEl.textContent = 'Please enter your email and password.'; return; }
   try{
@@ -3062,7 +3263,7 @@ const I18N = {
     footerSupport:'Support', footerWhatsapp:'WhatsApp us', footerDeliveryPolicy:'Delivery policy', footerReturns:'Returns & refunds',
     footerPayments:'Payments', footerBenefitpay:'BenefitPay QR', footerCod:'Cash on delivery', footerPricesBhd:'Prices shown in BHD.',
     cartTitle:'Your cart', cartTotal:'Total', cartSubtotal:'Sub total', cartPlatformFee:'Platform fees', cartDeliveryCharge:'Delivery charge', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
-    checkoutTitle:'Checkout', guestBannerText:'Checking out as a guest.', guestBannerLogin:'Log in', guestBannerSuffix:'for faster checkout & order tracking.',
+    checkoutTitle:'Checkout', guestBannerText:'New here? We\'ll create your account from these details.', guestBannerLogin:'Log in', guestBannerSuffix:'if you already have one.',
     fieldFullName:'Full name', fieldMobile:'Mobile number', fieldEmail:'Email', fieldDeliveryAddr:'Delivery address',
     fieldFlat:'Flat / Shop no.', fieldBuilding:'Building', fieldRoad:'Road', fieldBlock:'Block', fieldArea:'Area',
     phFullName:'Your name', phFlat:'e.g. Flat 12', phBuilding:'Building name/no.', phRoad:'Road no.', phBlock:'Block no.', phArea:'e.g. Manama, Riffa, Muharraq…',
@@ -3076,6 +3277,11 @@ const I18N = {
     qrDoLater:"I'll do this later", confirmTitle:'Order received', confirmWaBtn:'📲 Continue on WhatsApp', confirmAnyQuery:'Any query?', confirmDone:'Done',
     loginTitle:'Log in', loginSub:'An account keeps your order history and delivery details ready for next time.',
     fieldPassword:'Password', forgotPasswordLink:'Forgot password?', loginBtn:'Log in', newHere:'New here?', createAccount:'Create an account', continueGuest:'Continue without an account',
+    continueBtn:'Continue', changeEmail:'Change', loginWithOtp:'Login with OTP', loginWithPassword:'Login with password',
+    otpSentTo:"We've emailed a 6-digit code to", enterOtp:'Enter the 6-digit code', verifyOtpBtn:'Verify & log in', resendOtp:'Resend code', resendOtpIn:'Resend code in',
+    noAccountYet:"No account found with this email. Place an order and we'll create one automatically, or create an account below.",
+    autoAccountNote:"We've created your Souqify-bh account from these details and sent you a welcome email. Next time, log in with your email and a one-time code.",
+    accountExistsNote:"This email already has a Souqify-bh account. Log in to see this order under My orders.",
     signupPerksTitle:'Register for exciting offers', signupPerksSub:'Plus refer & earn 0.200 BHD per successful referral',
     resetTitle:'Reset your password', resetSub:"Enter your account email and we'll send a reset link.", sendResetBtn:'Send reset link', backToLogin:'← Back to log in',
     chooseNewPwTitle:'Choose a new password', resettingPwFor:'Resetting the password for', fieldNewPassword:'New password (min 6 characters)', setNewPwBtn:'Set new password',
@@ -3083,7 +3289,7 @@ const I18N = {
     fieldMobileOptional:'Mobile number (optional)', fieldPasswordMin:'Password (min 6 characters)', createAccountBtn:'Create account', alreadyHaveAccount:'Already have an account?',
     fieldReferralOptional:'Referral code (optional)', phReferralCode:'e.g. FATIF3K9',
     regSubscribeLabel:'📩 Yes, keep me first in line for offers, promo codes & restock alerts',
-    promoRegisterNotice:'Promo codes & member offers are for <b>registered customers</b>. Create a free account to unlock discounts on this order.',
+    promoRegisterNotice:'Promo codes & member offers unlock with an account. We\'ll create yours automatically with this order. <b>Already a member? Tap to log in.</b>',
     myAccount:'My account', tabOrders:'Orders', tabAddresses:'Addresses', tabWishlist:'Wishlist', tabProfile:'Profile', loadingOrders:'Loading your orders…', addAddress:'+ Add a new address',
     wishAddLabel:'Add to wishlist', wishRemoveLabel:'Remove from wishlist', wishLoginPrompt:'Log in to see your wishlist.', wishLoading:'Loading your wishlist…', wishLoadError:'Could not load your wishlist.', wishEmpty:'Your wishlist is empty — tap the heart on any product to save it here.', shareProductText:'Check this out on Souqify-bh',
     tabReferrals:'Wallet', walletBalanceLabel:'Souqify-bh wallet balance', walletUseAtCheckout:'Use it to pay for part of any order at checkout.',
@@ -3142,7 +3348,7 @@ const I18N = {
     footerSupport:'الدعم', footerWhatsapp:'راسلنا عبر واتساب', footerDeliveryPolicy:'سياسة التوصيل', footerReturns:'الإرجاع والاسترداد',
     footerPayments:'طرق الدفع', footerBenefitpay:'رمز BenefitPay', footerCod:'الدفع عند الاستلام', footerPricesBhd:'الأسعار موضحة بالدينار البحريني.',
     cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartSubtotal:'المجموع الفرعي', cartPlatformFee:'رسوم المنصة', cartDeliveryCharge:'رسوم التوصيل', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
-    checkoutTitle:'إتمام الطلب', guestBannerText:'أنت تتابع الشراء كضيف.', guestBannerLogin:'تسجيل الدخول', guestBannerSuffix:'لإتمام أسرع وتتبع الطلبات.',
+    checkoutTitle:'إتمام الطلب', guestBannerText:'جديد هنا؟ سننشئ حسابك من هذه البيانات.', guestBannerLogin:'سجّل الدخول', guestBannerSuffix:'إن كان لديك حساب.',
     fieldFullName:'الاسم الكامل', fieldMobile:'رقم الجوال', fieldEmail:'البريد الإلكتروني', fieldDeliveryAddr:'عنوان التوصيل',
     fieldFlat:'رقم الشقة / المحل', fieldBuilding:'المبنى', fieldRoad:'الطريق', fieldBlock:'المجمع', fieldArea:'المنطقة',
     phFullName:'اسمك', phFlat:'مثال: شقة 12', phBuilding:'اسم/رقم المبنى', phRoad:'رقم الطريق', phBlock:'رقم المجمع', phArea:'مثال: المنامة، الرفاع، المحرق…',
@@ -3156,6 +3362,11 @@ const I18N = {
     qrDoLater:'سأفعل ذلك لاحقًا', confirmTitle:'تم استلام الطلب', confirmWaBtn:'📲 المتابعة عبر واتساب', confirmAnyQuery:'لديك استفسار؟', confirmDone:'تم',
     loginTitle:'تسجيل الدخول', loginSub:'يحتفظ الحساب بسجل طلباتك وتفاصيل التوصيل جاهزة للمرة القادمة.',
     fieldPassword:'كلمة المرور', forgotPasswordLink:'نسيت كلمة المرور؟', loginBtn:'تسجيل الدخول', newHere:'جديد هنا؟', createAccount:'إنشاء حساب', continueGuest:'المتابعة بدون حساب',
+    continueBtn:'متابعة', changeEmail:'تغيير', loginWithOtp:'تسجيل الدخول برمز التحقق', loginWithPassword:'تسجيل الدخول بكلمة المرور',
+    otpSentTo:'أرسلنا رمزًا من 6 أرقام إلى', enterOtp:'أدخل الرمز المكوّن من 6 أرقام', verifyOtpBtn:'تحقق وسجّل الدخول', resendOtp:'إعادة إرسال الرمز', resendOtpIn:'إعادة الإرسال بعد',
+    noAccountYet:'لا يوجد حساب بهذا البريد. أكمل طلبك وسننشئ لك حسابًا تلقائيًا، أو أنشئ حسابًا أدناه.',
+    autoAccountNote:'أنشأنا لك حسابًا في Souqify-bh من هذه البيانات وأرسلنا لك رسالة ترحيب. في المرة القادمة سجّل الدخول ببريدك ورمز تحقق لمرة واحدة.',
+    accountExistsNote:'هذا البريد لديه حساب بالفعل. سجّل الدخول لرؤية هذا الطلب في طلباتي.',
     signupPerksTitle:'سجّل واحصل على عروض حصرية', signupPerksSub:'وادعُ أصدقاءك واربح 0.200 دينار عن كل إحالة ناجحة',
     resetTitle:'إعادة تعيين كلمة المرور', resetSub:'أدخل بريد حسابك وسنرسل لك رابط إعادة التعيين.', sendResetBtn:'إرسال رابط إعادة التعيين', backToLogin:'← العودة لتسجيل الدخول',
     chooseNewPwTitle:'اختر كلمة مرور جديدة', resettingPwFor:'إعادة تعيين كلمة المرور لـ', fieldNewPassword:'كلمة المرور الجديدة (6 أحرف على الأقل)', setNewPwBtn:'تعيين كلمة المرور الجديدة',
@@ -3163,7 +3374,7 @@ const I18N = {
     fieldMobileOptional:'رقم الجوال (اختياري)', fieldPasswordMin:'كلمة المرور (6 أحرف على الأقل)', createAccountBtn:'إنشاء الحساب', alreadyHaveAccount:'لديك حساب بالفعل؟',
     fieldReferralOptional:'رمز الإحالة (اختياري)', phReferralCode:'مثال: FATIF3K9',
     regSubscribeLabel:'📩 نعم، أبقوني على اطلاع بالعروض ورموز الخصم وتنبيهات إعادة التوفر',
-    promoRegisterNotice:'رموز الخصم وعروض الأعضاء متاحة <b>للعملاء المسجلين</b> فقط. أنشئ حسابًا مجانيًا للحصول على الخصومات على هذا الطلب.',
+    promoRegisterNotice:'تُفعَّل رموز الخصم وعروض الأعضاء عند وجود حساب، وسننشئ حسابك تلقائيًا مع هذا الطلب. <b>لديك حساب؟ اضغط لتسجيل الدخول.</b>',
     myAccount:'حسابي', tabOrders:'الطلبات', tabAddresses:'العناوين', tabWishlist:'قائمة الرغبات', tabProfile:'الملف الشخصي', loadingOrders:'جارِ تحميل طلباتك…', addAddress:'+ إضافة عنوان جديد',
     wishAddLabel:'أضف إلى قائمة الرغبات', wishRemoveLabel:'إزالة من قائمة الرغبات', wishLoginPrompt:'سجّل الدخول لرؤية قائمة رغباتك.', wishLoading:'جارِ تحميل قائمة رغباتك…', wishLoadError:'تعذّر تحميل قائمة رغباتك.', wishEmpty:'قائمة رغباتك فارغة — اضغط على القلب في أي منتج لحفظه هنا.', shareProductText:'ألق نظرة على هذا في Souqify-bh',
     tabReferrals:'المحفظة', walletBalanceLabel:'رصيد محفظة Souqify-bh', walletUseAtCheckout:'استخدمه لدفع جزء من أي طلب عند الدفع.',
@@ -5261,12 +5472,10 @@ function proceedWithCod(){
 }
 
 function openCheckout(){
-  if(!CUSTOMER && !GUEST_MODE){
-    pendingAfterAuth = 'checkout';
-    closeCart();
-    openAuth('login');
-    return;
-  }
+  // No login/guest popup: shoppers go straight to the delivery-details step.
+  // If they aren't logged in, an account is created automatically from those
+  // details when the order is placed (see placeOrder / handleAutoAccountResult_).
+  if(!CUSTOMER) GUEST_MODE = true;
   metaTrack('InitiateCheckout', { content_ids: CART.map(function(i){ return i.id; }), contents: metaContents(CART), content_type:'product', num_items: CART.reduce(function(n,i){ return n + i.qty; }, 0), value: cartTotal(), currency:'BHD' });
   buildPayOptions();
   document.getElementById('checkoutStep1').style.display='block';
@@ -5432,12 +5641,45 @@ function closeCheckout(){ document.getElementById('checkoutOverlay').classList.r
 
 let pendingOrderPayload = null;
 let pendingOrderId = null;
+let pendingAcctCtx = null;
+let lastOrderResp = null;
+
+// After an order is placed by someone who wasn't logged in, the backend
+// auto-creates their account (no password) from the delivery details and
+// returns it. Log them in with it, save the address to it, and return the
+// note to show on the confirmation screen.
+function handleAutoAccountResult_(data, ctx){
+  if(!data || !ctx || !ctx.wasGuest) return '';
+  if(data.accountCreated && data.customer){
+    CUSTOMER = data.customer;
+    GUEST_MODE = false;
+    localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+    localStorage.removeItem('gm_pending_referral');
+    updateAcctButton();
+    try{ loadWishlistIds(); }catch(e){}
+    try{
+      fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+        action:'addAddress', customerId: CUSTOMER.id, label:'Home', fullName: ctx.name, phone: ctx.phone,
+        flat: ctx.flat, building: ctx.building, road: ctx.road, block: ctx.block, area: ctx.area, isDefault: true
+      }) }).catch(() => {});
+    }catch(e){}
+    return T('autoAccountNote');
+  }
+  if(data.accountExists) return T('accountExistsNote');
+  return '';
+}
+function appendAccountNote_(text){
+  const el = document.getElementById('confirmAcctNote');
+  if(!el) return;
+  el.textContent = text || '';
+  el.style.display = text ? 'block' : 'none';
+}
 
 let isPlacingOrder = false;
 
 async function placeOrder(){
   if(isPlacingOrder) return;
-  if(!CUSTOMER && !GUEST_MODE){ openCheckout(); return; }
+  if(!CUSTOMER) GUEST_MODE = true;
   const name = document.getElementById('custName').value.trim();
   const phone = document.getElementById('custPhone').value.trim();
   const email = CUSTOMER ? CUSTOMER.email : document.getElementById('custEmail').value.trim();
@@ -5449,11 +5691,12 @@ async function placeOrder(){
   const method = document.querySelector('input[name=pay]:checked')?.value;
 
   if(!name || !phone){ alert('Please fill in your name and phone number.'); return; }
-  if(GUEST_MODE && (!email || email.indexOf('@') === -1)){ alert('Please enter a valid email so we can send your order confirmation.'); return; }
+  if(!CUSTOMER && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ alert('Please enter a valid email so we can send your order confirmation and create your account.'); return; }
   if(!flat || !building || !road || !block || !area){ alert('Please fill in Flat/Shop no., Building, Road, Block and Area.'); return; }
   if(!CART.length){ alert('Your cart is empty.'); return; }
 
   const address = `Flat/Shop ${flat}, Building ${building}, Road ${road}, Block ${block}, ${area}`;
+  const acctCtx = { wasGuest: !CUSTOMER, name, phone, flat, building, road, block, area };
 
   const submitBtn = document.getElementById('checkoutSubmitBtn');
   const submitLabel = document.getElementById('submitBtnLabel');
@@ -5489,13 +5732,15 @@ async function placeOrder(){
     const orderPayload = {
       action:'placeOrder', customerName:name, customerEmail: email, phone, address,
       items: CART, total: cartGrandTotal(), paymentMethod: method, walletAmountUsed,
-      promoCode: APPLIED_PROMO ? APPLIED_PROMO.code : ''
+      promoCode: APPLIED_PROMO ? APPLIED_PROMO.code : '',
+      referralCode: CUSTOMER ? '' : (localStorage.getItem('gm_pending_referral') || '')
     };
 
     if(method === 'benefitpay'){
       // Don't place the order yet — the customer still has to pay and confirm.
       // The backend call happens in onQrPaidClick() once they tap "Payment done".
       pendingOrderPayload = orderPayload;
+      pendingAcctCtx = acctCtx;
       pendingOrderId = 'ORD-' + Date.now();
       document.getElementById('checkoutStep1').style.display='none';
       document.getElementById('checkoutStep2').style.display='none';
@@ -5504,6 +5749,7 @@ async function placeOrder(){
     }
 
     // Cash on Delivery — place the order right away as before.
+    lastOrderResp = null;
     let orderId = 'ORD-' + Date.now();
     let actualWalletUsed = walletAmountUsed;
     let actualPromoDiscount = promoDiscountAmount;
@@ -5516,6 +5762,7 @@ async function placeOrder(){
         return;
       }
       if(data && data.orderId) orderId = data.orderId;
+      lastOrderResp = data;
       if(data && typeof data.walletUsed === 'number') actualWalletUsed = data.walletUsed;
       if(data && typeof data.promoDiscount === 'number') actualPromoDiscount = data.promoDiscount;
     }catch(err){ /* backend not connected yet — still show confirmation */ }
@@ -5534,6 +5781,7 @@ async function placeOrder(){
     document.getElementById('confirmWaBtn').style.display = 'none';
     document.getElementById('confirmWaQueryLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi! I have a question about my order ' + orderId + '.')}`;
 
+    appendAccountNote_(handleAutoAccountResult_(lastOrderResp, acctCtx));
     if(CUSTOMER && actualWalletUsed > 0){
       CUSTOMER.walletBalance = Math.max(0, round3Local_(Number(CUSTOMER.walletBalance || 0) - actualWalletUsed));
       localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
@@ -5590,9 +5838,11 @@ async function onQrPaidClick(){
       return;
     }
     if(data && data.orderId) orderId = data.orderId;
+      lastOrderResp = data;
     if(data && typeof data.walletUsed === 'number') actualWalletUsed = data.walletUsed;
   }catch(err){ /* backend not connected yet — still proceed to WhatsApp + confirmation */ }
 
+  appendAccountNote_(handleAutoAccountResult_(lastOrderResp, pendingAcctCtx));
   if(CUSTOMER && actualWalletUsed > 0){
     CUSTOMER.walletBalance = Math.max(0, round3Local_(Number(CUSTOMER.walletBalance || 0) - actualWalletUsed));
     localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
