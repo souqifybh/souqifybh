@@ -1581,11 +1581,16 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 <div class="overlay" id="overlay" onclick="closeCart()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head"><h3 data-i18n="cartTitle">Your cart</h3><button onclick="closeCart()">✕</button></div>
+  <div class="cart-offer-banner" id="cartOfferBanner" style="display:none;margin:10px 16px 0;padding:9px 12px;background:#F0F7E4;border:1px solid #CFE6AE;border-radius:10px;font-size:12.5px;font-weight:700;color:#3F5D1F;text-align:center;"></div>
   <div class="drawer-body" id="cartItems"></div>
   <div class="drawer-foot">
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartSubtotal">Sub total</span><span id="cartSubtotal">0.000 BHD</span></div>
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartPlatformFee">Platform fees</span><span id="cartPlatformFee">0.000 BHD</span></div>
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartDeliveryCharge">Delivery charge</span><span id="cartDeliveryCharge">0.000 BHD</span></div>
+    <div id="cartOfferDiscountRow" style="display:none;">
+      <hr style="border:none;border-top:1px solid var(--line,#eee);margin:6px 0;">
+      <div class="total-row" style="font-weight:700;font-size:13.5px;color:#2E7D32;"><span data-i18n="cartDiscountLabel">Discount</span><span id="cartOfferDiscountAmt">-0.000 BHD</span></div>
+    </div>
     <div class="total-row"><span data-i18n="cartTotal">Total</span><span id="cartTotal">0.000 BHD</span></div>
     <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled data-i18n="cartCheckout">Proceed to checkout</button>
   </div>
@@ -3298,6 +3303,7 @@ const I18N = {
     useWalletLabel:'Use my wallet balance', fromWalletSuffix:'from wallet', walletAvailableSuffix:'BHD available',
     promoCodeLabel:'Have a promo code?', phPromoCode:'Enter code', applyBtn:'Apply', removeBtn:'Remove',
     promoDiscountSuffix:'off', promoEnterCode:'Please enter a code.', promoLoginRequired:'Please log in to your account to use a promo code.',
+    cartDiscountLabel:'Discount', cartDiscountSuffix:'bundle offer',
     promoInvalid:'This code is not valid.', promoNetworkError:'Could not reach the server. Please try again.',
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
     addBtn:'Add', freeDeliveryBadge:'Free Delivery in Bahrain', codBadge:'Cash on Delivery', chipAll:'All', catGeneral:'General',
@@ -3383,6 +3389,7 @@ const I18N = {
     useWalletLabel:'استخدام رصيد محفظتي', fromWalletSuffix:'من المحفظة', walletAvailableSuffix:'دينار متاح',
     promoCodeLabel:'لديك رمز ترويجي؟', phPromoCode:'أدخل الرمز', applyBtn:'تطبيق', removeBtn:'إزالة',
     promoDiscountSuffix:'خصم', promoEnterCode:'يرجى إدخال رمز.', promoLoginRequired:'يرجى تسجيل الدخول إلى حسابك لاستخدام رمز ترويجي.',
+    cartDiscountLabel:'خصم', cartDiscountSuffix:'عرض الحزمة',
     promoInvalid:'هذا الرمز غير صالح.', promoNetworkError:'تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى.',
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
     addBtn:'أضف', freeDeliveryBadge:'توصيل مجاني في البحرين', codBadge:'الدفع عند الاستلام', chipAll:'الكل', catGeneral:'عام',
@@ -4357,6 +4364,120 @@ function applyOrderChargesSettings(settings){
 }
 function cartGrandTotal(){ return cartTotal() + ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge; }
 
+/* ---------------- cart offers (automatic bundle deals) ----------------
+ * Mirrors computeCartOfferDiscount_() on the backend so the cart can show
+ * the discount instantly without a round trip. The backend always
+ * recomputes this itself from the live Products sheet at order time, so
+ * this client copy is for display only — never trusted as the final amount.
+ */
+let CART_OFFERS = [];
+async function loadCartOffers(){
+  try{
+    const res = await fetch(`${CONFIG.API_URL}?action=listCartOffers&_=${Date.now()}`);
+    const data = await res.json();
+    CART_OFFERS = (data && data.offers) || [];
+  }catch(err){ CART_OFFERS = []; }
+  renderCart();
+}
+function offerUnitMatchesScope(unit, offer){
+  if(offer.scope === 'all') return true;
+  if(offer.scope === 'category') return unit.category && unit.category === offer.scopeValue;
+  if(offer.scope === 'product'){
+    const ids = (offer.scopeValue || '').split(',').map(s => s.trim()).filter(Boolean);
+    return ids.indexOf(unit.id) !== -1;
+  }
+  return false;
+}
+// Returns { discount, appliedOffers: [{id,name,amount}] } for the current CART.
+function computeCartOfferDiscount(){
+  if(!CART_OFFERS.length || !CART.length) return { discount: 0, appliedOffers: [] };
+  const productById = {};
+  PRODUCTS.forEach(p => { productById[p.id] = p; });
+
+  let units = [];
+  CART.forEach(item => {
+    const qty = Math.max(0, Math.round(Number(item.qty) || 0));
+    const product = productById[item.id];
+    const price = product ? Number(product.price || 0) : Number(item.price || 0);
+    const category = product ? (product.category || '') : '';
+    for(let n = 0; n < qty; n++) units.push({ id: item.id, price, category, used: false });
+  });
+  if(!units.length) return { discount: 0, appliedOffers: [] };
+
+  let totalDiscount = 0;
+  const appliedOffers = [];
+
+  CART_OFFERS.forEach(offer => {
+    const buyQty = Math.max(1, Math.round(Number(offer.buyQty) || 1));
+    const freeQty = Math.max(0, Math.round(Number(offer.freeQty) || 0));
+    const groupSize = offer.offerType === 'free' ? (buyQty + freeQty) : buyQty;
+    if(groupSize < 1) return;
+
+    const eligible = units
+      .map((u, idx) => ({ u, idx }))
+      .filter(x => !x.u.used && offerUnitMatchesScope(x.u, offer))
+      .sort((a, b) => a.u.price - b.u.price);
+
+    const numGroups = Math.floor(eligible.length / groupSize);
+    if(numGroups < 1) return;
+
+    const usedCount = numGroups * groupSize;
+    const usedEntries = eligible.slice(0, usedCount);
+    usedEntries.forEach(x => { units[x.idx].used = true; });
+
+    let offerDiscount = 0;
+    if(offer.offerType === 'amount'){
+      const groupTotal = usedEntries.reduce((s, x) => s + x.u.price, 0);
+      offerDiscount = Math.min(numGroups * Number(offer.discountValue || 0), groupTotal);
+    } else if(offer.offerType === 'percent'){
+      const groupTotal = usedEntries.reduce((s, x) => s + x.u.price, 0);
+      offerDiscount = groupTotal * (Number(offer.discountValue || 0) / 100);
+    } else if(offer.offerType === 'free'){
+      for(let g = 0; g < numGroups; g++){
+        const groupSlice = usedEntries.slice(g * groupSize, (g + 1) * groupSize);
+        const freeSlice = groupSlice.slice(0, freeQty);
+        offerDiscount += freeSlice.reduce((s, x) => s + x.u.price, 0);
+      }
+    }
+    offerDiscount = Math.round(offerDiscount * 1000) / 1000;
+    if(offerDiscount > 0){
+      totalDiscount = Math.round((totalDiscount + offerDiscount) * 1000) / 1000;
+      appliedOffers.push({ id: offer.id, name: offer.name, amount: offerDiscount });
+    }
+  });
+
+  return { discount: totalDiscount, appliedOffers };
+}
+function getCartOfferDiscountAmount(){ return computeCartOfferDiscount().discount; }
+// Total shown to the customer in the cart drawer / checkout button, after
+// the automatic bundle discount (but before any promo code / wallet, which
+// are only entered at the checkout step itself).
+function cartDisplayTotal(){ return Math.max(0, cartGrandTotal() - getCartOfferDiscountAmount()); }
+function cartOfferBadgeText(offer){
+  if(offer.badgeText) return offer.badgeText;
+  if(offer.offerType === 'free') return `🎁 Buy ${offer.buyQty}, get ${offer.freeQty || 1} free!`;
+  if(offer.offerType === 'percent') return `🎁 Buy ${offer.buyQty}, get ${offer.discountValue}% off!`;
+  return `🎁 Buy ${offer.buyQty}, get ${Number(offer.discountValue || 0).toFixed(3)} BHD off!`;
+}
+// Shows a banner for the first active offer whose scope matches something
+// currently in the cart (or, if the cart is empty, the first active offer
+// overall — so shoppers know a deal exists before they've added anything).
+function renderCartOfferBanner(){
+  const el = document.getElementById('cartOfferBanner');
+  if(!el) return;
+  if(!CART_OFFERS.length){ el.style.display = 'none'; return; }
+  const productById = {};
+  PRODUCTS.forEach(p => { productById[p.id] = p; });
+  let best = CART_OFFERS.find(offer => CART.some(item => {
+    const product = productById[item.id];
+    const category = product ? (product.category || '') : '';
+    return offerUnitMatchesScope({ id: item.id, category }, offer);
+  })) || CART_OFFERS[0];
+  if(!best){ el.style.display = 'none'; return; }
+  el.textContent = cartOfferBadgeText(best);
+  el.style.display = 'block';
+}
+
 /* ================= Product detail page ================= */
 let PDP_PRODUCT = null;
 let PDP_QTY = 1;
@@ -5248,8 +5369,19 @@ function renderCart(){
   document.getElementById('cartSubtotal').textContent = cartTotal().toFixed(3) + ' BHD';
   document.getElementById('cartPlatformFee').textContent = ORDER_CHARGES.platformFee.toFixed(3) + ' BHD';
   document.getElementById('cartDeliveryCharge').textContent = ORDER_CHARGES.deliveryCharge.toFixed(3) + ' BHD';
-  document.getElementById('cartTotal').textContent = cartGrandTotal().toFixed(3) + ' BHD';
-  document.getElementById('modalTotal').textContent = cartGrandTotal().toFixed(3) + ' BHD';
+  const cartOfferDiscount = getCartOfferDiscountAmount();
+  const discountRow = document.getElementById('cartOfferDiscountRow');
+  if(discountRow){
+    if(cartOfferDiscount > 0){
+      discountRow.style.display = 'block';
+      document.getElementById('cartOfferDiscountAmt').textContent = '-' + cartOfferDiscount.toFixed(3) + ' BHD';
+    } else {
+      discountRow.style.display = 'none';
+    }
+  }
+  document.getElementById('cartTotal').textContent = cartDisplayTotal().toFixed(3) + ' BHD';
+  document.getElementById('modalTotal').textContent = cartDisplayTotal().toFixed(3) + ' BHD';
+  renderCartOfferBanner();
   document.getElementById('checkoutBtn').disabled = CART.length === 0;
   if(currentLang === 'ar') translateProductsIfNeeded(CART.map(i => ({name:i.name})));
 }
@@ -5310,22 +5442,24 @@ function getWalletAmountToUse(){
   if(!CUSTOMER) return 0;
   const checkbox = document.getElementById('useWalletCheckbox');
   if(!checkbox || !checkbox.checked) return 0;
-  const afterPromo = Math.max(0, cartTotal() - getPromoDiscountAmount());
-  return Math.max(0, Math.min(Number(CUSTOMER.walletBalance || 0), afterPromo));
+  const afterDiscounts = Math.max(0, cartTotal() - getPromoDiscountAmount() - getCartOfferDiscountAmount());
+  return Math.max(0, Math.min(Number(CUSTOMER.walletBalance || 0), afterDiscounts));
 }
 function updateCheckoutTotalDisplay(){
   const promoDiscount = getPromoDiscountAmount();
+  const cartOfferDiscount = getCartOfferDiscountAmount();
   const walletUsed = getWalletAmountToUse();
   const fees = ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge;
-  const payable = Math.max(0, cartTotal() - promoDiscount - walletUsed) + fees;
+  const payable = Math.max(0, cartTotal() - promoDiscount - cartOfferDiscount - walletUsed) + fees;
   const modalTotalEl = document.getElementById('modalTotal');
   if(!modalTotalEl) return;
   const parts = [];
+  if(cartOfferDiscount > 0) parts.push(`${cartOfferDiscount.toFixed(3)} ${T('cartDiscountSuffix')}`);
   if(promoDiscount > 0) parts.push(`${promoDiscount.toFixed(3)} ${T('promoDiscountSuffix')}`);
   if(walletUsed > 0) parts.push(`${walletUsed.toFixed(3)} ${T('fromWalletSuffix')}`);
   modalTotalEl.textContent = parts.length
     ? `${payable.toFixed(3)} BHD (${parts.join(' + ')})`
-    : `${cartGrandTotal().toFixed(3)} BHD`;
+    : `${cartDisplayTotal().toFixed(3)} BHD`;
 }
 async function applyPromoCode(){
   const input = document.getElementById('promoCodeInput');
@@ -5725,9 +5859,10 @@ async function placeOrder(){
     }
 
     const promoDiscountAmount = getPromoDiscountAmount();
+    const cartOfferDiscountAmount = getCartOfferDiscountAmount();
     const walletAmountUsed = getWalletAmountToUse();
     const orderFees = ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge;
-    const payableTotal = Math.max(0, cartTotal() - promoDiscountAmount - walletAmountUsed) + orderFees;
+    const payableTotal = Math.max(0, cartTotal() - promoDiscountAmount - cartOfferDiscountAmount - walletAmountUsed) + orderFees;
 
     const orderPayload = {
       action:'placeOrder', customerName:name, customerEmail: email, phone, address,
@@ -5777,7 +5912,7 @@ async function placeOrder(){
     if(actualWalletUsed > 0) savingsBits.push(`${actualWalletUsed.toFixed(3)} BHD paid from your Souqify-bh wallet`);
     document.getElementById('confirmText').textContent = savingsBits.length
       ? `Order ${orderId}: ${savingsBits.join(', ')}, ${cashDue.toFixed(3)} BHD to pay in cash on delivery. We'll contact you to confirm delivery timing.`
-      : `Order ${orderId} for ${cartGrandTotal().toFixed(3)} BHD will be paid in cash on delivery. We'll contact you to confirm delivery timing.`;
+      : `Order ${orderId} for ${cartDisplayTotal().toFixed(3)} BHD will be paid in cash on delivery. We'll contact you to confirm delivery timing.`;
     document.getElementById('confirmWaBtn').style.display = 'none';
     document.getElementById('confirmWaQueryLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi! I have a question about my order ' + orderId + '.')}`;
 
@@ -6361,6 +6496,7 @@ loadProducts().then(loadHomeTestimonials);
 loadNotifPanel(); // prefetch so the bell badge count is correct even before the panel is opened
 loadSettings();
 loadMediaLibrary();
+loadCartOffers();
 startPdpPromoRotation();
 observeReveal();
 </script>

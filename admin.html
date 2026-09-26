@@ -230,6 +230,7 @@
       <div class="sb-link" data-tab="products" onclick="switchTab('products')"><span class="ic">🛍️</span> Products</div>
       <div class="sb-link" data-tab="inventory" onclick="switchTab('inventory')"><span class="ic">📋</span> Inventory</div>
       <div class="sb-link" data-tab="promocodes" onclick="switchTab('promocodes')"><span class="ic">🎟️</span> Promo Codes</div>
+      <div class="sb-link" data-tab="cartoffers" onclick="switchTab('cartoffers')"><span class="ic">🎁</span> Cart Offers</div>
       <div class="sb-link" data-tab="homepage" onclick="switchTab('homepage')"><span class="ic">🏠</span> Homepage</div>
       <div class="sb-link" data-tab="media" onclick="switchTab('media')"><span class="ic">🎬</span> Media Library</div>
       <div class="sb-link" data-tab="orders" onclick="switchTab('orders')"><span class="ic">📦</span> Orders</div>
@@ -594,6 +595,57 @@
         <table>
           <thead><tr><th>Code</th><th>Discount</th><th>Min. cart value</th><th>Redemptions</th><th>Status</th><th></th></tr></thead>
           <tbody id="promoRows"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ================= CART OFFERS (automatic bundle deals) ================= -->
+    <div class="panel" id="panel-cartoffers">
+      <div class="topbar">
+        <div><h1>Cart offers</h1><p>Automatic bundle deals — no code needed. Applies for guests and logged-in customers alike, shown as a banner in the cart and as a "Discount" line after Delivery charge.</p></div>
+        <button class="ghost" onclick="loadCartOffers()">↻ Refresh</button>
+      </div>
+
+      <div class="card">
+        <h2>Create a new offer</h2>
+        <div class="row">
+          <div class="field"><label>Offer name (internal)</label><input type="text" id="newOfferName" placeholder="e.g. Watch bundle deal"></div>
+          <div class="field"><label>Offer type</label>
+            <select id="newOfferType" onchange="updateOfferFormVisibility()">
+              <option value="amount">Buy X, get a fixed BHD amount off</option>
+              <option value="free">Buy X, get Y free</option>
+              <option value="percent">Buy X, get a % off</option>
+            </select>
+          </div>
+          <div class="field"><label>Buy quantity (X)</label><input type="number" step="1" min="1" id="newOfferBuyQty" placeholder="e.g. 2"></div>
+          <div class="field" id="newOfferFreeQtyField" style="display:none;"><label>Free quantity (Y)</label><input type="number" step="1" min="1" id="newOfferFreeQty" placeholder="e.g. 1"></div>
+          <div class="field" id="newOfferValueField"><label id="newOfferValueLabel">Discount amount (BHD)</label><input type="number" step="0.001" min="0" id="newOfferValue" placeholder="e.g. 1.000"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>Applies to</label>
+            <select id="newOfferScope" onchange="updateOfferFormVisibility()">
+              <option value="all">All products</option>
+              <option value="category">A specific category</option>
+              <option value="product">Specific product(s)</option>
+            </select>
+          </div>
+          <div class="field" id="newOfferCategoryField" style="display:none;"><label>Category</label>
+            <select id="newOfferCategory"></select>
+          </div>
+          <div class="field" id="newOfferProductsField" style="display:none;flex:2;">
+            <label>Product(s) — Ctrl/Cmd-click to pick several</label>
+            <select id="newOfferProducts" multiple size="6" style="height:auto;"></select>
+          </div>
+          <div class="field"><label>Banner text shown in cart <span style="font-weight:500;color:var(--muted);">(optional — auto-generated if blank)</span></label><input type="text" id="newOfferBadge" placeholder="e.g. 🎁 Buy 2 watches, get 10% off!"></div>
+        </div>
+        <button class="primary" onclick="createCartOffer()">+ Create offer</button>
+      </div>
+
+      <div class="card">
+        <h2>Existing offers</h2>
+        <table>
+          <thead><tr><th>Name</th><th>Rule</th><th>Applies to</th><th>Status</th><th></th></tr></thead>
+          <tbody id="cartOfferRows"></tbody>
         </table>
       </div>
     </div>
@@ -1023,8 +1075,10 @@ function applyExtraBootstrap(data){
   applyMedia(data);
   applyReturns(data);
   applyGiveaway(data);
+  applyCartOffers(data);
   renderDashboard();
   renderPromoCodes();
+  renderCartOffers();
 }
 async function loadExtra(){
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapExtra', password: ADMIN_PASSWORD }) });
@@ -2274,6 +2328,120 @@ async function deletePromoCodeRow(id, code){
   const data = await res.json();
   if(!data.ok){ alert(data.error || 'Could not delete this code.'); return; }
   loadPromoCodes();
+}
+
+/* ---------------- cart offers (automatic bundle deals) ---------------- */
+let CART_OFFERS = [];
+
+// Fills the category <select> and product <select multiple> from the
+// products already loaded for the Products/Inventory tabs, so the admin
+// picks from real data instead of typing ids by hand. Safe to call
+// repeatedly (e.g. every time products or the panel refresh).
+function populateOfferScopeSelectors(){
+  const catSel = document.getElementById('newOfferCategory');
+  const prodSel = document.getElementById('newOfferProducts');
+  if(!catSel || !prodSel) return;
+  const categories = [...new Set((PRODUCTS || []).map(p => (p.category || '').trim()).filter(Boolean))].sort();
+  const prevCat = catSel.value;
+  catSel.innerHTML = categories.map(c => `<option value="${c.replace(/"/g,'&quot;')}">${c}</option>`).join('');
+  if(categories.includes(prevCat)) catSel.value = prevCat;
+
+  const prevSelected = new Set([...prodSel.selectedOptions].map(o => o.value));
+  prodSel.innerHTML = (PRODUCTS || []).map(p => `<option value="${p.id}">${(p.name || p.id).replace(/</g,'&lt;')}</option>`).join('');
+  [...prodSel.options].forEach(o => { if(prevSelected.has(o.value)) o.selected = true; });
+}
+
+function updateOfferFormVisibility(){
+  const type = document.getElementById('newOfferType').value;
+  document.getElementById('newOfferFreeQtyField').style.display = type === 'free' ? 'block' : 'none';
+  document.getElementById('newOfferValueField').style.display = type === 'free' ? 'none' : 'block';
+  document.getElementById('newOfferValueLabel').textContent = type === 'percent' ? 'Discount percent (%)' : 'Discount amount (BHD)';
+
+  const scope = document.getElementById('newOfferScope').value;
+  document.getElementById('newOfferCategoryField').style.display = scope === 'category' ? 'block' : 'none';
+  document.getElementById('newOfferProductsField').style.display = scope === 'product' ? 'block' : 'none';
+  if(scope !== 'all') populateOfferScopeSelectors();
+}
+
+async function loadCartOffers(){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'listCartOffersAdmin', password: ADMIN_PASSWORD }) });
+  applyCartOffers(await res.json());
+}
+function applyCartOffers(data){
+  CART_OFFERS = (data.cartOffers || data.offers || []).slice().reverse();
+  renderCartOffers();
+  populateOfferScopeSelectors();
+}
+
+// Human-readable summary of an offer's rule, used both in the admin table
+// and as the fallback cart banner text when the admin leaves badgeText blank.
+function describeCartOffer(o){
+  const buyQty = Number(o.buyQty) || 1;
+  if(o.offerType === 'free'){
+    const freeQty = Number(o.freeQty) || 1;
+    return `Buy ${buyQty}, get ${freeQty} free`;
+  }
+  if(o.offerType === 'percent') return `Buy ${buyQty}, get ${Number(o.discountValue) || 0}% off`;
+  return `Buy ${buyQty}, get ${Number(o.discountValue || 0).toFixed(3)} BHD off`;
+}
+function describeCartOfferScope(o){
+  if(o.scope === 'category') return `Category: ${o.scopeValue}`;
+  if(o.scope === 'product'){
+    const ids = (o.scopeValue || '').split(',').map(s => s.trim()).filter(Boolean);
+    const names = ids.map(id => { const p = (PRODUCTS || []).find(x => x.id === id); return p ? p.name : id; });
+    return `Product(s): ${names.join(', ')}`;
+  }
+  return 'All products';
+}
+function renderCartOffers(){
+  const tbody = document.getElementById('cartOfferRows');
+  if(!tbody) return;
+  tbody.innerHTML = CART_OFFERS.length ? CART_OFFERS.map(o => `
+    <tr>
+      <td>${o.name}</td>
+      <td>${describeCartOffer(o)}</td>
+      <td style="max-width:220px;">${describeCartOfferScope(o)}</td>
+      <td><span class="badge ${isYes(o.active) ? 'active-yes' : 'active-no'}" onclick="toggleCartOfferActive('${o.id}', ${isYes(o.active)})" style="cursor:pointer;">${isYes(o.active) ? 'Active' : 'Inactive'}</span></td>
+      <td><button class="ghost small" onclick="deleteCartOfferRow('${o.id}','${(o.name||'').replace(/'/g,"\\'")}')">Delete</button></td>
+    </tr>
+  `).join('') : `<tr><td colspan="5" style="color:var(--muted);">No cart offers yet.</td></tr>`;
+}
+async function createCartOffer(){
+  const name = document.getElementById('newOfferName').value.trim();
+  const offerType = document.getElementById('newOfferType').value;
+  const buyQty = Number(document.getElementById('newOfferBuyQty').value);
+  const freeQty = Number(document.getElementById('newOfferFreeQty').value);
+  const discountValue = Number(document.getElementById('newOfferValue').value);
+  const scope = document.getElementById('newOfferScope').value;
+  const badgeText = document.getElementById('newOfferBadge').value.trim();
+  let scopeValue = '';
+  if(scope === 'category') scopeValue = document.getElementById('newOfferCategory').value;
+  if(scope === 'product') scopeValue = [...document.getElementById('newOfferProducts').selectedOptions].map(o => o.value).join(',');
+
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+    action:'addCartOffer', password: ADMIN_PASSWORD, name, offerType, buyQty, freeQty, discountValue, scope, scopeValue, badgeText
+  }) });
+  const data = await res.json();
+  if(!data.ok){ alert(data.error || 'Could not create this offer.'); return; }
+  document.getElementById('newOfferName').value = '';
+  document.getElementById('newOfferBuyQty').value = '';
+  document.getElementById('newOfferFreeQty').value = '';
+  document.getElementById('newOfferValue').value = '';
+  document.getElementById('newOfferBadge').value = '';
+  loadCartOffers();
+}
+async function toggleCartOfferActive(id, currentlyActive){
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateCartOffer', password: ADMIN_PASSWORD, id, active: !currentlyActive }) });
+  const data = await res.json();
+  if(!data.ok){ alert(data.error || 'Could not update this offer.'); return; }
+  loadCartOffers();
+}
+async function deleteCartOfferRow(id, name){
+  if(!confirm(`Delete cart offer "${name}"? This can't be undone.`)) return;
+  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'deleteCartOffer', password: ADMIN_PASSWORD, id }) });
+  const data = await res.json();
+  if(!data.ok){ alert(data.error || 'Could not delete this offer.'); return; }
+  loadCartOffers();
 }
 
 /* ---------------- marketing ---------------- */
