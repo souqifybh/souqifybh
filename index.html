@@ -5450,13 +5450,7 @@ function updateCheckoutTotalDisplay(){
   const payable = Math.max(0, cartTotal() - promoDiscount - cartOfferDiscount - walletUsed) + fees;
   const modalTotalEl = document.getElementById('modalTotal');
   if(!modalTotalEl) return;
-  const parts = [];
-  if(cartOfferDiscount > 0) parts.push(`${cartOfferDiscount.toFixed(3)} ${T('cartDiscountSuffix')}`);
-  if(promoDiscount > 0) parts.push(`${promoDiscount.toFixed(3)} ${T('promoDiscountSuffix')}`);
-  if(walletUsed > 0) parts.push(`${walletUsed.toFixed(3)} ${T('fromWalletSuffix')}`);
-  modalTotalEl.textContent = parts.length
-    ? `${payable.toFixed(3)} BHD (${parts.join(' + ')})`
-    : `${cartDisplayTotal().toFixed(3)} BHD`;
+  modalTotalEl.textContent = `${payable.toFixed(3)} BHD`;
 }
 async function applyPromoCode(){
   const input = document.getElementById('promoCodeInput');
