@@ -1659,9 +1659,6 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
           <button type="button" onclick="applyBestPromoQuick()" style="background:none;border:1px solid #2C6B2F;color:#2C6B2F;font-weight:700;font-size:11.5px;padding:3px 12px;border-radius:14px;cursor:pointer;white-space:nowrap;" data-i18n="applyBtn">Apply</button>
         </div>
       </div>
-      <div class="promo-register-notice" id="promoRegisterNotice" style="display:none;" onclick="switchToLogin()">
-        <span>🔒</span><span data-i18n-html="promoRegisterNotice">Promo codes &amp; member offers unlock with an account. We'll create yours automatically with this order. <b>Already a member? Tap to log in.</b></span>
-      </div>
       <div class="field" id="walletUseWrap" style="display:none;background:#FFF8F5;border:1px solid var(--line);border-radius:10px;padding:12px 14px;">
         <label style="display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;cursor:pointer;margin:0;">
           <input type="checkbox" id="useWalletCheckbox" onchange="updateCheckoutTotalDisplay()" style="width:18px;height:18px;flex:0 0 18px;padding:0;">
@@ -5639,10 +5636,8 @@ function openCheckout(){
   document.getElementById('promoInputRow').style.display = 'flex';
   if(!CUSTOMER){
     document.getElementById('promoCodeWrap').style.display = 'none';
-    document.getElementById('promoRegisterNotice').style.display = 'flex';
   } else {
     document.getElementById('promoCodeWrap').style.display = 'block';
-    document.getElementById('promoRegisterNotice').style.display = 'none';
   }
   loadCheckoutPromoBanner();
   if(CUSTOMER && Number(CUSTOMER.walletBalance) > 0){
