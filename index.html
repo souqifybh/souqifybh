@@ -27,6 +27,10 @@ function metaContents(items){
 src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 /></noscript>
 <!-- End Meta Pixel Code -->
+<!-- Google Identity Services: powers the "Continue with Google" one-tap
+     email prefill in the exit-intent "save your cart" popup. No-ops
+     harmlessly if CONFIG.GOOGLE_CLIENT_ID is left blank. -->
+<script src="https://accounts.google.com/gsi/client" async defer onload="if(typeof initGoogleOneTap==='function')initGoogleOneTap();"></script>
 <meta name="google" content="notranslate">
 <title>Souqify-bh: Shop More. Pay Less.</title>
 <meta name="description" content="Souqify-bh: Shop More. Pay Less. Gadgets and more in Bahrain.">
@@ -504,6 +508,17 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .lang-popup .lp-mark{width:52px;height:52px;margin:0 auto 16px;}
   .lang-popup h3{font-family:'Sora';font-weight:800;font-size:20px;margin:0 0 6px;}
   .lang-popup p{color:var(--ink-soft);font-size:13.5px;margin:0 0 22px;}
+  .exit-capture-popup{position:relative;max-width:380px;}
+  .exit-capture-popup .ec-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:16px;color:var(--ink-soft);cursor:pointer;line-height:1;padding:4px;}
+  .exit-capture-popup .ec-form{display:flex;flex-direction:column;gap:10px;}
+  .exit-capture-popup .ec-form input{width:100%;padding:12px 14px;border:1px solid var(--border,#e2e2e2);border-radius:10px;font-size:14px;box-sizing:border-box;}
+  .exit-capture-popup .ec-form .btn-primary{width:100%;}
+  .exit-capture-popup .ec-note{font-size:12px;margin:10px 0 0;min-height:14px;}
+  .exit-capture-popup .ec-note.err{color:#C0392B;}
+  .exit-capture-popup .ec-note.ok{color:#2E7D32;}
+  .exit-capture-popup .ec-google-btn{display:flex;justify-content:center;}
+  .exit-capture-popup .ec-divider{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:12px;margin:2px 0;}
+  .exit-capture-popup .ec-divider::before,.exit-capture-popup .ec-divider::after{content:'';flex:1;height:1px;background:var(--border,#e2e2e2);}
   .lp-options{display:flex;flex-direction:column;gap:10px;}
   .lp-option{
     display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 18px; border-radius:12px;
@@ -1309,6 +1324,22 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   </div>
 </div>
 
+<div class="lang-popup-overlay" id="exitCaptureOverlay">
+  <div class="lang-popup exit-capture-popup">
+    <button class="ec-close" onclick="closeExitCapturePopup()" aria-label="Close">✕</button>
+    <div class="lp-mark brand-cart-icon"></div>
+    <h3>Don't lose your cart! 🛒</h3>
+    <p>Leave your email and we'll keep these items saved for you, plus send a link back to your cart.</p>
+    <div class="ec-form">
+      <div id="ecGoogleBtn" class="ec-google-btn"></div>
+      <div class="ec-divider" id="ecDivider" style="display:none;"><span>or</span></div>
+      <input type="email" id="exitCaptureEmail" placeholder="you@email.com" autocomplete="email">
+      <button class="btn-primary" onclick="submitExitCaptureEmail()" id="exitCaptureBtn">Save my cart</button>
+    </div>
+    <p class="ec-note" id="exitCaptureNote"></p>
+  </div>
+</div>
+
 <div class="announce-bar" id="announceBar"><span id="announceBarText"></span></div>
 <header id="siteHeader">
   <nav>
@@ -1623,7 +1654,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
       <div class="saved-addr-pick" id="savedAddrPicker" style="display:none;"></div>
       <div class="field"><label data-i18n="fieldFullName">Full name</label><input type="text" id="custName" data-i18n-placeholder="phFullName" placeholder="Your name" oninput="onCheckoutFieldsEdited()"></div>
       <div class="field"><label data-i18n="fieldMobile">Mobile number</label><input type="text" id="custPhone" placeholder="+973 3xxx xxxx" oninput="onCheckoutFieldsEdited()"></div>
-      <div class="field" id="custEmailField" style="display:none;"><label data-i18n="fieldEmail">Email</label><input type="email" id="custEmail" placeholder="you@email.com" oninput="onCheckoutFieldsEdited()"></div>
+      <div class="field" id="custEmailField" style="display:none;"><label data-i18n="fieldEmail">Email</label><input type="email" id="custEmail" placeholder="you@email.com" oninput="onCheckoutFieldsEdited()" onblur="scheduleAbandonedCartSync()"></div>
       <label style="font-weight:700;font-size:13px;display:block;margin:4px 0 8px;" data-i18n="fieldDeliveryAddr">Delivery address</label>
       <div class="addr-grid">
         <div class="field"><label data-i18n="fieldFlat">Flat / Shop no.</label><input type="text" id="custFlat" data-i18n-placeholder="phFlat" placeholder="e.g. Flat 12" oninput="onCheckoutFieldsEdited()"></div>
@@ -2200,7 +2231,13 @@ const CONFIG = {
   WHATSAPP_NUMBER: '97335184023',
   // TODO: replace with your real BenefitPay QR image — upload it to the assets/ folder
   // (as benefitpay-qr.png) or update this path to point at it.
-  BENEFITPAY_QR_IMAGE: 'assets/benefitpay-qr.png'
+  BENEFITPAY_QR_IMAGE: 'assets/benefitpay-qr.png',
+  // TODO: create an OAuth Client ID at https://console.cloud.google.com/apis/credentials
+  // (Application type: "Web application", Authorized JavaScript origins: https://souqify-bh.com)
+  // and paste it here. Lets the exit-intent popup offer a one-tap "Continue with Google" that
+  // fills the shopper's email straight from their signed-in Google/Gmail account — no typing.
+  // Leave blank to skip; the popup falls back to the plain email field with no errors.
+  GOOGLE_CLIENT_ID: '946534578007-03f6qqoku8u3d8h07f347pe7dstbg9pi.apps.googleusercontent.com'
 };
 
 /* ================= body scroll lock (used by every overlay/modal/popup) =================
@@ -4331,6 +4368,7 @@ function saveCart(){
   const badge = document.getElementById('cartCount');
   badge.classList.remove('pulse'); void badge.offsetWidth; badge.classList.add('pulse');
   refreshCartAwareUI();
+  scheduleAbandonedCartSync();
 }
 // Re-syncs everything on screen whose "Add to cart" / "Go to cart" state, or
 // cart-count badge, depends on what's currently in the cart. Each call is
@@ -4500,6 +4538,176 @@ function gmSessionId(){
     return 'sid-' + Date.now() + '-' + Math.random().toString(36).slice(2);
   }
 }
+
+/* ================= abandoned cart tracking =================
+ * A persistent (not per-tab) id so the same cart is recognised across page
+ * reloads and repeat visits until the cart is cleared. Every time the cart
+ * changes we tell the backend (debounced), but only once we actually have
+ * an email — a logged-in customer's, or whatever the shopper has typed
+ * into the checkout email field so far. No email yet = nothing is sent.
+ */
+function gmCartSessionId(){
+  try{
+    let sid = localStorage.getItem('gm_cart_session_id');
+    if(!sid){
+      sid = (crypto && crypto.randomUUID) ? crypto.randomUUID() : ('cart-' + Date.now() + '-' + Math.random().toString(36).slice(2));
+      localStorage.setItem('gm_cart_session_id', sid);
+    }
+    return sid;
+  }catch(e){
+    return 'cart-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+  }
+}
+let abandonedCartSyncTimer = null;
+function scheduleAbandonedCartSync(){
+  clearTimeout(abandonedCartSyncTimer);
+  abandonedCartSyncTimer = setTimeout(syncAbandonedCart, 4000);
+}
+function currentCheckoutEmail_(){
+  if(CUSTOMER && CUSTOMER.email) return CUSTOMER.email;
+  const el = document.getElementById('custEmail');
+  return el ? el.value.trim() : '';
+}
+function syncAbandonedCart(){
+  try{
+    if(!CART.length){
+      // Cart is empty — stop any reminders tied to this browser.
+      fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'clearAbandonedCart', sessionId: gmCartSessionId() }) }).catch(()=>{});
+      return;
+    }
+    const email = currentCheckoutEmail_();
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return; // nothing to email without a valid address
+    const name = CUSTOMER ? CUSTOMER.name : (document.getElementById('custName') ? document.getElementById('custName').value.trim() : '');
+    fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+      action:'saveAbandonedCart', sessionId: gmCartSessionId(), customerEmail: email, customerName: name,
+      items: CART, cartTotal: cartGrandTotal(), currency: 'BHD'
+    }) }).catch(()=>{});
+  }catch(e){}
+}
+
+/* ---- exit-intent "save my cart" popup ----
+ * Shown at most once per browser session, and only when: the cart has
+ * items, and we don't already have an email for this shopper (logged in,
+ * or already typed at checkout). Desktop: fires when the mouse leaves
+ * toward the top of the window (the classic "about to close the tab /
+ * hit the URL bar" gesture). Mobile has no equivalent signal, so instead
+ * we catch it on visibilitychange — when someone backgrounds the tab/app
+ * with items still in their cart and no email on file, we show the same
+ * popup the moment they come back, which covers the same "left without
+ * buying" moment mobile browsers don't otherwise expose.
+ */
+function exitCaptureEligible_(){
+  if(!CART.length) return false;
+  if(currentCheckoutEmail_()) return false; // already have an email, nothing to capture
+  if(sessionStorage.getItem('gm_exit_capture_shown')) return false;
+  return true;
+}
+function maybeShowExitCapturePopup(){
+  if(!exitCaptureEligible_()) return;
+  sessionStorage.setItem('gm_exit_capture_shown', '1');
+  const overlay = document.getElementById('exitCaptureOverlay');
+  if(!overlay) return;
+  document.getElementById('exitCaptureEmail').value = '';
+  document.getElementById('exitCaptureNote').textContent = '';
+  document.getElementById('exitCaptureNote').className = 'ec-note';
+  overlay.classList.add('show');
+  lockBodyScroll();
+  renderGoogleOneTapInPopup_();
+}
+function closeExitCapturePopup(){
+  const overlay = document.getElementById('exitCaptureOverlay');
+  if(overlay) overlay.classList.remove('show');
+  unlockBodyScroll();
+}
+// Shared by both the manual "Save my cart" button and the Google one-tap
+// callback below — either way, once we have a valid email we send it the
+// same way to the same backend action.
+function collectExitCaptureEmail_(email, name){
+  const noteEl = document.getElementById('exitCaptureNote');
+  const btn = document.getElementById('exitCaptureBtn');
+  if(btn) btn.disabled = true;
+  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({
+    action:'saveAbandonedCart', sessionId: gmCartSessionId(), customerEmail: email,
+    customerName: name || (CUSTOMER ? CUSTOMER.name : ''), items: CART, cartTotal: cartGrandTotal(), currency: 'BHD'
+  }) }).catch(()=>{}).finally(() => {
+    if(btn) btn.disabled = false;
+    if(noteEl){
+      noteEl.textContent = "Saved! We'll email you a link back to your cart.";
+      noteEl.className = 'ec-note ok';
+    }
+    setTimeout(closeExitCapturePopup, 1600);
+  });
+  // Also prefill the guest checkout email field, so if they do proceed to
+  // checkout in this same visit they don't have to type it twice.
+  const checkoutEmailEl = document.getElementById('custEmail');
+  if(checkoutEmailEl && !checkoutEmailEl.value) checkoutEmailEl.value = email;
+}
+function submitExitCaptureEmail(){
+  const emailEl = document.getElementById('exitCaptureEmail');
+  const noteEl = document.getElementById('exitCaptureNote');
+  const email = emailEl.value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+    noteEl.textContent = 'Please enter a valid email address.';
+    noteEl.className = 'ec-note err';
+    return;
+  }
+  collectExitCaptureEmail_(email, '');
+}
+
+/* ---- "Continue with Google" one-tap email prefill ----
+ * When CONFIG.GOOGLE_CLIENT_ID is set, this reads the email straight from
+ * whichever Google account the shopper is already signed into in their
+ * browser — one tap, no typing, far higher completion than a blank email
+ * field. If it's left blank, or the script fails to load (ad blockers,
+ * offline, etc.), everything below is a silent no-op and the popup just
+ * shows the plain email field as before.
+ */
+function decodeJwtPayload_(token){
+  try{
+    const base64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
+    const json = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    return JSON.parse(json);
+  }catch(e){ return null; }
+}
+function handleGoogleCredential(response){
+  const payload = decodeJwtPayload_(response && response.credential);
+  if(!payload || !payload.email) return;
+  const emailEl = document.getElementById('exitCaptureEmail');
+  if(emailEl) emailEl.value = payload.email;
+  const noteEl = document.getElementById('exitCaptureNote');
+  if(noteEl){ noteEl.textContent = 'Signed in as ' + payload.email; noteEl.className = 'ec-note ok'; }
+  collectExitCaptureEmail_(payload.email, payload.name || '');
+}
+let googleOneTapInitialized = false;
+function initGoogleOneTap(){
+  if(googleOneTapInitialized || !CONFIG.GOOGLE_CLIENT_ID) return;
+  if(typeof google === 'undefined' || !google.accounts || !google.accounts.id) return; // script not loaded yet — safe to skip
+  googleOneTapInitialized = true;
+  google.accounts.id.initialize({ client_id: CONFIG.GOOGLE_CLIENT_ID, callback: handleGoogleCredential, auto_select: false, cancel_on_tap_outside: true });
+}
+function renderGoogleOneTapInPopup_(){
+  if(!CONFIG.GOOGLE_CLIENT_ID) return;
+  initGoogleOneTap();
+  if(!googleOneTapInitialized) return; // script hasn't finished loading yet
+  const btnHolder = document.getElementById('ecGoogleBtn');
+  const divider = document.getElementById('ecDivider');
+  if(btnHolder){
+    btnHolder.innerHTML = '';
+    google.accounts.id.renderButton(btnHolder, { theme:'outline', size:'large', width:260, text:'continue_with' });
+    if(divider) divider.style.display = 'flex';
+  }
+  try{ google.accounts.id.prompt(); }catch(e){} // also offers the floating one-tap card when eligible
+}
+(function setupExitIntentCapture(){
+  document.addEventListener('mouseout', (e) => {
+    if(e.clientY > 0) return; // only the "left through the top of the page" gesture
+    if(e.relatedTarget || e.toElement) return; // moved onto another element, not off the window
+    maybeShowExitCapturePopup();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible') maybeShowExitCapturePopup();
+  });
+})();
 function activityBadgeHtml(type, count, labelSingular, labelPlural){
   if(!count || count <= 0) return '';
   const label = count === 1 ? labelSingular : labelPlural.replace('{n}', count);
@@ -5857,7 +6065,8 @@ async function placeOrder(){
       action:'placeOrder', customerName:name, customerEmail: email, phone, address,
       items: CART, total: cartGrandTotal(), paymentMethod: method, walletAmountUsed,
       promoCode: APPLIED_PROMO ? APPLIED_PROMO.code : '',
-      referralCode: CUSTOMER ? '' : (localStorage.getItem('gm_pending_referral') || '')
+      referralCode: CUSTOMER ? '' : (localStorage.getItem('gm_pending_referral') || ''),
+      sessionId: gmCartSessionId()
     };
 
     if(method === 'benefitpay'){
