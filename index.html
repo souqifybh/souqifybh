@@ -761,13 +761,29 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     body{padding-bottom:34px;}
   }
 
-  .trust-bar{background:var(--ink);color:#fff;padding:16px 0;overflow:hidden;}
-  .trust-track{display:flex;gap:56px;white-space:nowrap;font-size:13px;font-weight:600;letter-spacing:0.02em;opacity:0.92;
-    animation:scrollTrust 26s linear infinite;}
-  .trust-track span{display:flex;align-items:center;gap:8px;}
-  .trust-track span::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--blush);}
+  .trust-bar{background:linear-gradient(90deg,#333C14 0%,#46501B 50%,#333C14 100%);color:#F3FFD0;height:30px;display:flex;align-items:center;overflow:hidden;border-top:1px solid rgba(229,255,180,.18);border-bottom:1px solid rgba(0,0,0,.25);}
+  .trust-track{display:flex;width:max-content;animation:scrollTrust 36s linear infinite;will-change:transform;}
+  .tb-half{display:flex;flex-shrink:0;}
+  .tb-item{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:0 18px;white-space:nowrap;font-size:11px;font-weight:700;letter-spacing:.02em;position:relative;}
+  .tb-item::after{content:'';position:absolute;right:-3px;top:50%;width:5px;height:5px;margin-top:-2.5px;transform:rotate(45deg);background:#A5BA4A;opacity:.9;}
+  html[dir="rtl"] .tb-item::after{right:auto;left:-3px;}
+  .tb-item b{font-weight:700;color:#F3FFD0;}
+  .tb-ic{color:#E5FFB4;flex-shrink:0;display:block;}
+  .tb-cash{animation:tbCoin 2.6s ease-in-out infinite;}
+  .tb-flag{transform-origin:left center;animation:tbWave 1.7s ease-in-out infinite;border-radius:2px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35));}
+  .tb-truck{position:relative;display:inline-flex;align-items:center;animation:tbDrive 1.9s ease-in-out infinite;}
+  .tb-truck i{position:absolute;left:-7px;height:1.5px;border-radius:2px;background:#A5BA4A;opacity:0;animation:tbSpeed 1.9s ease-in-out infinite;}
+  .tb-truck i:nth-child(1){top:3px;width:6px;}
+  .tb-truck i:nth-child(2){top:7px;width:8px;animation-delay:.15s;}
+  .tb-truck i:nth-child(3){top:11px;width:5px;animation-delay:.3s;}
   @keyframes scrollTrust{ 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
-  @media (prefers-reduced-motion: reduce){ .trust-track{animation:none;} }
+  @keyframes scrollTrustRtl{ 0%{transform:translateX(0);} 100%{transform:translateX(50%);} }
+  html[dir="rtl"] .trust-track{animation-name:scrollTrustRtl;}
+  @keyframes tbCoin{ 0%,55%,100%{transform:rotateY(0) scale(1);} 25%{transform:rotateY(180deg) scale(1.12);} 40%{transform:rotateY(360deg) scale(1);} }
+  @keyframes tbWave{ 0%,100%{transform:skewY(0deg) scaleX(1);} 25%{transform:skewY(-7deg) scaleX(.94);} 50%{transform:skewY(0deg) scaleX(1.03);} 75%{transform:skewY(7deg) scaleX(.94);} }
+  @keyframes tbDrive{ 0%,100%{transform:translateX(-1.5px);} 50%{transform:translateX(2.5px);} }
+  @keyframes tbSpeed{ 0%{opacity:0;transform:translateX(5px);} 35%{opacity:.9;} 100%{opacity:0;transform:translateX(-6px);} }
+  @media (prefers-reduced-motion: reduce){ .trust-track,.tb-cash,.tb-flag,.tb-truck,.tb-truck i{animation:none!important;} .trust-track{overflow-x:auto;} }
 
   .section{padding:88px 24px;}
   .section-head{text-align:center;max-width:560px;margin:0 auto 48px;}
@@ -849,6 +865,11 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .free-delivery .van{display:inline-block;font-size:12px;flex-shrink:0;animation:vanNudge 1.8s ease-in-out infinite;}
   @keyframes vanNudge{ 0%,100%{transform:translateX(0);} 50%{transform:translateX(3px);} }
   .pdp-free-delivery{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:#1E7A44;background:#EAF7EE;border:1px solid #D3EFDB;padding:8px 12px;border-radius:10px;margin:2px 0 20px;width:fit-content;}
+  .getit{font-size:11.5px;margin-top:5px;line-height:1.3;color:var(--ink-soft);font-weight:600;}
+  .getit .getit-val{color:var(--ink);font-weight:800;}
+  .pdp-getit{display:flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--ink-soft);margin:0 0 12px;}
+  .pdp-getit svg{width:16px;height:16px;flex-shrink:0;color:var(--blush-deep);}
+  .pdp-getit .getit-val{color:var(--ink);font-weight:800;}
   .pdp-free-delivery .van{display:inline-block;font-size:16px;animation:vanNudge 1.8s ease-in-out infinite;}
   @media (prefers-reduced-motion: reduce){ .free-delivery .van, .pdp-free-delivery .van{animation:none!important;} }
   .card-badge.sale{background:var(--blush-deep);color:#fff;}
@@ -1175,7 +1196,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     .newsletter{margin:0 18px;padding:22px 20px;}
     .foot-grid{grid-template-columns:1fr;gap:26px;}
     .foot-bottom{flex-direction:column;text-align:center;}
-    .trust-track{gap:32px;font-size:12px;}
+    .tb-item{font-size:10px;padding:0 14px;gap:5px;}
     nav{padding:14px 18px;}
     .logo .word{font-size:16px;}
     .nav-right{gap:8px;}
@@ -1199,15 +1220,40 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   @media (min-width:640px){ .sfy-grid{grid-template-columns:repeat(4,1fr);gap:16px;} .sfy-body{padding:10px 12px 12px;} .sfy-name{font-size:13.5px;min-height:35px;} .sfy-price{font-size:15px;} }
   @media (min-width:960px){ .sfy-grid{grid-template-columns:repeat(6,1fr);} }
 
-  /* ================= Value Picks section ================= */
-  .value365-section{background:linear-gradient(135deg,#FFF3DD 0%,#FFE7C2 100%);border-radius:20px;padding:22px 16px 10px;margin:0 18px 44px;}
-  @media (min-width:640px){ .value365-section{margin:0 auto 56px;max-width:1180px;padding:26px 24px 14px;} }
-  .value365-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
-  .value365-head h2{font-size:18px;margin:0;font-weight:800;color:#7A4B00;}
-  .value365-badge{background:#B23B2E;color:#fff;font-weight:800;font-size:11px;padding:4px 10px;border-radius:20px;letter-spacing:.03em;}
-  .value365-rail{display:flex;gap:14px;overflow-x:auto;padding-bottom:16px;scroll-snap-type:x proximity;}
-  .value365-rail .card{min-width:170px;max-width:170px;scroll-snap-align:start;}
-  @media (min-width:640px){ .value365-rail .card{min-width:220px;max-width:220px;} }
+  /* ================= Value Picks section: banner 1 + swipeable compact cards ================= */
+  .value365-section{background:#F1F3E6;border:1px solid #E1E6CC;border-radius:22px;padding:6px 6px 12px;margin:0 14px 40px;overflow:hidden;}
+  @media (min-width:640px){ .value365-section{margin:0 auto 56px;max-width:1180px;padding:8px 8px 16px;} }
+  .vp-banner{position:relative;border-radius:17px;overflow:hidden;aspect-ratio:2/1;max-height:380px;background:var(--paper-soft);cursor:pointer;}
+  .vp-banner img{width:100%;height:100%;object-fit:cover;display:block;}
+  .vp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 12px 10px;}
+  .vp-head h2{font-size:19px;margin:0;font-weight:800;color:var(--blush-ink);}
+  .vp-live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;color:var(--blush-deep);letter-spacing:.05em;text-transform:uppercase;}
+  .vp-live i{width:7px;height:7px;border-radius:50%;background:#2E9E4F;animation:vpPulse 1.6s ease-out infinite;}
+  @keyframes vpPulse{ 0%{box-shadow:0 0 0 0 rgba(46,158,79,.55);} 100%{box-shadow:0 0 0 8px rgba(46,158,79,0);} }
+  .value365-rail{display:flex;gap:10px;overflow-x:auto;padding:2px 6px 4px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .value365-rail::-webkit-scrollbar{display:none;}
+  .vp-card{flex:0 0 min(82%,320px);scroll-snap-align:start;display:flex;gap:12px;align-items:stretch;background:#fff;border-radius:16px;padding:10px;cursor:pointer;box-shadow:0 1px 3px rgba(28,28,30,.06);transition:transform .18s var(--ease),box-shadow .18s var(--ease);}
+  .vp-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
+  .vp-img{position:relative;flex:0 0 96px;width:96px;height:96px;border-radius:12px;background:var(--paper-soft);overflow:hidden;align-self:center;}
+  .vp-img img{width:100%;height:100%;object-fit:cover;display:block;}
+  .vp-rate{position:absolute;left:5px;bottom:5px;background:#fff;color:var(--ink);font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.18);}
+  .vp-rate b{color:#1E7A44;font-weight:800;}
+  .vp-info{min-width:0;flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px;}
+  .vp-name{font-size:13.5px;font-weight:700;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .vp-was-row{display:flex;align-items:baseline;gap:6px;font-size:12.5px;}
+  .vp-off{color:#1E7A44;font-weight:800;}
+  .vp-was{color:var(--ink-soft);text-decoration:line-through;font-weight:600;}
+  .vp-price-row{display:flex;align-items:center;gap:7px;}
+  .vp-tag{background:var(--blush-deep);color:#E5FFB4;font-size:10px;font-weight:800;letter-spacing:.07em;padding:2px 7px;border-radius:6px;font-style:italic;}
+  .vp-price{font-family:'Sora';font-weight:800;font-size:16px;color:var(--ink);}
+  .vp-price small{font-size:11px;font-weight:600;color:var(--ink-soft);}
+  .vp-sub{font-size:11.5px;color:#1E4FA8;font-weight:600;}
+  .vp-card .getit{margin-top:1px;}
+  .vp-card.out{opacity:.6;}
+  .vp-more{flex:0 0 auto;align-self:center;display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 10px 0 4px;border-radius:50%;background:var(--ink);color:#fff;font-size:20px;cursor:pointer;box-shadow:var(--shadow-sm);}
+  html[dir="rtl"] .vp-more{transform:scaleX(-1);}
+  @media (min-width:640px){ .vp-card{flex-basis:340px;} .vp-img{flex-basis:108px;width:108px;height:108px;} }
+  @media (prefers-reduced-motion: reduce){ .vp-live i{animation:none;} }
 
   /* ================= Category icon strip (mirrors the reference screenshot's tab row) ================= */
   .cat-strip-wrap{padding:14px 0 6px;background:#fff;}
@@ -1444,9 +1490,6 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 <div class="top-cat-strip" id="topCatStrip"></div>
 
 <section class="hero-banner" id="heroBanner">
-  <div class="hero-announce reveal">
-    <div class="eyebrow-standalone" id="heroEyebrow"><span class="dot"></span> <span data-i18n="heroEyebrowDefault">ORDER ONLINE, GET IT DELIVERED EASILY</span></div>
-  </div>
   <div class="hero-full reveal" id="heroCard">
     <img class="hs-slide active" id="heroImage" data-slide="0" src="https://res.cloudinary.com/bib9sqiz/image/upload/v1787120685/ChatGPT_Image_Aug_19_2026_09_22_03_AM.png" alt="Featured gadget" fetchpriority="high" onclick="hsSlideClick(0)">
     <img class="hs-slide" id="heroImage2" data-slide="1" src="https://res.cloudinary.com/bib9sqiz/image/upload/v1787120684/ChatGPT_Image_Aug_19_2026_09_21_04_AM.png" alt="Featured gadget" loading="eager" onclick="hsSlideClick(1)">
@@ -1458,17 +1501,17 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     </div>
     <button class="hs-next-circle" onclick="hsGo(1)" aria-label="Next">›</button>
   </div>
-  <div class="hero-tags-row reveal">
-    <div class="hb-float-tag" id="heroBadge1"><span class="pip"></span> In stock in Bahrain</div>
-    <div class="hb-float-tag" id="heroBadge2">🚚 One day delivery</div>
-  </div>
 </section>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="tb-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" fill="currentColor"/><circle cx="5.6" cy="12" r="1" fill="currentColor"/><circle cx="18.4" cy="12" r="1" fill="currentColor"/></symbol>
+  <symbol id="tb-flag" viewBox="0 0 28 18"><rect width="28" height="18" rx="2" fill="#CE1126"/><path d="M0 0H8L12 1.8 8 3.6 12 5.4 8 7.2 12 9 8 10.8 12 12.6 8 14.4 12 16.2 8 18H0Z" fill="#fff"/></symbol>
+  <symbol id="tb-truck" viewBox="0 0 26 20"><path d="M1.5 3.5h13v10.5h-13z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14.5 7h5.2l3.8 3.6V14h-9z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="6.5" cy="15.5" r="2.3" fill="#46501B" stroke="currentColor" stroke-width="1.8"/><circle cx="18.6" cy="15.5" r="2.3" fill="#46501B" stroke="currentColor" stroke-width="1.8"/></symbol>
+</svg>
 <div class="trust-bar">
   <div class="trust-track">
-    <span data-i18n="trustCod">Cash on delivery</span><span data-i18n="trustBenefitpay">BenefitPay accepted</span><span data-i18n="trustBhd">Priced in BHD</span><span data-i18n="trustFreeDelivery">Free delivery all over Bahrain</span>
-    <span data-i18n="trustSecure">Secure checkout</span><span data-i18n="trustCod">Cash on delivery</span><span data-i18n="trustBenefitpay">BenefitPay accepted</span><span data-i18n="trustBhd">Priced in BHD</span>
-    <span data-i18n="trustFreeDelivery">Free delivery all over Bahrain</span><span data-i18n="trustSecure">Secure checkout</span>
+    <div class="tb-half"><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span></div>
+    <div class="tb-half" aria-hidden="true"><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span><span class="tb-item"><svg class="tb-ic tb-cash" width="15" height="15" aria-hidden="true"><use href="#tb-cash"/></svg><b data-i18n="trustCod">Cash on delivery</b></span><span class="tb-item"><svg class="tb-ic tb-flag" width="18" height="12" aria-hidden="true"><use href="#tb-flag"/></svg><b data-i18n="trustBahrain">Bahrain based website</b></span><span class="tb-item"><span class="tb-truck"><i></i><i></i><i></i><svg class="tb-ic" width="18" height="14" aria-hidden="true"><use href="#tb-truck"/></svg></span><b data-i18n="trustFreeFast">Free &amp; fast delivery</b></span></div>
   </div>
 </div>
 
@@ -1499,9 +1542,10 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 </div>
 
 <section class="value365-section" id="value365Section" style="display:none;">
-  <div class="value365-head">
-    <h2>💰 Value Picks</h2>
-    <span class="value365-badge">Limited Deals</span>
+  <div class="vp-banner" id="vpBanner" onclick="hsSlideClick(0)" style="display:none;"><img id="vpBannerImg" src="" alt="Value Picks"></div>
+  <div class="vp-head">
+    <h2 data-i18n="valuePicksTitle">Value Picks</h2>
+    <span class="vp-live"><i></i><span data-i18n="limitedDeals">Limited Deals</span></span>
   </div>
   <div class="value365-rail" id="value365Rail"></div>
 </section>
@@ -2092,6 +2136,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
         <div class="pdp-stars" id="pdpStars"></div>
         <p class="pdp-short-desc" id="pdpShortDesc"></p>
         <div class="pdp-price" id="pdpPrice"></div>
+        <div class="pdp-getit" id="pdpGetIt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><span class="getit-lbl"></span> <span class="getit-val"></span></span></div>
         <div class="pdp-free-delivery" id="pdpFreeDelivery"><span class="van">🚚</span> <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span></div>
         <div class="pdp-stock" id="pdpStock"></div>
         <div class="pdp-activity" id="pdpActivity"></div>
@@ -3483,7 +3528,7 @@ const I18N = {
     cartDiscountLabel:'Discount', cartDiscountSuffix:'bundle offer',
     promoInvalid:'This code is not valid.', promoNetworkError:'Could not reach the server. Please try again.',
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
-    addBtn:'Add', freeDeliveryBadge:'Free Delivery in Bahrain', codBadge:'Cash on Delivery', chipAll:'All', catGeneral:'General',
+    addBtn:'Add', trustBahrain:'Bahrain based website', trustFreeFast:'Free & fast delivery', getItBy:'Get it by', valueTag:'VALUE', valuePicksTitle:'Value Picks', limitedDeals:'Limited Deals', freeDeliveryBadge:'Free Delivery in Bahrain', codBadge:'Cash on Delivery', chipAll:'All', catGeneral:'General',
     saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet. Try another search.', viewAllResults:'View all matching products',
     goToCartBtn:'Go to cart', searchResultsFor:'Search results for "{q}"', noResultsForQuery:'No results found for "{q}"',
     productsAvailable:'{n} products available now', productAvailable:'1 product available now',
@@ -3569,7 +3614,7 @@ const I18N = {
     cartDiscountLabel:'خصم', cartDiscountSuffix:'عرض الحزمة',
     promoInvalid:'هذا الرمز غير صالح.', promoNetworkError:'تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى.',
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
-    addBtn:'أضف', freeDeliveryBadge:'توصيل مجاني في البحرين', codBadge:'الدفع عند الاستلام', chipAll:'الكل', catGeneral:'عام',
+    addBtn:'أضف', trustBahrain:'موقع بحريني', trustFreeFast:'توصيل مجاني وسريع', getItBy:'احصل عليه بحلول', valueTag:'قيمة', valuePicksTitle:'اختيارات القيمة', limitedDeals:'عروض محدودة', freeDeliveryBadge:'توصيل مجاني في البحرين', codBadge:'الدفع عند الاستلام', chipAll:'الكل', catGeneral:'عام',
     saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة. جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
     goToCartBtn:'الذهاب إلى السلة', searchResultsFor:'نتائج البحث عن "{q}"', noResultsForQuery:'لا توجد نتائج لـ "{q}"',
     productsAvailable:'{n} منتج متوفر الآن', productAvailable:'منتج واحد متوفر الآن',
@@ -3698,6 +3743,7 @@ function applyLanguage(lang){
   document.querySelectorAll('[data-i18n]').forEach(el => {
     try{ el.textContent = T(el.getAttribute('data-i18n')); }catch(e){}
   });
+  try{ refreshGetItBy(); }catch(e){}
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     try{ el.setAttribute('placeholder', T(el.getAttribute('data-i18n-placeholder'))); }catch(e){}
   });
@@ -3744,6 +3790,42 @@ function normalizeProduct(p){
     stock: p.stock === undefined || p.stock === '' ? 10 : Number(p.stock)
   });
 }
+
+/* ================= "Get it by" delivery date =================
+   Uses Bahrain time (Asia/Bahrain) no matter where the visitor's phone is set:
+   before 6 PM -> tomorrow, 6 PM or later -> the day after tomorrow.
+   Every element with .getit-lbl / .getit-val is refreshed on load, every
+   minute, when the tab becomes visible again, and when the language changes. */
+const GETIT_CUTOFF_HOUR = 18;
+const GETIT_MONTHS_EN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function bahrainNow_(){
+  try{
+    const parts = new Intl.DateTimeFormat('en-GB', { timeZone:'Asia/Bahrain', year:'numeric', month:'numeric', day:'numeric', hour:'numeric', hourCycle:'h23' }).formatToParts(new Date());
+    const g = t => Number((parts.find(x => x.type === t) || {}).value);
+    return { y:g('year'), m:g('month'), d:g('day'), h:g('hour') % 24 };
+  }catch(e){
+    const t = new Date(Date.now() + 3*3600*1000); // Bahrain = UTC+3, no DST
+    return { y:t.getUTCFullYear(), m:t.getUTCMonth()+1, d:t.getUTCDate(), h:t.getUTCHours() };
+  }
+}
+function getItByDateStr_(){
+  const n = bahrainNow_();
+  const d = new Date(Date.UTC(n.y, n.m - 1, n.d + (n.h < GETIT_CUTOFF_HOUR ? 1 : 2)));
+  if(currentLang === 'ar'){
+    try{ return new Intl.DateTimeFormat('ar-BH-u-nu-latn', { day:'numeric', month:'short', timeZone:'UTC' }).format(d); }catch(e){}
+  }
+  return d.getUTCDate() + ' ' + GETIT_MONTHS_EN[d.getUTCMonth()];
+}
+function getItByHtml_(){
+  return `<div class="getit"><span class="getit-lbl">${T('getItBy')}</span> <span class="getit-val">${getItByDateStr_()}</span></div>`;
+}
+function refreshGetItBy(){
+  const lbl = T('getItBy'), val = getItByDateStr_();
+  document.querySelectorAll('.getit-lbl').forEach(el => { if(el.textContent !== lbl) el.textContent = lbl; });
+  document.querySelectorAll('.getit-val').forEach(el => { if(el.textContent !== val) el.textContent = val; });
+}
+setInterval(refreshGetItBy, 60000);
+document.addEventListener('visibilitychange', () => { if(!document.hidden) refreshGetItBy(); });
 
 function discountPct(p){
   if(!p.compareAtPrice) return 0;
@@ -4187,15 +4269,48 @@ function renderSuggestedForYou(){
 }
 
 /* ================= Value Picks (admin-set BD value amount) ================= */
+// Value Picks = the reference layout: main banner 1 on top, then a swipeable strip of compact
+// cards (photo + rating chip, % off + old price, VALUE tag + price, delivery note, Get it by date)
+// ending in a round arrow that opens the full catalogue.
+let VP_LAST_SIG = '';
+function vpCardHtml_(p){
+  const outOfStock = Number(p.stock) <= 0;
+  const pct = discountPct(p);
+  const rating = Number(p.reviewCount) > 0 ? `<span class="vp-rate">${Number(p.avgRating).toFixed(1)} <b>★</b></span>` : '';
+  return `<div class="vp-card${outOfStock ? ' out' : ''}" onclick="openProduct('${p.id}')">
+    <div class="vp-img"><img src="${p.images[0]}" alt="${escapeHtmlClient(pName(p))}" loading="lazy" decoding="async">${rating}</div>
+    <div class="vp-info">
+      <div class="vp-name">${escapeHtmlClient(pName(p))}</div>
+      ${pct > 0 ? `<div class="vp-was-row"><span class="vp-off">↓${pct}%</span><span class="vp-was">${p.compareAtPrice.toFixed(3)}</span></div>` : ''}
+      <div class="vp-price-row"><span class="vp-tag">${T('valueTag')}</span><span class="vp-price">${p.price.toFixed(3)} <small>BHD</small></span></div>
+      <div class="vp-sub">${T('freeDeliveryBadge')}</div>
+      ${outOfStock ? `<div class="getit" style="color:#B23B2E;font-weight:800;">${T('outOfStock')}</div>` : getItByHtml_()}
+    </div>
+  </div>`;
+}
+function syncValueBanner_(){
+  const hero = document.getElementById('heroImage'), img = document.getElementById('vpBannerImg'), wrap = document.getElementById('vpBanner');
+  if(!hero || !img || !wrap) return;
+  const src = hero.getAttribute('src') || '';
+  if(src && img.getAttribute('src') !== src) img.setAttribute('src', src);
+  wrap.style.display = src ? 'block' : 'none';
+}
+(function(){
+  const hero = document.getElementById('heroImage');
+  if(hero && window.MutationObserver) new MutationObserver(syncValueBanner_).observe(hero, { attributes:true, attributeFilter:['src'] });
+  syncValueBanner_();
+})();
 function renderValuePicks(){
   const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p));
   const section = document.getElementById('value365Section');
   if(!items.length){ section.style.display = 'none'; return; }
   section.style.display = 'block';
-  // Value Picks cards keep it simple: just the % off, no featured star and
-  // no separate BD price badge cluttering the image overlay.
-  const needsReveal = renderCardSection(document.getElementById('value365Rail'), items, { hideFeatured:true, hideValueAmount:true });
-  if(needsReveal) requestAnimationFrame(() => observeReveal());
+  syncValueBanner_();
+  const html = items.map(vpCardHtml_).join('') + `<div class="vp-more" onclick="openAllProductsPage()" role="button" aria-label="${T('chipAll')}">→</div>`;
+  const sig = currentLang + '|' + html;
+  if(sig === VP_LAST_SIG) return;   // nothing changed, so leave the strip (and its scroll position) alone
+  VP_LAST_SIG = sig;
+  document.getElementById('value365Rail').innerHTML = html;
 }
 
 function renderProducts(){ renderAllProductsGrid(); }
@@ -4282,6 +4397,7 @@ function cardBodyHtml(p){
               : `<button class="add-btn" onclick="event.stopPropagation();popButton(this);addToCart('${p.id}',1,event)">${T('addBtn')}</button>`}
         </div>
         <div class="free-delivery"><span class="van">🚚</span> ${T('freeDeliveryBadge')}</div>
+        ${outOfStock ? '' : getItByHtml_()}
   `;
 }
 function productCardHtml(p, opts){
@@ -4954,6 +5070,7 @@ function togglePdpAcc(btn){
   if(!wasOpen) item.classList.add('open');
 }
 function openProduct(id){
+  try{ refreshGetItBy(); }catch(e){}
   const p = PRODUCTS.find(p => p.id === id);
   if(!p) return;
   PDP_PRODUCT = p;
