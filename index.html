@@ -460,6 +460,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     width:38px; height:38px; padding:0; display:flex; align-items:center; justify-content:center;
     font-size:17px; line-height:1; cursor:pointer; transition:border-color .15s ease; flex-shrink:0;
   }
+  .acct-btn .acct-svg{width:20px;height:20px;display:block;}
   .acct-btn:hover{border-color:var(--ink);}
   .acct-btn.logged-in{background:#fff;border-color:var(--ink);color:var(--blush-ink);}
   .acct-wrap{position:relative;}
@@ -554,6 +555,12 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .oc-status.confirmed{background:#DCEEE2;color:#1E7A44;}
   .oc-status.shipped{background:#DDE7F5;color:#2A4E9C;}
   .oc-status.delivered{background:#1E7A44;color:#fff;}
+  .oc-status.cancelled{background:#FBE2DE;color:#B3261E;}
+  .oc-cancel-wrap{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);}
+  .oc-cancel-btn{width:100%;background:#fff;border:1.5px solid #B3261E;color:#B3261E;border-radius:10px;padding:10px;font-size:13px;font-weight:800;cursor:pointer;}
+  .oc-cancel-btn:disabled{opacity:.6;cursor:not-allowed;}
+  .oc-cancel-note{font-size:11.5px;color:var(--ink-soft);margin-top:6px;text-align:center;}
+  .oc-cancel-err{font-size:12px;color:#B3261E;margin-top:6px;text-align:center;}
   .oc-track{margin-top:10px;font-size:12.5px;background:var(--paper-soft);border-radius:10px;padding:10px 12px;line-height:1.5;}
   .oc-track a{color:var(--blush-ink);font-weight:700;}
   .oc-return{margin-top:10px;font-size:12.5px;background:#FFF6F6;border:1px solid #FBE2DE;border-radius:10px;padding:10px 12px;line-height:1.55;}
@@ -730,21 +737,21 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   }
   .bn-item.active{color:var(--blush-ink);}
   .bn-item .bn-logo svg,.bn-item .bn-logo img{width:18px;height:20px;display:block;}
-  .bn-item .bn-icon{font-size:16px;line-height:1;}
-  .bn-item .bn-home-emoji{font-size:17px;line-height:1;}
+  .bn-item .bn-svg{width:24px;height:24px;display:block;color:var(--ink);}
+  .bn-item.active .bn-svg{color:var(--blush-ink);}
   /* ---- floating round "Deals %" button, sits centered above the nav bar ---- */
   .bn-item.deals-fab{
-    flex:0 0 auto;width:58px;position:relative;top:-8px;color:var(--paper);
+    flex:0 0 auto;width:98px;position:relative;top:-8px;color:var(--paper);
   }
   .deals-fab .deals-fab-circle{
-    width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 32% 28%,var(--blush) 0%,var(--blush-deep) 78%);
+    width:98px;height:58px;border-radius:22px;background:radial-gradient(circle at 32% 28%,var(--blush) 0%,var(--blush-deep) 78%);
     display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(70,80,27,0.38);
     border:3px solid #fff;gap:1px;
   }
   .deals-fab .deals-fab-circle.spin-attract{animation:dealsFabSpin 0.85s ease-in-out 2;}
   @keyframes dealsFabSpin{
-    from{transform:rotate(0deg);}
-    to{transform:rotate(360deg);}
+    from{transform:perspective(200px) rotateY(0deg);}
+    to{transform:perspective(200px) rotateY(360deg);}
   }
   @media (prefers-reduced-motion: reduce){ .deals-fab .deals-fab-circle.spin-attract{animation:none!important;} }
   .deals-fab .deals-fab-circle .bn-logo{width:20px;height:22px;filter:brightness(0) invert(1);}
@@ -1369,7 +1376,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
         </div>
       </div>
       <div class="acct-wrap">
-        <button class="acct-btn" id="acctBtn" onclick="onAcctBtnClick()" aria-label="Account">👤</button>
+        <button class="acct-btn" id="acctBtn" onclick="onAcctBtnClick()" aria-label="Account"><svg class="acct-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7.5" r="4.3"/><path d="M3.8 20.5v-.8c0-3.3 3.5-5.9 8.2-5.9s8.2 2.6 8.2 5.9v.8z"/></svg></button>
       </div>
       <button class="icon-btn notif-btn" onclick="toggleNotifPanel(event)" aria-label="Notifications">
         🔔<span class="badge-corner" id="notifCount" style="display:none;">0</span>
@@ -1790,14 +1797,14 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
           <p class="otp-hint"><span data-i18n="otpSentTo">We've emailed a 6-digit code to</span> <strong id="otpSentEmail"></strong></p>
           <div class="field"><label data-i18n="enterOtp">Enter the 6-digit code</label><input type="text" id="loginOtpCode" class="otp-input" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······" onkeydown="if(event.key==='Enter')doVerifyLoginOtp()"></div>
           <p class="auth-error" id="otpError"></p>
-          <button class="submit-btn" onclick="doVerifyLoginOtp()" data-i18n="verifyOtpBtn">Verify &amp; log in</button>
+          <button class="submit-btn" id="loginVerifyBtn" onclick="doVerifyLoginOtp()" data-i18n="verifyOtpBtn">Verify &amp; log in</button>
           <a class="otp-resend" id="otpResendLink" href="javascript:void(0)" onclick="resendLoginOtp()" data-i18n="resendOtp">Resend code</a>
         </div>
         <div id="loginPwBlock" style="display:none;">
           <div class="field"><label data-i18n="fieldPassword">Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
           <a class="forgot-link" href="javascript:void(0)" onclick="openForgotPassword()" data-i18n="forgotPasswordLink">Forgot password?</a>
           <p class="auth-error" id="loginPwError"></p>
-          <button class="submit-btn" onclick="doLogin()" data-i18n="loginBtn">Log in</button>
+          <button class="submit-btn" id="loginPwBtn" onclick="doLogin()" data-i18n="loginBtn">Log in</button>
         </div>
       </div>
       <p style="text-align:center;font-size:13px;margin-top:14px;color:var(--ink-soft);"><span data-i18n="newHere">New here?</span> <a href="javascript:void(0)" onclick="showAuthPanel('register')" style="color:var(--blush-ink);font-weight:700;" data-i18n="createAccount">Create an account</a></p>
@@ -2210,7 +2217,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 
 <nav class="bottom-nav" id="bottomNav">
   <button class="bn-item active" id="bnHomeBtn" onclick="bottomNavHome()">
-    <span class="bn-home-emoji" role="img" aria-label="Home">🏡</span>
+    <svg class="bn-svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
     <span data-i18n="bnHome">Home</span>
   </button>
   <button class="bn-item deals-fab" id="bnDealsBtn" onclick="bottomNavDeals()">
@@ -2220,7 +2227,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     </span>
   </button>
   <button class="bn-item" id="bnProfileBtn" onclick="onAcctBtnClick()">
-    <span class="bn-icon">👤</span>
+    <svg class="bn-svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7.5" r="4.3"/><path d="M3.8 20.5v-.8c0-3.3 3.5-5.9 8.2-5.9s8.2 2.6 8.2 5.9v.8z"/></svg>
     <span data-i18n="bnProfile">Profile</span>
   </button>
 </nav>
@@ -2334,7 +2341,82 @@ document.addEventListener('focusout', (e) => {
 
 let PRODUCTS = [];
 let CART = JSON.parse(localStorage.getItem('gm_cart') || '[]');
-let CUSTOMER = JSON.parse(localStorage.getItem('gm_customer') || 'null');
+/* ---- Persistent login: the customer stays logged in until they tap Log out.
+   The session is kept in THREE places (localStorage, a 400-day cookie and
+   IndexedDB) because browsers such as iOS Safari and in-app browsers
+   (Instagram/Facebook) sometimes wipe localStorage on their own. Whichever
+   copy survives is used to restore the login. Nothing else ever clears it. */
+const GM_SESSION_KEY = 'gm_customer';
+const GM_SESSION_FIELDS = ['id','name','email','phone','referralCode','walletBalance','hasPassword'];
+function gmSlimCustomer_(c){
+  const out = {};
+  GM_SESSION_FIELDS.forEach(k => { if(c && c[k] !== undefined) out[k] = c[k]; });
+  return out;
+}
+function gmCookieWrite_(value, maxAge){
+  try{
+    document.cookie = GM_SESSION_KEY + '=' + encodeURIComponent(value) + '; max-age=' + maxAge + '; path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+  }catch(e){}
+}
+function gmIdb_(){
+  return new Promise((resolve, reject) => {
+    try{
+      const req = indexedDB.open('gm_session_db', 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('kv');
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    }catch(e){ reject(e); }
+  });
+}
+function gmIdbSet_(value){
+  return gmIdb_().then(db => new Promise(resolve => {
+    const tx = db.transaction('kv', 'readwrite');
+    if(value === null) tx.objectStore('kv').delete(GM_SESSION_KEY); else tx.objectStore('kv').put(value, GM_SESSION_KEY);
+    tx.oncomplete = () => resolve(); tx.onerror = () => resolve();
+  })).catch(() => {});
+}
+function gmIdbGet_(){
+  return gmIdb_().then(db => new Promise(resolve => {
+    const r = db.transaction('kv').objectStore('kv').get(GM_SESSION_KEY);
+    r.onsuccess = () => resolve(r.result || null); r.onerror = () => resolve(null);
+  })).catch(() => null);
+}
+function gmSaveCustomer(c){
+  if(!c) return;
+  const raw = JSON.stringify(gmSlimCustomer_(c));
+  try{ localStorage.setItem(GM_SESSION_KEY, raw); }catch(e){}
+  gmCookieWrite_(raw, 34560000);
+  gmIdbSet_(raw);
+}
+function gmClearCustomer(){
+  try{ localStorage.removeItem(GM_SESSION_KEY); }catch(e){}
+  gmCookieWrite_('', 0);
+  gmIdbSet_(null);
+}
+function gmReadCustomerSync_(){
+  try{ const raw = localStorage.getItem(GM_SESSION_KEY); if(raw){ const c = JSON.parse(raw); if(c && c.email) return c; } }catch(e){}
+  try{ const m = document.cookie.match(/(?:^|;\s*)gm_customer=([^;]*)/); if(m && m[1]){ const c = JSON.parse(decodeURIComponent(m[1])); if(c && c.email) return c; } }catch(e){}
+  return null;
+}
+let CUSTOMER = gmReadCustomerSync_();
+if(CUSTOMER) gmSaveCustomer(CUSTOMER); // re-sync all three copies + refresh the cookie's 400-day clock
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){} // ask the browser not to evict our storage
+if(!CUSTOMER){
+  // Last resort: localStorage and cookie are both gone, but IndexedDB may still have the login.
+  gmIdbGet_().then(raw => {
+    if(!raw || CUSTOMER) return;
+    try{
+      const c = JSON.parse(raw);
+      if(c && c.email){
+        CUSTOMER = c;
+        gmSaveCustomer(CUSTOMER);
+        try{ updateAcctButton(); }catch(e){}
+        try{ loadWishlistIds(); }catch(e){}
+        try{ loadCustomerOrdersForReviews(); }catch(e){}
+      }
+    }catch(e){}
+  });
+}
 let CUSTOMER_ORDERS = [];
 let CUSTOMER_RETURNS = [];
 async function loadCustomerOrdersForReviews(){
@@ -2378,14 +2460,15 @@ document.getElementById('pdpWaFooterLink').href = `https://wa.me/${CONFIG.WHATSA
 document.getElementById('apWaFooterLink').href = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent('Hi Souqify-bh, I have a question about my order.')}`;
 
 /* ================= account / auth ================= */
+const ACCT_ICON_SVG = '<svg class="acct-svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7.5" r="4.3"/><path d="M3.8 20.5v-.8c0-3.3 3.5-5.9 8.2-5.9s8.2 2.6 8.2 5.9v.8z"/></svg>';
 function updateAcctButton(){
   const btn = document.getElementById('acctBtn');
   if(CUSTOMER){
-    btn.textContent = '🙂';
+    btn.innerHTML = ACCT_ICON_SVG;
     btn.title = `Hi, ${CUSTOMER.name.split(' ')[0]}`;
     btn.classList.add('logged-in');
   } else {
-    btn.textContent = '👤';
+    btn.innerHTML = ACCT_ICON_SVG;
     btn.title = 'Login';
     btn.classList.remove('logged-in');
   }
@@ -2406,7 +2489,7 @@ function doLogout(){
     GUEST_MODE = false;
     CUSTOMER_ORDERS = [];
     WISHLIST_IDS = new Set();
-    localStorage.removeItem('gm_customer');
+    gmClearCustomer();
     updateAcctButton();
     updatePdpWishBtn();
   }
@@ -2446,7 +2529,7 @@ async function loadWalletTab(){
     if(data.ok){
       CUSTOMER.walletBalance = data.walletBalance;
       CUSTOMER.referralCode = data.referralCode || CUSTOMER.referralCode;
-      localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+      gmSaveCustomer(CUSTOMER);
       document.getElementById('walletBalanceDisplay').textContent = Number(data.walletBalance || 0).toFixed(3) + ' BHD';
       document.getElementById('myReferralCode').value = data.referralCode || '';
     }
@@ -2532,6 +2615,12 @@ function orderCardHtml(o){
     ? `<div class="oc-track">📦 Tracking number: <strong>${o.trackingNumber}</strong>${o.trackingUrl ? `. <a href="${o.trackingUrl}" target="_blank" rel="noopener">Track package →</a>` : ''}</div>`
     : '';
   const returnBlock = status === 'delivered' ? returnSectionHtml(o) : '';
+  const cancelBlock = canCancelOrder_(o) ? `
+    <div class="oc-cancel-wrap">
+      <button class="oc-cancel-btn" id="cancelBtn_${o.id}" onclick="cancelMyOrder('${o.id}')">Cancel order</button>
+      <div class="oc-cancel-err" id="cancelErr_${o.id}"></div>
+      <div class="oc-cancel-note">You can cancel until we confirm your order.</div>
+    </div>` : '';
   const reviewSection = status === 'delivered' && items.length ? `
     <div class="order-review-section">
       <div class="order-review-title">Rate your purchase</div>
@@ -2560,10 +2649,45 @@ function orderCardHtml(o){
       <div class="oc-items">${itemsText || '—'}</div>
       <div class="oc-total">${Number(o.total).toFixed(3)} BHD</div>
       ${track}
+      ${cancelBlock}
       ${returnBlock}
       ${reviewSection}
     </div>
   `;
+}
+// A customer can cancel on their own only while the order is still "new"
+// (before the store marks it Confirmed), and only if no money has been
+// taken yet. Paid / awaiting-verification orders go through WhatsApp.
+function canCancelOrder_(o){
+  const st = String(o.orderStatus || 'new').toLowerCase();
+  const pay = String(o.paymentStatus || '').toLowerCase();
+  return st === 'new' && pay !== 'paid' && pay !== 'awaiting_verification' && pay !== 'cancelled';
+}
+let CANCELLING_ORDER = false;
+async function cancelMyOrder(orderId){
+  if(CANCELLING_ORDER || !CUSTOMER) return;
+  if(!confirm('Cancel order ' + orderId + '? This cannot be undone.')) return;
+  CANCELLING_ORDER = true;
+  const btn = document.getElementById('cancelBtn_' + orderId);
+  const errEl = document.getElementById('cancelErr_' + orderId);
+  if(errEl) errEl.textContent = '';
+  if(btn){ btn.disabled = true; btn.textContent = 'Cancelling…'; }
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'cancelOrderCustomer', orderId, email: CUSTOMER.email }) });
+    const data = await res.json();
+    if(!data.ok){
+      if(errEl) errEl.textContent = data.error || 'Could not cancel this order.';
+      if(btn){ btn.disabled = false; btn.textContent = 'Cancel order'; }
+      if(data.tooLate) loadMyOrders();
+      return;
+    }
+    if(typeof data.walletBalance === 'number'){ CUSTOMER.walletBalance = data.walletBalance; gmSaveCustomer(CUSTOMER); }
+    loadProducts(); // stock was returned — refresh numbers
+    await loadMyOrders();
+  }catch(err){
+    if(errEl) errEl.textContent = 'Could not reach the server. Check your connection and try again.';
+    if(btn){ btn.disabled = false; btn.textContent = 'Cancel order'; }
+  }finally{ CANCELLING_ORDER = false; }
 }
 let INLINE_REVIEW_RATING = {};
 function toggleInlineReview(key){
@@ -2971,17 +3095,20 @@ async function savePasswordWithOtp(){
   errEl.textContent = ''; okEl.textContent = '';
   if(!/^\d{6}$/.test(otp)){ errEl.textContent = 'Please enter the 6-digit code from your email.'; return; }
   if(!newPassword || newPassword.length < 6){ errEl.textContent = 'Password must be at least 6 characters.'; return; }
+  if(AUTH_BUSY) return;
+  const spBtn = document.querySelector('#profPwForm .submit-btn, #profPwForm button[onclick*="savePasswordWithOtp"]');
+  AUTH_BUSY = true; setBtnBusy_(spBtn, true, 'Verifying…');
   try{
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'setPasswordWithOtp', email: CUSTOMER.email, otp, newPassword }) });
     const data = await res.json();
     if(!data.ok){ errEl.textContent = data.error || 'Could not save your password.'; return; }
     CUSTOMER.hasPassword = true;
-    localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+    gmSaveCustomer(CUSTOMER);
     document.getElementById('profPwOtp').value = '';
     document.getElementById('profPwNew').value = '';
     loadProfile();
     document.getElementById('profPwSuccess').textContent = '✓ Password saved. You can now log in with your email + password or with an OTP.';
-  }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }
+  }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }  finally{ AUTH_BUSY = false; setBtnBusy_(spBtn, false); }
 }
 async function saveProfile(){
   if(!CUSTOMER) return;
@@ -2996,7 +3123,7 @@ async function saveProfile(){
     const data = await res.json();
     if(!data.ok){ errEl.textContent = data.error || 'Could not update your profile.'; return; }
     CUSTOMER = Object.assign({}, CUSTOMER, data.customer);
-    localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+    gmSaveCustomer(CUSTOMER);
     updateAcctButton();
     okEl.textContent = '✓ Saved.';
   }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }
@@ -3103,6 +3230,7 @@ async function loginContinue(){
   const email = emailEl.value.trim().toLowerCase();
   errEl.textContent = '';
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ errEl.textContent = 'Please enter a valid email.'; return; }
+  if(btn.disabled) return;
   btn.disabled = true;
   try{
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'getLoginOptions', email }) });
@@ -3174,11 +3302,20 @@ function startOtpCooldown(linkId, seconds){
     }
   }, 1000);
 }
+let AUTH_BUSY = false;
+function setBtnBusy_(btn, busy, busyText){
+  if(!btn) return;
+  if(busy){ if(btn.dataset.idleText === undefined) btn.dataset.idleText = btn.textContent; btn.disabled = true; btn.textContent = busyText; }
+  else { btn.disabled = false; if(btn.dataset.idleText !== undefined){ btn.textContent = btn.dataset.idleText; delete btn.dataset.idleText; } }
+}
 async function doVerifyLoginOtp(){
+  if(AUTH_BUSY) return;
   const otp = document.getElementById('loginOtpCode').value.trim();
   const errEl = document.getElementById('otpError');
+  const btn = document.getElementById('loginVerifyBtn');
   errEl.textContent = '';
   if(!/^\d{6}$/.test(otp)){ errEl.textContent = 'Please enter the 6-digit code from your email.'; return; }
+  AUTH_BUSY = true; setBtnBusy_(btn, true, 'Verifying…');
   try{
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'verifyLoginOtp', email: LOGIN_EMAIL, otp }) });
     const data = await res.json();
@@ -3186,20 +3323,26 @@ async function doVerifyLoginOtp(){
     onAuthSuccess(data.customer);
   }catch(err){
     errEl.textContent = 'Could not reach the server. Check your connection and try again.';
+  }finally{
+    AUTH_BUSY = false; setBtnBusy_(btn, false);
   }
 }
 async function doLogin(){
+  if(AUTH_BUSY) return;
   const email = (LOGIN_EMAIL || document.getElementById('loginEmail').value).trim();
   const password = document.getElementById('loginPassword').value;
   const errEl = document.getElementById('loginPwError');
+  const btn = document.getElementById('loginPwBtn');
   errEl.textContent = '';
   if(!email || !password){ errEl.textContent = 'Please enter your email and password.'; return; }
+  AUTH_BUSY = true; setBtnBusy_(btn, true, 'Verifying…');
   try{
     const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'loginCustomer', email, password }) });
     const data = await res.json();
     if(!data.ok){ errEl.textContent = data.error || 'Could not log in.'; return; }
     onAuthSuccess(data.customer);
   }catch(err){ errEl.textContent = 'Could not reach the server. Check your connection and try again.'; }
+  finally{ AUTH_BUSY = false; setBtnBusy_(btn, false); }
 }
 async function doRegister(){
   const name = document.getElementById('regName').value.trim();
@@ -3232,7 +3375,7 @@ async function doRegister(){
 function onAuthSuccess(customer){
   CUSTOMER = customer;
   GUEST_MODE = false;
-  localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+  gmSaveCustomer(CUSTOMER);
   updateAcctButton();
   closeAuth();
   loadWishlistIds();
@@ -5858,7 +6001,7 @@ function openCheckout(){
       .then(r => r.json()).then(data => {
         if(data.ok){
           CUSTOMER.walletBalance = data.walletBalance;
-          localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+          gmSaveCustomer(CUSTOMER);
           if(Number(CUSTOMER.walletBalance) > 0){
             document.getElementById('walletUseWrap').style.display = 'block';
             document.getElementById('walletAvailableLabel').textContent = `(${Number(CUSTOMER.walletBalance).toFixed(3)} ${T('walletAvailableSuffix')})`;
@@ -5984,7 +6127,7 @@ function handleAutoAccountResult_(data, ctx){
   if(data.accountCreated && data.customer){
     CUSTOMER = data.customer;
     GUEST_MODE = false;
-    localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+    gmSaveCustomer(CUSTOMER);
     localStorage.removeItem('gm_pending_referral');
     updateAcctButton();
     try{ loadWishlistIds(); }catch(e){}
@@ -6117,7 +6260,7 @@ async function placeOrder(){
     appendAccountNote_(handleAutoAccountResult_(lastOrderResp, acctCtx));
     if(CUSTOMER && actualWalletUsed > 0){
       CUSTOMER.walletBalance = Math.max(0, round3Local_(Number(CUSTOMER.walletBalance || 0) - actualWalletUsed));
-      localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+      gmSaveCustomer(CUSTOMER);
     }
 
     metaTrack('Purchase', { content_ids: CART.map(function(i){ return i.id; }), contents: metaContents(CART), content_type:'product', num_items: CART.reduce(function(n,i){ return n + i.qty; }, 0), value: Math.max(0, cartTotal() - actualPromoDiscount) + orderFees, currency:'BHD' }, { eventID: String(orderId) });
@@ -6178,7 +6321,7 @@ async function onQrPaidClick(){
   appendAccountNote_(handleAutoAccountResult_(lastOrderResp, pendingAcctCtx));
   if(CUSTOMER && actualWalletUsed > 0){
     CUSTOMER.walletBalance = Math.max(0, round3Local_(Number(CUSTOMER.walletBalance || 0) - actualWalletUsed));
-    localStorage.setItem('gm_customer', JSON.stringify(CUSTOMER));
+    gmSaveCustomer(CUSTOMER);
   }
 
   const paidMsg = `Hi! I've completed BenefitPay payment for order ${orderId} (${qrCurrentAmount} BHD). Sending my payment screenshot now.`;

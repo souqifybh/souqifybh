@@ -159,6 +159,8 @@
   .pill.confirmed{background:var(--good-bg);color:var(--good);}
   .pill.shipped{background:#DDE7F5;color:#2A4E9C;}
   .pill.delivered{background:var(--good);color:white;}
+  .pill.cancelled,.pill.refund_due{background:#FBE2DE;color:#B3261E;}
+  tr.order-cancelled{opacity:.62;}
   select.status{font-size:11.5px;padding:5px 7px;border-radius:7px;border:1.5px solid var(--line);font-family:inherit;}
   .stock-low{color:var(--bad);font-weight:700;}
   .badge.low-badge{background:var(--warn-bg);color:var(--warn);}
@@ -862,6 +864,7 @@
             <option value="confirmed">Confirmed</option>
             <option value="shipped">Shipped</option>
             <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
           </select>
           <label class="toggle-pill" id="showCompletedPill" style="margin-left:auto;">
             <input type="checkbox" id="showCompletedOrders" onchange="toggleCompletedSection()">
@@ -1483,8 +1486,9 @@ function isCompletedOrder(o){
 function orderRowHtml(o, domIdx, completed){
   const items = parseItems(o);
   const detailsId = (completed ? 'odc' : 'odp') + domIdx;
+  const isCancelled = String(o.orderStatus || '').toLowerCase() === 'cancelled';
   return `
-      <tr>
+      <tr class="${isCancelled ? 'order-cancelled' : ''}">
         <td>
           <a href="javascript:void(0)" onclick="toggleDetails('${detailsId}')" style="font-weight:700;">${o.id}</a>
           <div class="muted">${new Date(o.timestamp).toLocaleString()}</div>
@@ -1512,14 +1516,14 @@ function orderRowHtml(o, domIdx, completed){
           <button class="ghost small" style="margin-top:4px;" onclick="savePaymentMethod('${o.id}')">Update</button>
         </td>
         <td>
-          <select class="status" onchange="updateOrder('${o.id}','orderStatus',this.value)">
-            ${['new','confirmed','shipped','delivered'].map(s => `<option value="${s}" ${o.orderStatus===s?'selected':''}>${s}</option>`).join('')}
+          <select class="status" ${isCancelled ? 'disabled title="Cancelled orders are locked"' : ''} onchange="updateOrder('${o.id}','orderStatus',this.value)">
+            ${(isCancelled ? ['cancelled'] : ['new','confirmed','shipped','delivered']).map(s => `<option value="${s}" ${o.orderStatus===s?'selected':''}>${s}</option>`).join('')}
           </select>
           ${deliveryStageBoxHtml(o)}
         </td>
         <td>
-          <select class="status" onchange="updatePaymentStatus('${o.id}',this.value)">
-            ${['pending','paid'].map(s => `<option value="${s}" ${o.paymentStatus===s?'selected':''}>${s}</option>`).join('')}
+          <select class="status" ${isCancelled ? 'disabled' : ''} onchange="updatePaymentStatus('${o.id}',this.value)">
+            ${(isCancelled ? [o.paymentStatus || 'cancelled'] : ['pending','paid']).map(s => `<option value="${s}" ${o.paymentStatus===s?'selected':''}>${s}</option>`).join('')}
           </select>
         </td>
         <td style="min-width:170px;">
@@ -1539,6 +1543,7 @@ function orderRowHtml(o, domIdx, completed){
             <option value="paymentReceived">Sample: Payment received</option>
           </select>
           <button class="ghost small" style="margin-top:4px;" onclick="sendSampleEmail('${o.id}')">Send sample mail</button>
+          ${isCancelled ? `<div class="pill cancelled" style="display:block;text-align:center;margin-top:4px;">Cancelled${String(o.paymentStatus||'')==='refund_due' ? ' · refund due' : ''}</div>` : `<button class="ghost small" style="color:#B3261E;border-color:#B3261E;margin-top:4px;width:100%;" onclick="cancelOrderAdmin('${o.id}')">✕ Cancel order</button>`}
           <button class="ghost small" style="color:#B34141;border-color:#F2C9C9;margin-top:4px;" onclick="deleteOrder('${o.id}')">Delete</button>
         </td>
       </tr>
@@ -1590,6 +1595,40 @@ async function sendOrderBackToProgress(id){
   if(!o) return;
   if(!confirm(`Send order ${id} back to "Confirmed" in the progress list?`)) return;
   await updateOrder(id, 'orderStatus', 'confirmed');
+}
+// Cancels an order in ANY status. Puts wallet credit back, emails the customer,
+// and (optionally) returns the items to stock. If the order was already paid
+// it is flagged "refund due" so it no longer counts as revenue.
+let ADMIN_CANCELLING = false;
+async function cancelOrderAdmin(id, isGift){
+  if(ADMIN_CANCELLING) return;
+  const list = isGift ? GIFT_ORDERS_CACHE : ORDERS;
+  const o = list.find(x => x.id === id);
+  if(!o) return;
+  const paid = String(o.paymentStatus||'') === 'paid' || Number(o.paidAmount||0) > 0;
+  let msg = `Cancel order ${id} (currently "${o.orderStatus || 'new'}")? The customer will be emailed.`;
+  if(paid) msg += `\n\nThis order is already PAID, so it will be marked "refund due". You still need to send the refund yourself.`;
+  if(!confirm(msg)) return;
+  let restock = false;
+  if(!isGift){
+    const delivered = String(o.orderStatus||'') === 'delivered';
+    restock = confirm(delivered
+      ? `Return the items to stock?\n\nThis order was already DELIVERED. Press OK only if the items are physically back with you; Cancel to leave stock unchanged.`
+      : `Return the items to stock?\n\nOK = add the items back to stock.  Cancel = leave stock unchanged.`);
+  }
+  ADMIN_CANCELLING = true;
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'cancelOrderAdmin', password: ADMIN_PASSWORD, id, restock }) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.error || 'Could not cancel this order.'); return; }
+    if(isGift){ loadGiftOrders(); return; }
+    o.orderStatus = 'cancelled';
+    o.paymentStatus = data.refundDue ? 'refund_due' : 'cancelled';
+    renderOrderRows();
+    renderDashboard();
+    if(restock && typeof loadProducts === 'function') { try{ loadProducts(); }catch(e){} }
+  }catch(err){ alert('Could not reach the server. Please try again.'); }
+  finally{ ADMIN_CANCELLING = false; }
 }
 async function deleteOrder(id){
   if(!confirm(`Delete order ${id}? This can't be undone. Only this order is removed, every other order stays exactly as it is.`)) return;
@@ -2783,7 +2822,7 @@ function renderGiftOrderRows(){
       <td>${escapeHtmlAdmin(o.orderStatus)}</td>
       <td>
         ${o.paymentStatus === 'awaiting_verification' ? `<button class="primary small" onclick="verifyGiftOrder('${o.id}')">Verify payment</button>` : ''}
-        ${(o.paymentStatus !== 'paid' && o.orderStatus !== 'cancelled') ? `<button class="ghost small" onclick="cancelGiftOrder('${o.id}')">Cancel</button>` : ''}
+        ${o.orderStatus !== 'cancelled' ? `<button class="ghost small" style="color:#B3261E;border-color:#B3261E;" onclick="cancelOrderAdmin('${o.id}', true)">Cancel</button>` : ''}
       </td>
     </tr>`).join('') || '<tr><td colspan="8" class="muted">No gift orders yet.</td></tr>';
 }
