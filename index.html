@@ -1300,6 +1300,25 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .ap-searchwrap{flex:1;display:flex;align-items:center;background:var(--paper-soft);border:1px solid var(--line);border-radius:12px;padding:9px 12px;gap:8px;}
   .ap-searchwrap input{flex:1;border:none;background:none;font-size:16px;font-family:inherit;outline:none;color:var(--ink);}
   .ap-cart-btn{background:none;border:none;font-size:20px;cursor:pointer;position:relative;flex-shrink:0;padding:4px;}
+  /* ---------- All-products page: standalone Value Picks strip (ignores category/sort/search) ---------- */
+  .ap-vp-wrap{position:relative;padding:12px 0 10px;border-bottom:1px solid var(--line);background:#F1F3E6;}
+  .ap-vp-head{padding:0 16px 8px;display:flex;align-items:center;gap:8px;}
+  .ap-vp-head b{font-size:13.5px;font-weight:800;color:var(--blush-ink);}
+  .ap-vp-head i{width:6px;height:6px;border-radius:50%;background:#2E9E4F;flex-shrink:0;animation:vpPulse 1.6s ease-out infinite;}
+  .ap-vp-rail{display:flex;gap:10px;overflow-x:auto;padding:0 16px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .ap-vp-rail::-webkit-scrollbar{display:none;}
+  .ap-vp-card{flex:0 0 auto;width:max-content;max-width:258px;scroll-snap-align:start;}
+  .ap-vp-card .vp-img{flex:0 0 60px;width:60px;height:60px;}
+  .ap-vp-card .vp-name{max-width:172px;}
+  .ap-vp-next{
+    position:absolute;top:50%;right:6px;transform:translateY(-2px);width:34px;height:34px;border-radius:50%;
+    background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--ink);z-index:3;
+  }
+  .ap-vp-next svg{width:16px;height:16px;display:block;}
+  html[dir="rtl"] .ap-vp-next{right:auto;left:6px;transform:translateY(-2px) scaleX(-1);}
+  @media (min-width:640px){ .ap-vp-card{max-width:300px;} .ap-vp-card .vp-name{max-width:206px;} }
+
   .ap-toolbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
   .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
   .ap-chips::-webkit-scrollbar{display:none;}
@@ -1998,6 +2017,11 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
       <input type="text" id="apSearchInput" placeholder="Search products…" oninput="renderAllProductsGrid()" onchange="trackRecentSearch(this.value)">
     </div>
     <button class="ap-cart-btn icon-btn" onclick="openCart()" aria-label="Cart">🛒<span class="badge-corner" id="apCartCount">0</span></button>
+  </div>
+  <div class="ap-vp-wrap" id="apValuePicksWrap" style="display:none;">
+    <div class="ap-vp-head"><i></i><b data-i18n="valuePicksTitle">Value Picks</b></div>
+    <div class="ap-vp-rail" id="apValuePicksRail"></div>
+    <button class="ap-vp-next" onclick="apValuePicksScroll(1)" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   </div>
   <div class="ap-toolbar">
     <div class="ap-chips" id="apCategoryChips"></div>
@@ -4108,6 +4132,7 @@ function openAllProductsPage(){
   document.getElementById('apSearchInput').value = '';
   buildCategoryChips();
   renderAllProductsGrid();
+  renderApValuePicks();
   lockBodyScroll();
   history.pushState({ap:true, cat:activeCategory}, '', location.pathname + location.search + productsHashFor(activeCategory));
 }
@@ -4273,11 +4298,11 @@ function renderSuggestedForYou(){
 // cards (photo + rating chip, % off + old price, VALUE tag + price, delivery note, Get it by date)
 // ending in a round arrow that opens the full catalogue.
 let VP_LAST_SIG = '';
-function vpCardHtml_(p){
+function vpCardHtml_(p, extraClass){
   const outOfStock = Number(p.stock) <= 0;
   const pct = discountPct(p);
   const rating = Number(p.reviewCount) > 0 ? `<span class="vp-rate">${Number(p.avgRating).toFixed(1)} <b>★</b></span>` : '';
-  return `<div class="vp-card${outOfStock ? ' out' : ''}" onclick="openProduct('${p.id}')">
+  return `<div class="vp-card${extraClass ? ' ' + extraClass : ''}${outOfStock ? ' out' : ''}" onclick="openProduct('${p.id}')">
     <div class="vp-img"><img src="${p.images[0]}" alt="${escapeHtmlClient(pName(p))}" loading="lazy" decoding="async">${rating}</div>
     <div class="vp-info">
       <div class="vp-name">${escapeHtmlClient(pName(p))}</div>
@@ -4313,6 +4338,31 @@ function renderValuePicks(){
   document.getElementById('value365Rail').innerHTML = html;
 }
 
+// Standalone strip shown at the top of the All-products page. Always the
+// same admin-picked Value Picks items (same source as the homepage section),
+// completely unaffected by the category chips, sort order or search box
+// below it.
+let APVP_LAST_SIG = '';
+function apValuePicksScroll(dir){
+  const rail = document.getElementById('apValuePicksRail');
+  if(!rail) return;
+  const card = rail.querySelector('.ap-vp-card');
+  const step = (card ? card.getBoundingClientRect().width : 240) + 10;
+  const rtl = document.documentElement.dir === 'rtl';
+  rail.scrollBy({ left: (rtl ? -1 : 1) * dir * step, behavior:'smooth' });
+}
+function renderApValuePicks(){
+  const wrap = document.getElementById('apValuePicksWrap');
+  if(!wrap) return;
+  const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p));
+  if(!items.length){ wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  const html = items.map(p => vpCardHtml_(p, 'ap-vp-card')).join('');
+  const sig = currentLang + '|' + html;
+  if(sig === APVP_LAST_SIG) return;
+  APVP_LAST_SIG = sig;
+  document.getElementById('apValuePicksRail').innerHTML = html;
+}
 function renderProducts(){ renderAllProductsGrid(); }
 function clearDealsFilter(){
   maxPriceFilter = null;
@@ -4637,6 +4687,7 @@ function refreshCartAwareUI(){
   safeCall(renderFeatured);
   safeCall(renderBestsellers);
   safeCall(renderValuePicks);
+  safeCall(renderApValuePicks);
   safeCall(() => { const ov = document.getElementById('apOverlay'); if(ov && ov.classList.contains('show')) renderAllProductsGrid(); });
   safeCall(() => { const ov = document.getElementById('pdpOverlay'); if(ov && ov.classList.contains('show')) updatePdpAddBtnState(); });
   safeCall(updateFloatingCartCount);
