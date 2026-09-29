@@ -1220,9 +1220,17 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   @media (min-width:640px){ .sfy-grid{grid-template-columns:repeat(4,1fr);gap:16px;} .sfy-body{padding:10px 12px 12px;} .sfy-name{font-size:13.5px;min-height:35px;} .sfy-price{font-size:15px;} }
   @media (min-width:960px){ .sfy-grid{grid-template-columns:repeat(6,1fr);} }
 
-  /* ================= Value Picks section: banner 1 + swipeable compact cards ================= */
-  .value365-section{background:#F1F3E6;border:1px solid #E1E6CC;border-radius:22px;padding:6px 6px 12px;margin:0 14px 40px;overflow:hidden;}
-  @media (min-width:640px){ .value365-section{margin:0 auto 56px;max-width:1180px;padding:8px 8px 16px;} }
+  /* ================= Value Picks section (home page — original design) ================= */
+  .value365-section{background:linear-gradient(135deg,#FFF3DD 0%,#FFE7C2 100%);border-radius:20px;padding:22px 16px 10px;margin:0 18px 44px;}
+  @media (min-width:640px){ .value365-section{margin:0 auto 56px;max-width:1180px;padding:26px 24px 14px;} }
+  .value365-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .value365-head h2{font-size:18px;margin:0;font-weight:800;color:#7A4B00;}
+  .value365-badge{background:#B23B2E;color:#fff;font-weight:800;font-size:11px;padding:4px 10px;border-radius:20px;letter-spacing:.03em;}
+  .value365-rail{display:flex;gap:14px;overflow-x:auto;padding-bottom:16px;scroll-snap-type:x proximity;}
+  .value365-rail .card{min-width:170px;max-width:170px;scroll-snap-align:start;}
+  @media (min-width:640px){ .value365-rail .card{min-width:220px;max-width:220px;} }
+
+  /* ================= Value Picks card styles (All-Products page strip only) ================= */
   .vp-banner{position:relative;border-radius:17px;overflow:hidden;aspect-ratio:2/1;max-height:380px;background:var(--paper-soft);cursor:pointer;}
   .vp-banner img{width:100%;height:100%;object-fit:cover;display:block;}
   .vp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 12px 10px;}
@@ -1230,8 +1238,6 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .vp-live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;color:var(--blush-deep);letter-spacing:.05em;text-transform:uppercase;}
   .vp-live i{width:7px;height:7px;border-radius:50%;background:#2E9E4F;animation:vpPulse 1.6s ease-out infinite;}
   @keyframes vpPulse{ 0%{box-shadow:0 0 0 0 rgba(46,158,79,.55);} 100%{box-shadow:0 0 0 8px rgba(46,158,79,0);} }
-  .value365-rail{display:flex;gap:10px;overflow-x:auto;padding:2px 6px 4px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-  .value365-rail::-webkit-scrollbar{display:none;}
   .vp-card{flex:0 0 min(82%,320px);scroll-snap-align:start;display:flex;gap:12px;align-items:stretch;background:#fff;border-radius:16px;padding:10px;cursor:pointer;box-shadow:0 1px 3px rgba(28,28,30,.06);transition:transform .18s var(--ease),box-shadow .18s var(--ease);}
   .vp-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm);}
   .vp-img{position:relative;flex:0 0 96px;width:96px;height:96px;border-radius:12px;background:var(--paper-soft);overflow:hidden;align-self:center;}
@@ -1250,8 +1256,6 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .vp-sub{font-size:11.5px;color:#1E4FA8;font-weight:600;}
   .vp-card .getit{margin-top:1px;}
   .vp-card.out{opacity:.6;}
-  .vp-more{flex:0 0 auto;align-self:center;display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 10px 0 4px;border-radius:50%;background:var(--ink);color:#fff;font-size:20px;cursor:pointer;box-shadow:var(--shadow-sm);}
-  html[dir="rtl"] .vp-more{transform:scaleX(-1);}
   @media (min-width:640px){ .vp-card{flex-basis:340px;} .vp-img{flex-basis:108px;width:108px;height:108px;} }
   @media (prefers-reduced-motion: reduce){ .vp-live i{animation:none;} }
 
@@ -1301,7 +1305,8 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .ap-searchwrap input{flex:1;border:none;background:none;font-size:16px;font-family:inherit;outline:none;color:var(--ink);}
   .ap-cart-btn{background:none;border:none;font-size:20px;cursor:pointer;position:relative;flex-shrink:0;padding:4px;}
   /* ---------- All-products page: standalone Value Picks strip (ignores category/sort/search) ---------- */
-  .ap-vp-wrap{position:relative;padding:12px 0 10px;border-bottom:1px solid var(--line);background:#F1F3E6;}
+  .ap-vp-wrap{position:relative;padding:0 0 10px;border-bottom:1px solid var(--line);background:#F1F3E6;}
+  .ap-vp-wrap .vp-banner{border-radius:0;margin-bottom:10px;}
   .ap-vp-head{padding:0 16px 8px;display:flex;align-items:center;gap:8px;}
   .ap-vp-head b{font-size:13.5px;font-weight:800;color:var(--blush-ink);}
   .ap-vp-head i{width:6px;height:6px;border-radius:50%;background:#2E9E4F;flex-shrink:0;animation:vpPulse 1.6s ease-out infinite;}
@@ -1561,10 +1566,9 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 </div>
 
 <section class="value365-section" id="value365Section" style="display:none;">
-  <div class="vp-banner" id="vpBanner" onclick="hsSlideClick(0)" style="display:none;"><img id="vpBannerImg" src="" alt="Value Picks"></div>
-  <div class="vp-head">
-    <h2 data-i18n="valuePicksTitle">Value Picks</h2>
-    <span class="vp-live"><i></i><span data-i18n="limitedDeals">Limited Deals</span></span>
+  <div class="value365-head">
+    <h2>💰 Value Picks</h2>
+    <span class="value365-badge">Limited Deals</span>
   </div>
   <div class="value365-rail" id="value365Rail"></div>
 </section>
@@ -2019,6 +2023,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <button class="ap-cart-btn icon-btn" onclick="openCart()" aria-label="Cart">🛒<span class="badge-corner" id="apCartCount">0</span></button>
   </div>
   <div class="ap-vp-wrap" id="apValuePicksWrap" style="display:none;">
+    <div class="vp-banner" id="apVpBanner" onclick="hsSlideClick(0)" style="display:none;"><img id="apVpBannerImg" src="" alt="Value Picks"></div>
     <div class="ap-vp-head"><i></i><b data-i18n="valuePicksTitle">Value Picks</b></div>
     <div class="ap-vp-rail" id="apValuePicksRail"></div>
     <button class="ap-vp-next" onclick="apValuePicksScroll(1)" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
@@ -4294,10 +4299,23 @@ function renderSuggestedForYou(){
 }
 
 /* ================= Value Picks (admin-set BD value amount) ================= */
-// Value Picks = the reference layout: main banner 1 on top, then a swipeable strip of compact
-// cards (photo + rating chip, % off + old price, VALUE tag + price, delivery note, Get it by date)
-// ending in a round arrow that opens the full catalogue.
-let VP_LAST_SIG = '';
+// Homepage section: original design — a plain rail of standard product cards.
+function renderValuePicks(){
+  const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p));
+  const section = document.getElementById('value365Section');
+  if(!items.length){ section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  // Value Picks cards keep it simple: just the % off, no featured star and
+  // no separate BD price badge cluttering the image overlay.
+  const needsReveal = renderCardSection(document.getElementById('value365Rail'), items, { hideFeatured:true, hideValueAmount:true });
+  if(needsReveal) requestAnimationFrame(() => observeReveal());
+}
+
+// All-Products page strip: banner 1 + a swipeable row of compact cards
+// (photo + rating chip, % off + old price, VALUE tag + price, delivery
+// note, Get it by date). Completely separate markup/CSS from the homepage
+// section above, and unaffected by the category chips, sort or search box.
+let APVP_LAST_SIG = '';
 function vpCardHtml_(p, extraClass){
   const outOfStock = Number(p.stock) <= 0;
   const pct = discountPct(p);
@@ -4313,8 +4331,8 @@ function vpCardHtml_(p, extraClass){
     </div>
   </div>`;
 }
-function syncValueBanner_(){
-  const hero = document.getElementById('heroImage'), img = document.getElementById('vpBannerImg'), wrap = document.getElementById('vpBanner');
+function syncApValueBanner_(){
+  const hero = document.getElementById('heroImage'), img = document.getElementById('apVpBannerImg'), wrap = document.getElementById('apVpBanner');
   if(!hero || !img || !wrap) return;
   const src = hero.getAttribute('src') || '';
   if(src && img.getAttribute('src') !== src) img.setAttribute('src', src);
@@ -4322,27 +4340,8 @@ function syncValueBanner_(){
 }
 (function(){
   const hero = document.getElementById('heroImage');
-  if(hero && window.MutationObserver) new MutationObserver(syncValueBanner_).observe(hero, { attributes:true, attributeFilter:['src'] });
-  syncValueBanner_();
+  if(hero && window.MutationObserver) new MutationObserver(syncApValueBanner_).observe(hero, { attributes:true, attributeFilter:['src'] });
 })();
-function renderValuePicks(){
-  const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p));
-  const section = document.getElementById('value365Section');
-  if(!items.length){ section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  syncValueBanner_();
-  const html = items.map(vpCardHtml_).join('') + `<div class="vp-more" onclick="openAllProductsPage()" role="button" aria-label="${T('chipAll')}">→</div>`;
-  const sig = currentLang + '|' + html;
-  if(sig === VP_LAST_SIG) return;   // nothing changed, so leave the strip (and its scroll position) alone
-  VP_LAST_SIG = sig;
-  document.getElementById('value365Rail').innerHTML = html;
-}
-
-// Standalone strip shown at the top of the All-products page. Always the
-// same admin-picked Value Picks items (same source as the homepage section),
-// completely unaffected by the category chips, sort order or search box
-// below it.
-let APVP_LAST_SIG = '';
 function apValuePicksScroll(dir){
   const rail = document.getElementById('apValuePicksRail');
   if(!rail) return;
@@ -4357,6 +4356,7 @@ function renderApValuePicks(){
   const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p));
   if(!items.length){ wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
+  syncApValueBanner_();
   const html = items.map(p => vpCardHtml_(p, 'ap-vp-card')).join('');
   const sig = currentLang + '|' + html;
   if(sig === APVP_LAST_SIG) return;
