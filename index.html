@@ -997,7 +997,10 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .img-zoom-nav:hover{background:rgba(255,255,255,0.22);}
   .img-zoom-nav.prev{left:14px;}
   .img-zoom-nav.next{right:14px;}
-  .img-zoom-counter{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.75);font-size:12px;z-index:2;}
+  .img-zoom-overlay .close-x.img-zoom-close{top:calc(12px + env(safe-area-inset-top,0px));right:14px;width:46px;height:46px;background:#fff;color:#1c1c1e;font-size:22px;font-weight:700;box-shadow:0 2px 10px rgba(0,0,0,0.45);z-index:5;}
+  .img-zoom-hint-bar{top:calc(20px + env(safe-area-inset-top,0px));right:76px;}
+  .img-zoom-close-bottom{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#fff;color:#1c1c1e;border:none;border-radius:999px;padding:11px 26px;font-size:15px;font-weight:700;cursor:pointer;z-index:5;box-shadow:0 2px 10px rgba(0,0,0,0.45);font-family:inherit;}
+  .img-zoom-counter{position:fixed;bottom:calc(74px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.85);font-size:12px;z-index:2;}
   @media (max-width:640px){ .img-zoom-nav{width:38px;height:38px;font-size:17px;} .img-zoom-nav.prev{left:8px;} .img-zoom-nav.next{right:8px;} }
   .pdp-thumbs{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;}
   .pdp-thumb{width:70px;height:70px;border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#fff;flex-shrink:0;}
@@ -1099,6 +1102,16 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 
   .overlay{position:fixed;inset:0;background:rgba(28,28,30,0.45);z-index:490;display:none;}
   .overlay.show{display:block;}
+  .cart-nudge-overlay{position:fixed;inset:0;background:rgba(28,28,30,0.55);z-index:560;display:none;align-items:center;justify-content:center;padding:16px;}
+  .cart-nudge-overlay.show{display:flex;}
+  .cart-nudge-box{background:#fff;border-radius:20px;max-width:360px;width:100%;padding:24px 22px 20px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,0.3);animation:cartNudgePop .25s ease;}
+  @keyframes cartNudgePop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+  .cart-nudge-title{font-size:20px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .cart-nudge-text{font-size:15px;line-height:1.5;color:var(--ink-soft);margin-bottom:18px;}
+  .cart-nudge-actions{display:flex;gap:10px;}
+  .cart-nudge-actions button{flex:1;border-radius:12px;padding:13px 10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .cart-nudge-close{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+  .cart-nudge-go{background:var(--ink);color:#fff;border:none;}
   .drawer{
     position:fixed; top:0; right:0; height:100%; width:min(420px,92vw);
     background:#fff; z-index:500; transform:translateX(100%); transition:transform .3s var(--ease);
@@ -1685,9 +1698,19 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   </div>
 </footer>
 
-<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-nudge-overlay" id="cartNudge" onclick="if(event.target===this)hideCartNudge()">
+  <div class="cart-nudge-box" role="dialog" aria-modal="true">
+    <div class="cart-nudge-title" data-i18n="nudgeTitle">🔥 Selling fast!</div>
+    <div class="cart-nudge-text" data-i18n="nudgeText">Limited stock left. Complete your order now before it’s gone!</div>
+    <div class="cart-nudge-actions">
+      <button class="cart-nudge-close" onclick="hideCartNudge()" data-i18n="nudgeClose">Close</button>
+      <button class="cart-nudge-go" onclick="cartNudgeCheckout()" data-i18n="cartCheckout">Proceed to checkout</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="overlay" onclick="requestCloseCart()"></div>
 <div class="drawer" id="drawer">
-  <div class="drawer-head"><h3 data-i18n="cartTitle">Your cart</h3><button onclick="closeCart()">✕</button></div>
+  <div class="drawer-head"><h3 data-i18n="cartTitle">Your cart</h3><button onclick="requestCloseCart()">✕</button></div>
   <div class="cart-offer-banner" id="cartOfferBanner" style="display:none;margin:10px 16px 0;padding:9px 12px;background:#F0F7E4;border:1px solid #CFE6AE;border-radius:10px;font-size:12.5px;font-weight:700;color:#3F5D1F;text-align:center;"></div>
   <div class="drawer-body" id="cartItems"></div>
   <div class="drawer-foot">
@@ -1824,7 +1847,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 </div>
 
 <div class="img-zoom-overlay" id="imgZoomOverlay">
-  <button class="close-x img-zoom-close" onclick="closeImageZoom()">✕</button>
+  <button class="close-x img-zoom-close" onclick="closeImageZoom()" aria-label="Close">✕</button>
   <div class="img-zoom-hint-bar" id="imgZoomHintBar">Pinch or scroll to zoom · Drag to pan · Double-tap to reset</div>
   <button class="img-zoom-nav prev" id="imgZoomPrev" onclick="event.stopPropagation();zoomPrevImage()" aria-label="Previous image">‹</button>
   <div class="img-zoom-stage" id="imgZoomStage">
@@ -1832,6 +1855,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   </div>
   <button class="img-zoom-nav next" id="imgZoomNext" onclick="event.stopPropagation();zoomNextImage()" aria-label="Next image">›</button>
   <div class="img-zoom-counter" id="imgZoomCounter"></div>
+  <button class="img-zoom-close-bottom" onclick="event.stopPropagation();closeImageZoom()" data-i18n="zoomClose">✕ Close</button>
 </div>
 
 <div class="modal-overlay" id="paymentMaintOverlay">
@@ -2145,7 +2169,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 <div class="pdp-overlay" id="pdpOverlay">
   <div class="pdp-topbar">
     <div class="pdp-topbar-inner">
-      <button class="pdp-back" onclick="closeProduct()" data-i18n="pdpBack">← Back to shop</button>
+      <button class="pdp-back" onclick="pdpGoBack()" data-i18n="pdpBack">← Back</button>
       <span class="pdp-crumb" id="pdpCrumb"></span>
     </div>
   </div>
@@ -3569,7 +3593,7 @@ const I18N = {
     activityViewerSingular:'1 person viewing now', activityViewerPlural:'{n} people viewing now',
     activityOrderSingular:'1 ordered in the last hour', activityOrderPlural:'{n} ordered in the last hour',
     outOfStockBtn:'Out of stock', outOfStockAlert:'Sorry, this product is out of stock.', maxStockAlert:'Sorry, only {n} left in stock.',
-    shopCrumb:'Shop', pdpBack:'← Back to shop', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
+    shopCrumb:'Shop', pdpBack:'← Back', zoomClose:'✕ Close', nudgeTitle:'🔥 Selling fast!', nudgeText:'Limited stock left. Complete your order now before it’s gone!', nudgeClose:'Close', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
     pdpTrustCod:'✅ Cash on delivery available', pdpTrustBenefitpay:'📲 BenefitPay via WhatsApp confirmation', pdpTrustDelivery:'🚚 Delivered across Bahrain',
     pdpRelated:'You might also like', noReviewsYet:'No reviews yet', noReviewsShort:'No reviews yet, be the first',
     sortNewest:'Newest first', sortHighest:'Highest rated', sortLowest:'Lowest rated', writeReview:'Write a review',
@@ -3655,7 +3679,7 @@ const I18N = {
     activityViewerSingular:'يشاهده شخص واحد الآن', activityViewerPlural:'يشاهده {n} أشخاص الآن',
     activityOrderSingular:'تم طلبه مرة واحدة خلال الساعة الأخيرة', activityOrderPlural:'تم طلبه {n} مرات خلال الساعة الأخيرة',
     outOfStockBtn:'غير متوفر', outOfStockAlert:'عذرًا، هذا المنتج غير متوفر حاليًا.', maxStockAlert:'عذرًا، يتبقى {n} فقط في المخزون.',
-    shopCrumb:'المتجر', pdpBack:'← العودة للمتجر', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
+    shopCrumb:'المتجر', pdpBack:'← رجوع', zoomClose:'✕ إغلاق', nudgeTitle:'🔥 يُباع بسرعة!', nudgeText:'الكمية محدودة. أكمل طلبك الآن قبل نفاد المخزون!', nudgeClose:'إغلاق', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
     pdpTrustCod:'✅ الدفع عند الاستلام متاح', pdpTrustBenefitpay:'📲 BenefitPay عبر تأكيد واتساب', pdpTrustDelivery:'🚚 التوصيل لجميع مناطق البحرين',
     pdpRelated:'قد يعجبك أيضًا', noReviewsYet:'لا توجد تقييمات بعد', noReviewsShort:'لا توجد تقييمات بعد، كن أول من يقيّم',
     sortNewest:'الأحدث أولاً', sortHighest:'الأعلى تقييمًا', sortLowest:'الأقل تقييمًا', writeReview:'أضف تقييمًا',
@@ -5220,7 +5244,7 @@ function openProduct(id){
   document.getElementById('pdpOverlay').classList.add('show');
   lockBodyScroll();
   window.scrollTo({top:0});
-  if(location.hash !== `#/product/${id}`) history.pushState({pdp:id}, '', `#/product/${id}`);
+  if(location.hash !== `#/product/${id}`) history.pushState({pdp:id, back:true}, '', `#/product/${id}`);
   updateDealsFabVisibility();
   updatePdpWishBtn();
   startPdpActivityTracking();
@@ -5266,6 +5290,7 @@ let ZOOM_PINCH_START_DIST = 0, ZOOM_PINCH_START_SCALE = 1;
 let ZOOM_DRAGGING = false, ZOOM_DRAG_START = {x:0,y:0}, ZOOM_PAN_START = {x:0,y:0};
 const ZOOM_MIN = 1, ZOOM_MAX = 4, ZOOM_DOUBLE_TAP = 2.5;
 let ZOOM_IMG_INDEX = 0;
+let ZOOM_HISTORY_PUSHED = false, ZOOM_SKIP_POP = false;
 
 function openImageZoom(){
   if(!PDP_PRODUCT || !PDP_PRODUCT.images || !PDP_PRODUCT.images.length) return;
@@ -5273,6 +5298,11 @@ function openImageZoom(){
   setZoomImage(ZOOM_IMG_INDEX);
   document.getElementById('imgZoomOverlay').classList.add('show');
   lockBodyScroll();
+  // history entry so the phone/browser Back button closes the viewer
+  try{
+    history.pushState({pdp:PDP_PRODUCT.id, back:!!(history.state && history.state.back), zoom:true}, '', location.href);
+    ZOOM_HISTORY_PUSHED = true;
+  }catch(e){ ZOOM_HISTORY_PUSHED = false; }
 }
 function setZoomImage(i){
   const imgs = (PDP_PRODUCT && PDP_PRODUCT.images) || [];
@@ -5295,11 +5325,20 @@ function setZoomImage(i){
 }
 function zoomPrevImage(){ setZoomImage(ZOOM_IMG_INDEX - 1); }
 function zoomNextImage(){ setZoomImage(ZOOM_IMG_INDEX + 1); }
-function closeImageZoom(){
-  document.getElementById('imgZoomOverlay').classList.remove('show');
+function closeImageZoom(fromPop){
+  const ov = document.getElementById('imgZoomOverlay');
+  if(!ov.classList.contains('show')) return;
+  ov.classList.remove('show');
   ZOOM_POINTERS.clear();
   ZOOM_DRAGGING = false;
+  resetZoomTransform();
   unlockBodyScroll();
+  if(fromPop === true){ ZOOM_HISTORY_PUSHED = false; }
+  else if(ZOOM_HISTORY_PUSHED){
+    ZOOM_HISTORY_PUSHED = false;
+    ZOOM_SKIP_POP = true;
+    history.back();
+  }
 }
 function resetZoomTransform(){
   ZOOM_SCALE = 1; ZOOM_PAN_X = 0; ZOOM_PAN_Y = 0;
@@ -5374,6 +5413,17 @@ function zoomToggleAt(){
         if(ZOOM_SCALE <= 1) resetZoomTransform();
       }
     }
+    let tapStart = null;
+    stage.addEventListener('pointerdown', (e) => { tapStart = {x:e.clientX, y:e.clientY, t:Date.now(), multi: ZOOM_POINTERS.size > 1}; });
+    stage.addEventListener('pointerup', (e) => {
+      const ts = tapStart; tapStart = null;
+      if(!ts || ts.multi || ZOOM_SCALE > 1) return;
+      if(Math.hypot(e.clientX-ts.x, e.clientY-ts.y) > 8 || Date.now()-ts.t > 400) return;
+      const img = document.getElementById('imgZoomImg');
+      const r = img.getBoundingClientRect();
+      const outside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      if(outside) closeImageZoom();
+    });
     stage.addEventListener('pointerup', endZoomPointer);
     stage.addEventListener('pointercancel', endZoomPointer);
     stage.addEventListener('pointerleave', endZoomPointer);
@@ -5823,6 +5873,17 @@ function closeProduct(){
   // overlay states (All Products, then this product) were stacked above it.
   if(location.hash) history.replaceState({}, '', location.pathname + location.search);
 }
+// "Back" button on the product page: return to the page the shopper came
+// from (home, All Products / a category, or the previous product). Falls back
+// to the homepage when the product was opened straight from a shared link and
+// there is no earlier in-app page to return to.
+function pdpGoBack(){
+  if(history.state && history.state.pdp && history.state.back){
+    history.back();
+    return;
+  }
+  closeProduct();
+}
 // Just hides the product overlay itself, without touching any page
 // underneath or the URL — used by the popstate handler below, which
 // manages history/overlay-visibility itself based on where navigation
@@ -5843,20 +5904,29 @@ function handleRouteFromHash(){
   }
 }
 window.addEventListener('popstate', () => {
+  // The image viewer adds its own history entry so the phone/browser Back
+  // button closes it first. If we triggered that back() ourselves, ignore it.
+  if(ZOOM_SKIP_POP){ ZOOM_SKIP_POP = false; return; }
+  const zoomEl = document.getElementById('imgZoomOverlay');
+  if(zoomEl && zoomEl.classList.contains('show')){ closeImageZoom(true); return; }
   const m = location.hash.match(/^#\/product\/(.+)$/);
   if(m){ openProduct(m[1]); return; }
   hidePdpOverlayOnly();
+  const apEl = document.getElementById('apOverlay');
   const apMatch = location.hash.match(/^#\/products(?:\/(.+))?$/);
   if(apMatch){
     const requestedCat = apMatch[1] ? decodeURIComponent(apMatch[1]) : 'All';
     const validCats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
-    activeCategory = validCats.includes(requestedCat) ? requestedCat : 'All';
-    buildCategoryChips();
-    renderAllProductsGrid();
-    document.getElementById('apOverlay').classList.add('show');
-    lockBodyScroll();
-  } else {
-    document.getElementById('apOverlay').classList.remove('show');
+    const newCat = validCats.includes(requestedCat) ? requestedCat : 'All';
+    const wasOpen = apEl.classList.contains('show');
+    if(!wasOpen || newCat !== activeCategory){
+      activeCategory = newCat;
+      buildCategoryChips();
+      renderAllProductsGrid();
+    }
+    if(!wasOpen){ apEl.classList.add('show'); lockBodyScroll(); }
+  } else if(apEl.classList.contains('show')){
+    apEl.classList.remove('show');
     unlockBodyScroll();
   }
 });
@@ -5907,7 +5977,35 @@ function renderCart(){
 }
 
 function openCart(){ document.getElementById('overlay').classList.add('show'); document.getElementById('drawer').classList.add('show'); lockBodyScroll(); }
-function closeCart(){ document.getElementById('overlay').classList.remove('show'); document.getElementById('drawer').classList.remove('show'); unlockBodyScroll(); }
+function closeCart(){
+  const drawerEl = document.getElementById('drawer');
+  const wasOpen = drawerEl.classList.contains('show');
+  document.getElementById('overlay').classList.remove('show');
+  drawerEl.classList.remove('show');
+  if(wasOpen) unlockBodyScroll();
+}
+// Used by the cart's ✕ button and the dimmed backdrop: closes the cart and,
+// if there are items in it, nudges the shopper to finish their order.
+let CART_NUDGE_LOCKED = false;
+function requestCloseCart(){
+  closeCart();
+  if(CART.length > 0) showCartNudge();
+}
+function showCartNudge(){
+  const el = document.getElementById('cartNudge');
+  if(!el || el.classList.contains('show')) return;
+  el.classList.add('show');
+  if(!CART_NUDGE_LOCKED){ lockBodyScroll(); CART_NUDGE_LOCKED = true; }
+}
+function hideCartNudge(){
+  const el = document.getElementById('cartNudge');
+  if(el) el.classList.remove('show');
+  if(CART_NUDGE_LOCKED){ CART_NUDGE_LOCKED = false; unlockBodyScroll(); }
+}
+function cartNudgeCheckout(){
+  hideCartNudge();
+  if(CART.length > 0) openCheckout();
+}
 
 let PAYMENT_CARD_ENABLED = false;
 let PAYMENT_BENEFITPAY_ENABLED = false;
