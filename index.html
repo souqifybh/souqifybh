@@ -1111,7 +1111,13 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .cart-nudge-actions{display:flex;gap:10px;}
   .cart-nudge-actions button{flex:1;border-radius:12px;padding:13px 10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
   .cart-nudge-close{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
-  .cart-nudge-go{background:var(--ink);color:#fff;border:none;}
+  .cart-nudge-go{background:var(--ink);color:#fff;border:none;white-space:nowrap;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:8px;animation:cngPulse 1.6s ease-in-out infinite;}
+  .cart-nudge-go::after{content:'';position:absolute;top:0;left:-70%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.35),transparent);transform:skewX(-20deg);animation:cngShine 2.4s ease-in-out infinite;}
+  .cart-nudge-go .cng-icon{display:inline-block;width:20px;height:20px;flex:none;background-size:contain;background-repeat:no-repeat;background-position:center;animation:cngCart 1.6s ease-in-out infinite;}
+  @keyframes cngPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(28,28,30,0.35)}50%{transform:scale(1.045);box-shadow:0 0 0 8px rgba(28,28,30,0)}}
+  @keyframes cngShine{0%{left:-70%}55%,100%{left:130%}}
+  @keyframes cngCart{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+  @media (prefers-reduced-motion:reduce){.cart-nudge-go,.cart-nudge-go::after,.cart-nudge-go .cng-icon{animation:none}}
   .drawer{
     position:fixed; top:0; right:0; height:100%; width:min(420px,92vw);
     background:#fff; z-index:500; transform:translateX(100%); transition:transform .3s var(--ease);
@@ -1704,7 +1710,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <div class="cart-nudge-text" data-i18n="nudgeText">Limited stock left. Complete your order now before it’s gone!</div>
     <div class="cart-nudge-actions">
       <button class="cart-nudge-close" onclick="hideCartNudge()" data-i18n="nudgeClose">Close</button>
-      <button class="cart-nudge-go" onclick="cartNudgeCheckout()" data-i18n="cartCheckout">Proceed to checkout</button>
+      <button class="cart-nudge-go" onclick="cartNudgeCheckout()"><span class="cng-icon brand-cart-icon" role="img" aria-label="Souqify-bh"></span><span data-i18n="nudgeGo">Checkout</span></button>
     </div>
   </div>
 </div>
@@ -3592,7 +3598,7 @@ const I18N = {
     activityViewerSingular:'1 person viewing now', activityViewerPlural:'{n} people viewing now',
     activityOrderSingular:'1 ordered in the last hour', activityOrderPlural:'{n} ordered in the last hour',
     outOfStockBtn:'Out of stock', outOfStockAlert:'Sorry, this product is out of stock.', maxStockAlert:'Sorry, only {n} left in stock.',
-    shopCrumb:'Shop', pdpBack:'← Back', zoomClose:'✕ Close', nudgeTitle:'🔥 Selling fast!', nudgeText:'Limited stock left. Complete your order now before it’s gone!', nudgeClose:'Close', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
+    shopCrumb:'Shop', pdpBack:'← Back', zoomClose:'✕ Close', nudgeTitle:'🔥 Selling fast!', nudgeText:'Limited stock left. Complete your order now before it’s gone!', nudgeClose:'Close', nudgeGo:'Checkout', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
     pdpTrustCod:'✅ Cash on delivery available', pdpTrustBenefitpay:'📲 BenefitPay via WhatsApp confirmation', pdpTrustDelivery:'🚚 Delivered across Bahrain',
     pdpRelated:'You might also like', noReviewsYet:'No reviews yet', noReviewsShort:'No reviews yet, be the first',
     sortNewest:'Newest first', sortHighest:'Highest rated', sortLowest:'Lowest rated', writeReview:'Write a review',
@@ -3678,7 +3684,7 @@ const I18N = {
     activityViewerSingular:'يشاهده شخص واحد الآن', activityViewerPlural:'يشاهده {n} أشخاص الآن',
     activityOrderSingular:'تم طلبه مرة واحدة خلال الساعة الأخيرة', activityOrderPlural:'تم طلبه {n} مرات خلال الساعة الأخيرة',
     outOfStockBtn:'غير متوفر', outOfStockAlert:'عذرًا، هذا المنتج غير متوفر حاليًا.', maxStockAlert:'عذرًا، يتبقى {n} فقط في المخزون.',
-    shopCrumb:'المتجر', pdpBack:'← رجوع', zoomClose:'✕ إغلاق', nudgeTitle:'🔥 يُباع بسرعة!', nudgeText:'الكمية محدودة. أكمل طلبك الآن قبل نفاد المخزون!', nudgeClose:'إغلاق', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
+    shopCrumb:'المتجر', pdpBack:'← رجوع', zoomClose:'✕ إغلاق', nudgeTitle:'🔥 يُباع بسرعة!', nudgeText:'الكمية محدودة. أكمل طلبك الآن قبل نفاد المخزون!', nudgeClose:'إغلاق', nudgeGo:'إتمام الطلب', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
     pdpTrustCod:'✅ الدفع عند الاستلام متاح', pdpTrustBenefitpay:'📲 BenefitPay عبر تأكيد واتساب', pdpTrustDelivery:'🚚 التوصيل لجميع مناطق البحرين',
     pdpRelated:'قد يعجبك أيضًا', noReviewsYet:'لا توجد تقييمات بعد', noReviewsShort:'لا توجد تقييمات بعد، كن أول من يقيّم',
     sortNewest:'الأحدث أولاً', sortHighest:'الأعلى تقييمًا', sortLowest:'الأقل تقييمًا', writeReview:'أضف تقييمًا',
