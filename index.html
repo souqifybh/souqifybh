@@ -1305,24 +1305,26 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .ap-searchwrap input{flex:1;border:none;background:none;font-size:16px;font-family:inherit;outline:none;color:var(--ink);}
   .ap-cart-btn{background:none;border:none;font-size:20px;cursor:pointer;position:relative;flex-shrink:0;padding:4px;}
   /* ---------- All-products page: standalone Value Picks strip (ignores category/sort/search) ---------- */
-  .ap-vp-wrap{position:relative;padding:0 0 10px;border-bottom:1px solid var(--line);background:#F1F3E6;}
-  .ap-vp-wrap .vp-banner{border-radius:0;margin-bottom:10px;}
-  .ap-vp-head{padding:0 16px 8px;display:flex;align-items:center;gap:8px;}
+  /* One shared rounded card behind BOTH the banner and the Value Picks row — nothing else on the page. */
+  .ap-vp-wrap{position:relative;background:#F1F3E6;border:1px solid #E1E6CC;border-radius:22px;overflow:hidden;margin:14px 14px 18px;padding:8px 8px 12px;}
+  .ap-vp-wrap .vp-banner{border-radius:16px;margin-bottom:10px;}
+  .ap-vp-head{padding:2px 8px 8px;display:flex;align-items:center;gap:8px;}
   .ap-vp-head b{font-size:13.5px;font-weight:800;color:var(--blush-ink);}
   .ap-vp-head i{width:6px;height:6px;border-radius:50%;background:#2E9E4F;flex-shrink:0;animation:vpPulse 1.6s ease-out infinite;}
-  .ap-vp-rail{display:flex;gap:10px;overflow-x:auto;padding:0 16px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .ap-vp-rail-wrap{position:relative;}
+  .ap-vp-rail{display:flex;gap:10px;overflow-x:auto;padding:0 8px 2px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
   .ap-vp-rail::-webkit-scrollbar{display:none;}
   .ap-vp-card{flex:0 0 auto;width:max-content;max-width:258px;scroll-snap-align:start;}
   .ap-vp-card .vp-img{flex:0 0 60px;width:60px;height:60px;}
   .ap-vp-card .vp-name{max-width:172px;}
   .ap-vp-next{
-    position:absolute;top:50%;right:6px;transform:translateY(-2px);width:34px;height:34px;border-radius:50%;
+    position:absolute;top:50%;right:2px;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;
     background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-sm);display:flex;align-items:center;justify-content:center;
     cursor:pointer;color:var(--ink);z-index:3;
   }
   .ap-vp-next svg{width:16px;height:16px;display:block;}
-  html[dir="rtl"] .ap-vp-next{right:auto;left:6px;transform:translateY(-2px) scaleX(-1);}
-  @media (min-width:640px){ .ap-vp-card{max-width:300px;} .ap-vp-card .vp-name{max-width:206px;} }
+  html[dir="rtl"] .ap-vp-next{right:auto;left:2px;transform:translateY(-50%) scaleX(-1);}
+  @media (min-width:640px){ .ap-vp-wrap{margin:16px auto 22px;max-width:1180px;padding:10px 10px 14px;} .ap-vp-card{max-width:300px;} .ap-vp-card .vp-name{max-width:206px;} }
 
   .ap-toolbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
   .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
@@ -2025,8 +2027,10 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   <div class="ap-vp-wrap" id="apValuePicksWrap" style="display:none;">
     <div class="vp-banner" id="apVpBanner" onclick="hsSlideClick(0)" style="display:none;"><img id="apVpBannerImg" src="" alt="Value Picks"></div>
     <div class="ap-vp-head"><i></i><b data-i18n="valuePicksTitle">Value Picks</b></div>
-    <div class="ap-vp-rail" id="apValuePicksRail"></div>
-    <button class="ap-vp-next" onclick="apValuePicksScroll(1)" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <div class="ap-vp-rail-wrap">
+      <div class="ap-vp-rail" id="apValuePicksRail"></div>
+      <button class="ap-vp-next" onclick="apValuePicksScroll(1)" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
   </div>
   <div class="ap-toolbar">
     <div class="ap-chips" id="apCategoryChips"></div>
