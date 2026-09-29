@@ -8,48 +8,95 @@ on:
 permissions:
   contents: write
 
+# Never run two syncs at the same time
+concurrency:
+  group: sync-site-data
+  cancel-in-progress: false
+
+env:
+  API_URL: "https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0nP0mfTHx3AGvMOrsqwsBvTZm-9RL4iJ947YJEVViOgx-YFUJNc9zo1/exec"
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Fetch Latest Products from Google Sheets API
         run: |
-          curl -L "https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0nP0mfTHx3AGvMOrsqwsBvTZm-9RL4iJ947YJEVViOgx-YFUJNc9zo1/exec" -o products.json.tmp
-          node -e '
-            const fs = require("fs");
-            const data = JSON.parse(fs.readFileSync("products.json.tmp"));
-            if (data.ok && Array.isArray(data.products)) {
-              fs.writeFileSync("products.json", JSON.stringify(data.products, null, 2));
-              console.log("products.json updated successfully.");
-            } else {
-              console.error("Invalid response format");
+          ok=0
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt of 3..."
+            curl -fsSL --max-time 120 "$API_URL" -o products.json.tmp || echo "curl failed"
+            if node -e '
+              const fs = require("fs");
+              const raw = fs.existsSync("products.json.tmp") ? fs.readFileSync("products.json.tmp", "utf8") : "";
+              try {
+                const data = JSON.parse(raw);
+                if (data.ok && Array.isArray(data.products)) {
+                  fs.writeFileSync("products.json", JSON.stringify(data.products, null, 2));
+                  console.log("products.json updated successfully.");
+                  process.exit(0);
+                }
+                console.error("Invalid response format");
+              } catch (e) {
+                console.error("Response is not valid JSON. First 200 chars:", raw.slice(0, 200));
+              }
               process.exit(1);
-            }
-          '
-          rm products.json.tmp
+            '; then
+              ok=1
+              break
+            fi
+            sleep 20
+          done
+          rm -f products.json.tmp
+          [ "$ok" = "1" ]
 
+      # Runs even if the products step failed, so one bad fetch doesn't block the other
       - name: Fetch Latest Homepage Settings from Google Sheets API
+        if: ${{ !cancelled() }}
         run: |
-          curl -L "https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0nP0mfTHx3AGvMOrsqwsBvTZm-9RL4iJ947YJEVViOgx-YFUJNc9zo1/exec?action=getSettings" -o settings.json.tmp
-          node -e '
-            const fs = require("fs");
-            const data = JSON.parse(fs.readFileSync("settings.json.tmp"));
-            if (data.ok && data.settings) {
-              fs.writeFileSync("settings.json", JSON.stringify(data, null, 2));
-              console.log("settings.json updated successfully.");
-            } else {
-              console.error("Invalid response format");
+          ok=0
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt of 3..."
+            curl -fsSL --max-time 120 "$API_URL?action=getSettings" -o settings.json.tmp || echo "curl failed"
+            if node -e '
+              const fs = require("fs");
+              const raw = fs.existsSync("settings.json.tmp") ? fs.readFileSync("settings.json.tmp", "utf8") : "";
+              try {
+                const data = JSON.parse(raw);
+                if (data.ok && data.settings) {
+                  fs.writeFileSync("settings.json", JSON.stringify(data, null, 2));
+                  console.log("settings.json updated successfully.");
+                  process.exit(0);
+                }
+                console.error("Invalid response format");
+              } catch (e) {
+                console.error("Response is not valid JSON. First 200 chars:", raw.slice(0, 200));
+              }
               process.exit(1);
-            }
-          '
-          rm settings.json.tmp
+            '; then
+              ok=1
+              break
+            fi
+            sleep 20
+          done
+          rm -f settings.json.tmp
+          [ "$ok" = "1" ]
 
+      # Commits whatever was fetched successfully, even if the other fetch failed
       - name: Commit and Push Changes
+        if: ${{ !cancelled() }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add products.json settings.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update products.json and settings.json from Google Sheets" && git push)
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Auto-update products.json and settings.json from Google Sheets"
+            git pull --rebase
+            git push
+          fi
