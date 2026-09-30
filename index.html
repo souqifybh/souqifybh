@@ -1146,7 +1146,8 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .ship-opt{display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:6px;border:1.5px solid var(--line,#e5e5e5);border-radius:10px;cursor:pointer;font-size:13.5px;}
   .ship-opt.selected{border-color:#46501B;background:#F5F7EE;}
   .ship-opt input{accent-color:#46501B;margin:0;}
-  .ship-opt .ship-name{flex:1;font-weight:600;}
+  .ship-opt .ship-name{flex:1;font-weight:600;min-width:0;}
+  .ship-opt .ship-sub{display:block;font-size:10.5px;font-weight:500;line-height:1.3;color:#8C8F7C;margin-top:1px;}
   .ship-opt .ship-price{font-weight:700;}
   .ship-opt .ship-price.free{color:#2E7D32;}
   .ship-hint{font-size:12.5px;font-weight:600;color:#6E7260;margin-top:2px;}
@@ -1736,8 +1737,8 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   <div class="drawer-foot">
     <div class="ship-box" id="cartShipBox" style="display:none;">
       <div class="ship-title" data-i18n="shipTitle">Delivery options</div>
-      <label class="ship-opt selected" id="shipOptStandard"><input type="radio" name="shipOpt" value="standard" checked onchange="setDeliveryOption('standard')"><span class="ship-name" data-i18n="shipStandard">Standard shipping</span><span class="ship-price free" id="shipPriceStandard">FREE</span></label>
-      <label class="ship-opt" id="shipOptSameDay"><input type="radio" name="shipOpt" value="same_day" onchange="setDeliveryOption('same_day')"><span class="ship-name" data-i18n="shipSameDay">Same day delivery</span><span class="ship-price" id="shipPriceSameDay">1.200 BHD</span></label>
+      <label class="ship-opt selected" id="shipOptStandard"><input type="radio" name="shipOpt" value="standard" checked onchange="setDeliveryOption('standard')"><span class="ship-name"><span data-i18n="shipStandard">Standard shipping</span><span class="ship-sub" data-i18n="shipStandardSub">Within 24-48 hours of order confirmation</span></span><span class="ship-price free" id="shipPriceStandard">FREE</span></label>
+      <label class="ship-opt" id="shipOptSameDay"><input type="radio" name="shipOpt" value="same_day" onchange="setDeliveryOption('same_day')"><span class="ship-name"><span data-i18n="shipSameDay">Same day delivery</span><span class="ship-sub" data-i18n="shipSameDaySub">Within 6-12 hours of order confirmation</span></span><span class="ship-price" id="shipPriceSameDay">1.200 BHD</span></label>
       <div class="ship-hint" id="shipHint" style="display:none;"></div>
     </div>
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartSubtotal">Sub total</span><span id="cartSubtotal">0.000 BHD</span></div>
@@ -3571,7 +3572,7 @@ const I18N = {
     footerTagline:'Shop More. Pay Less.', footerShop:'Shop', footerAllProducts:'All products', footerDeals:'Deals', footerAboutUs:'About us',
     footerSupport:'Support', footerWhatsapp:'WhatsApp us', footerDeliveryPolicy:'Delivery policy', footerReturns:'Returns & refunds',
     footerPayments:'Payments', footerBenefitpay:'BenefitPay QR', footerCod:'Cash on delivery', footerPricesBhd:'Prices shown in BHD.',
-    cartTitle:'Your cart', cartTotal:'Total', cartSubtotal:'Sub total', cartPlatformFee:'Platform fees', cartDeliveryCharge:'Delivery charge', shipTitle:'Delivery options', shipStandard:'Standard shipping', shipSameDay:'Same day delivery', shipFree:'FREE', shipAddMore:'Add {amt} BHD more for free standard shipping', shipUnlocked:'🎉 You unlocked free standard shipping', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
+    cartTitle:'Your cart', cartTotal:'Total', cartSubtotal:'Sub total', cartPlatformFee:'Platform fees', cartDeliveryCharge:'Delivery charge', shipTitle:'Delivery options', shipStandard:'Standard shipping', shipStandardSub:'Within 24-48 hours of order confirmation', shipSameDay:'Same day delivery', shipSameDaySub:'Within 6-12 hours of order confirmation', shipFree:'FREE', shipAddMore:'Add {amt} BHD more for free standard shipping', shipUnlocked:'🎉 You unlocked free standard shipping', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
     checkoutTitle:'Checkout', guestBannerText:'New here? fill these details', guestBannerLogin:'Log in', guestBannerSuffix:'if you already have one.',
     fieldFullName:'Full name', fieldMobile:'Mobile number', fieldEmail:'Email', fieldDeliveryAddr:'Delivery address',
     fieldFlat:'Flat / Shop no.', fieldBuilding:'Building', fieldRoad:'Road', fieldBlock:'Block', fieldArea:'Area',
@@ -3657,7 +3658,7 @@ const I18N = {
     footerTagline:'الحل الكامل للأجهزة والإلكترونيات.', footerShop:'المتجر', footerAllProducts:'جميع المنتجات', footerDeals:'العروض', footerAboutUs:'من نحن',
     footerSupport:'الدعم', footerWhatsapp:'راسلنا عبر واتساب', footerDeliveryPolicy:'سياسة التوصيل', footerReturns:'الإرجاع والاسترداد',
     footerPayments:'طرق الدفع', footerBenefitpay:'رمز BenefitPay', footerCod:'الدفع عند الاستلام', footerPricesBhd:'الأسعار موضحة بالدينار البحريني.',
-    cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartSubtotal:'المجموع الفرعي', cartPlatformFee:'رسوم المنصة', cartDeliveryCharge:'رسوم التوصيل', shipTitle:'خيارات التوصيل', shipStandard:'الشحن العادي', shipSameDay:'التوصيل في نفس اليوم', shipFree:'مجاني', shipAddMore:'أضف {amt} دينار للحصول على شحن عادي مجاني', shipUnlocked:'🎉 حصلت على شحن عادي مجاني', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
+    cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartSubtotal:'المجموع الفرعي', cartPlatformFee:'رسوم المنصة', cartDeliveryCharge:'رسوم التوصيل', shipTitle:'خيارات التوصيل', shipStandard:'الشحن العادي', shipStandardSub:'خلال 24-48 ساعة من تأكيد الطلب', shipSameDay:'التوصيل في نفس اليوم', shipSameDaySub:'خلال 6-12 ساعة من تأكيد الطلب', shipFree:'مجاني', shipAddMore:'أضف {amt} دينار للحصول على شحن عادي مجاني', shipUnlocked:'🎉 حصلت على شحن عادي مجاني', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
     checkoutTitle:'إتمام الطلب', guestBannerText:'جديد هنا؟ سننشئ حسابك من هذه البيانات.', guestBannerLogin:'سجّل الدخول', guestBannerSuffix:'إن كان لديك حساب.',
     fieldFullName:'الاسم الكامل', fieldMobile:'رقم الجوال', fieldEmail:'البريد الإلكتروني', fieldDeliveryAddr:'عنوان التوصيل',
     fieldFlat:'رقم الشقة / المحل', fieldBuilding:'المبنى', fieldRoad:'الطريق', fieldBlock:'المجمع', fieldArea:'المنطقة',
