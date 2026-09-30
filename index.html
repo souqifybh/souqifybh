@@ -519,6 +519,17 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .exit-capture-popup .ec-note.err{color:#C0392B;}
   .exit-capture-popup .ec-note.ok{color:#2E7D32;}
   .exit-capture-popup .ec-google-btn{display:flex;justify-content:center;}
+  /* compact size: matches the "Selling fast!" popup (252px wide) */
+  .lang-popup.exit-capture-popup{max-width:252px;padding:17px 15px 14px;border-radius:16px;box-shadow:0 14px 35px rgba(0,0,0,0.3);}
+  .exit-capture-popup .lp-mark{width:36px;height:36px;margin:0 auto 8px;}
+  .exit-capture-popup h3{font-size:14px;margin:0 0 5px;}
+  .exit-capture-popup p{font-size:11.5px;line-height:1.45;margin:0 0 12px;}
+  .exit-capture-popup .ec-close{top:7px;inset-inline-end:9px;right:auto;font-size:13px;}
+  .exit-capture-popup .ec-form{gap:7px;}
+  .exit-capture-popup .ec-form input{padding:9px 10px;border-radius:9px;font-size:12.5px;}
+  .exit-capture-popup .ec-form .btn-primary{padding:9px 7px;font-size:12px;border-radius:9px;}
+  .exit-capture-popup .ec-divider{font-size:11px;margin:0;}
+  .exit-capture-popup .ec-note{font-size:11px;margin:7px 0 0;min-height:12px;}
   .exit-capture-popup .ec-divider{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:12px;margin:2px 0;}
   .exit-capture-popup .ec-divider::before,.exit-capture-popup .ec-divider::after{content:'';flex:1;height:1px;background:var(--border,#e2e2e2);}
   .lp-options{display:flex;flex-direction:column;gap:10px;}
@@ -5424,7 +5435,7 @@ function renderGoogleOneTapInPopup_(){
   const divider = document.getElementById('ecDivider');
   if(btnHolder){
     btnHolder.innerHTML = '';
-    google.accounts.id.renderButton(btnHolder, { theme:'outline', size:'large', width:260, text:'continue_with' });
+    google.accounts.id.renderButton(btnHolder, { theme:'outline', size:'medium', width:222, text:'continue_with' });
     if(divider) divider.style.display = 'flex';
   }
   try{ google.accounts.id.prompt(); }catch(e){} // also offers the floating one-tap card when eligible
