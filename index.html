@@ -1131,11 +1131,14 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .drawer-body{flex:1;overflow-y:auto;padding:16px 22px;}
   .cart-item{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);}
   .cart-item img{width:58px;height:58px;border-radius:10px;object-fit:cover;background:var(--paper-soft);}
-  .cart-item .ci-info{flex:1;}
+  .cart-item .ci-info{flex:1;min-width:0;}
   .cart-item .ci-name{font-weight:700;font-size:14px;}
   .qty-row{display:flex;align-items:center;gap:8px;margin-top:6px;}
   .qty-row button{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--paper-soft);cursor:pointer;font-weight:700;}
   .remove-link{color:#B23B2E;font-size:12px;cursor:pointer;background:none;border:none;text-decoration:underline;margin-left:auto;}
+  .qty-row button.remove-link{width:26px;height:26px;padding:0;margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;border:none;background:none;border-radius:6px;color:#1C1C1E;text-decoration:none;transition:color .15s,background .15s;}
+  .qty-row button.remove-link svg{width:15px;height:15px;display:block;}
+  .qty-row button.remove-link:hover,.qty-row button.remove-link:focus-visible{color:#B23B2E;background:#FBEAE8;}
   .drawer-foot{padding:18px 22px;border-top:1px solid var(--line);}
   .total-row{display:flex;justify-content:space-between;font-weight:700;font-size:16px;margin-bottom:14px;}
   .ship-box{margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line,#eee);}
@@ -6030,7 +6033,7 @@ function renderCart(){
           <button onclick="changeQty('${i.id}',-1,${i.color ? `'${i.color.replace(/'/g,"\\'")}'` : 'null'})">−</button>
           <span>${i.qty}</span>
           <button onclick="changeQty('${i.id}',1,${i.color ? `'${i.color.replace(/'/g,"\\'")}'` : 'null'})">+</button>
-          <button class="remove-link" onclick="removeItem('${i.id}',${i.color ? `'${i.color.replace(/'/g,"\\'")}'` : 'null'})">${T('removeBtn')}</button>
+          <button class="remove-link" title="${T('removeBtn')}" aria-label="${T('removeBtn')}" onclick="removeItem('${i.id}',${i.color ? `'${i.color.replace(/'/g,"\\'")}'` : 'null'})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5V3.5h6V5"/><path d="M3.5 5.5h17"/><path d="M5 8.5l1.1 11.2a1.8 1.8 0 0 0 1.8 1.6h8.2a1.8 1.8 0 0 0 1.8-1.6l1.1-11.2"/><path d="M9.2 11.5v6M12 11.5v6M14.8 11.5v6"/></svg></button>
         </div>
       </div>
     </div>
