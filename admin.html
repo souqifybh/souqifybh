@@ -327,6 +327,7 @@
           <label class="toggle-pill" id="pActivePill"><input type="checkbox" id="pActive" checked onchange="syncPill('pActive','pActivePill')"><span class="ic">✅</span> Active (visible in store)</label>
           <label class="toggle-pill" id="pFeaturedPill"><input type="checkbox" id="pFeatured" onchange="syncPill('pFeatured','pFeaturedPill')"><span class="ic">⭐</span> Featured product</label>
           <label class="toggle-pill" id="pBestsellerPill"><input type="checkbox" id="pBestseller" onchange="syncPill('pBestseller','pBestsellerPill')"><span class="ic">🔥</span> Best seller</label>
+          <label class="toggle-pill" id="pMoaPill" title="Cart must reach BHD 5.000 for free standard shipping, otherwise a delivery charge applies. Carts with a watch are exempt."><input type="checkbox" id="pMoa" onchange="syncPill('pMoa','pMoaPill')"><span class="ic">📦</span> MOA: min. cart BHD 5.000</label>
         </div>
 
         <input type="hidden" id="pId">
@@ -1259,6 +1260,7 @@ function renderProductRows(){
     const flags = [
       isYes(p.featured) ? '<span class="badge featured">⭐ Featured</span>' : '',
       isYes(p.bestseller) ? '<span class="badge bestseller">🔥 Best seller</span>' : '',
+      isYes(p.moa) ? '<span class="badge featured">📦 MOA 5.000</span>' : '',
       Number(p.valueAmount) > 0 ? `<span class="badge bestseller">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
       pct > 0 ? `<span class="badge sale">🏷️ ${pct}% off</span>` : '',
       `<span class="badge ${isYes(p.active)?'active-yes':'active-no'}">${isYes(p.active)?'Active':'Hidden'}</span>`
@@ -1303,7 +1305,8 @@ function editProduct(id){
   document.getElementById('pValueAmount').value = p.valueAmount || '';
   document.getElementById('pFeatured').checked = isYes(p.featured);
   document.getElementById('pBestseller').checked = isYes(p.bestseller);
-  ['pActive','pFeatured','pBestseller'].forEach(id => syncPill(id, id+'Pill'));
+  document.getElementById('pMoa').checked = isYes(p.moa);
+  ['pActive','pFeatured','pBestseller','pMoa'].forEach(id => syncPill(id, id+'Pill'));
   updateDiscountPreview();
   document.getElementById('cancelEditBtn').style.display='inline-block';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1316,7 +1319,8 @@ function resetForm(){
   document.getElementById('pValueAmount').value = '';
   document.getElementById('pFeatured').checked = false;
   document.getElementById('pBestseller').checked = false;
-  ['pActive','pFeatured','pBestseller'].forEach(id => syncPill(id, id+'Pill'));
+  document.getElementById('pMoa').checked = false;
+  ['pActive','pFeatured','pBestseller','pMoa'].forEach(id => syncPill(id, id+'Pill'));
   document.getElementById('discountPreview').style.display='none';
   document.getElementById('cancelEditBtn').style.display='none';
 }
@@ -1345,6 +1349,7 @@ async function saveProduct(){
     active: document.getElementById('pActive').checked,
     featured: document.getElementById('pFeatured').checked,
     bestseller: document.getElementById('pBestseller').checked,
+    moa: document.getElementById('pMoa').checked,
     valueAmount: parseFloat(document.getElementById('pValueAmount').value) || 0
   };
   const msg = document.getElementById('productSaveMsg');

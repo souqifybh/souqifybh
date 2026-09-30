@@ -1138,6 +1138,16 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .remove-link{color:#B23B2E;font-size:12px;cursor:pointer;background:none;border:none;text-decoration:underline;margin-left:auto;}
   .drawer-foot{padding:18px 22px;border-top:1px solid var(--line);}
   .total-row{display:flex;justify-content:space-between;font-weight:700;font-size:16px;margin-bottom:14px;}
+  .ship-box{margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid var(--line,#eee);}
+  .ship-box .ship-title{font-weight:700;font-size:13.5px;margin-bottom:8px;}
+  .ship-opt{display:flex;align-items:center;gap:10px;padding:9px 12px;margin-bottom:6px;border:1.5px solid var(--line,#e5e5e5);border-radius:10px;cursor:pointer;font-size:13.5px;}
+  .ship-opt.selected{border-color:#46501B;background:#F5F7EE;}
+  .ship-opt input{accent-color:#46501B;margin:0;}
+  .ship-opt .ship-name{flex:1;font-weight:600;}
+  .ship-opt .ship-price{font-weight:700;}
+  .ship-opt .ship-price.free{color:#2E7D32;}
+  .ship-hint{font-size:12.5px;font-weight:600;color:#6E7260;margin-top:2px;}
+  .ship-hint.ok{color:#2E7D32;}
   .checkout-btn{width:100%;background:var(--ink);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;}
   .checkout-btn:disabled{opacity:0.4;cursor:not-allowed;}
 
@@ -1721,6 +1731,12 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   <div class="cart-offer-banner" id="cartOfferBanner" style="display:none;margin:10px 16px 0;padding:9px 12px;background:#F0F7E4;border:1px solid #CFE6AE;border-radius:10px;font-size:12.5px;font-weight:700;color:#3F5D1F;text-align:center;"></div>
   <div class="drawer-body" id="cartItems"></div>
   <div class="drawer-foot">
+    <div class="ship-box" id="cartShipBox" style="display:none;">
+      <div class="ship-title" data-i18n="shipTitle">Delivery options</div>
+      <label class="ship-opt selected" id="shipOptStandard"><input type="radio" name="shipOpt" value="standard" checked onchange="setDeliveryOption('standard')"><span class="ship-name" data-i18n="shipStandard">Standard shipping</span><span class="ship-price free" id="shipPriceStandard">FREE</span></label>
+      <label class="ship-opt" id="shipOptSameDay"><input type="radio" name="shipOpt" value="same_day" onchange="setDeliveryOption('same_day')"><span class="ship-name" data-i18n="shipSameDay">Same day delivery</span><span class="ship-price" id="shipPriceSameDay">1.200 BHD</span></label>
+      <div class="ship-hint" id="shipHint" style="display:none;"></div>
+    </div>
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartSubtotal">Sub total</span><span id="cartSubtotal">0.000 BHD</span></div>
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartPlatformFee">Platform fees</span><span id="cartPlatformFee">0.000 BHD</span></div>
     <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartDeliveryCharge">Delivery charge</span><span id="cartDeliveryCharge">0.000 BHD</span></div>
@@ -3552,7 +3568,7 @@ const I18N = {
     footerTagline:'Shop More. Pay Less.', footerShop:'Shop', footerAllProducts:'All products', footerDeals:'Deals', footerAboutUs:'About us',
     footerSupport:'Support', footerWhatsapp:'WhatsApp us', footerDeliveryPolicy:'Delivery policy', footerReturns:'Returns & refunds',
     footerPayments:'Payments', footerBenefitpay:'BenefitPay QR', footerCod:'Cash on delivery', footerPricesBhd:'Prices shown in BHD.',
-    cartTitle:'Your cart', cartTotal:'Total', cartSubtotal:'Sub total', cartPlatformFee:'Platform fees', cartDeliveryCharge:'Delivery charge', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
+    cartTitle:'Your cart', cartTotal:'Total', cartSubtotal:'Sub total', cartPlatformFee:'Platform fees', cartDeliveryCharge:'Delivery charge', shipTitle:'Delivery options', shipStandard:'Standard shipping', shipSameDay:'Same day delivery', shipFree:'FREE', shipAddMore:'Add {amt} BHD more for free standard shipping', shipUnlocked:'🎉 You unlocked free standard shipping', cartCheckout:'Proceed to checkout', cartEmpty:'Your cart is empty.',
     checkoutTitle:'Checkout', guestBannerText:'New here? fill these details', guestBannerLogin:'Log in', guestBannerSuffix:'if you already have one.',
     fieldFullName:'Full name', fieldMobile:'Mobile number', fieldEmail:'Email', fieldDeliveryAddr:'Delivery address',
     fieldFlat:'Flat / Shop no.', fieldBuilding:'Building', fieldRoad:'Road', fieldBlock:'Block', fieldArea:'Area',
@@ -3638,7 +3654,7 @@ const I18N = {
     footerTagline:'الحل الكامل للأجهزة والإلكترونيات.', footerShop:'المتجر', footerAllProducts:'جميع المنتجات', footerDeals:'العروض', footerAboutUs:'من نحن',
     footerSupport:'الدعم', footerWhatsapp:'راسلنا عبر واتساب', footerDeliveryPolicy:'سياسة التوصيل', footerReturns:'الإرجاع والاسترداد',
     footerPayments:'طرق الدفع', footerBenefitpay:'رمز BenefitPay', footerCod:'الدفع عند الاستلام', footerPricesBhd:'الأسعار موضحة بالدينار البحريني.',
-    cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartSubtotal:'المجموع الفرعي', cartPlatformFee:'رسوم المنصة', cartDeliveryCharge:'رسوم التوصيل', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
+    cartTitle:'سلة التسوق', cartTotal:'الإجمالي', cartSubtotal:'المجموع الفرعي', cartPlatformFee:'رسوم المنصة', cartDeliveryCharge:'رسوم التوصيل', shipTitle:'خيارات التوصيل', shipStandard:'الشحن العادي', shipSameDay:'التوصيل في نفس اليوم', shipFree:'مجاني', shipAddMore:'أضف {amt} دينار للحصول على شحن عادي مجاني', shipUnlocked:'🎉 حصلت على شحن عادي مجاني', cartCheckout:'المتابعة للدفع', cartEmpty:'سلتك فارغة.',
     checkoutTitle:'إتمام الطلب', guestBannerText:'جديد هنا؟ سننشئ حسابك من هذه البيانات.', guestBannerLogin:'سجّل الدخول', guestBannerSuffix:'إن كان لديك حساب.',
     fieldFullName:'الاسم الكامل', fieldMobile:'رقم الجوال', fieldEmail:'البريد الإلكتروني', fieldDeliveryAddr:'عنوان التوصيل',
     fieldFlat:'رقم الشقة / المحل', fieldBuilding:'المبنى', fieldRoad:'الطريق', fieldBlock:'المجمع', fieldArea:'المنطقة',
@@ -4741,7 +4757,64 @@ function applyOrderChargesSettings(settings){
   renderCart();
   if(typeof updateCheckoutTotalDisplay === 'function') safeCall(updateCheckoutTotalDisplay);
 }
-function cartGrandTotal(){ return cartTotal() + ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge; }
+/* ---------------- MOA (minimum order amount) delivery charges ----------------
+ * Mirrors computeShipping_() on the backend. Products ticked "MOA" in the
+ * admin need a BHD 5.000 cart for free Standard shipping, unless the cart
+ * has a watch. Below that, Standard costs 0.600. Same day is always 1.200
+ * when chosen. The backend recomputes all of this at order time, so this
+ * client copy is display-only.
+ */
+const MOA_MIN_CART = 5.000, SHIP_STANDARD_FEE = 0.600, SHIP_SAME_DAY_FEE = 1.200;
+let DELIVERY_OPTION = 'standard';
+function moaFlagOn_(v){ return v === true || v === 'TRUE' || v === 'true' || v === 1 || v === '1'; }
+function computeShipping(){
+  const byId = {};
+  PRODUCTS.forEach(p => { byId[p.id] = p; });
+  let subtotal = 0, hasMoa = false, hasExempt = false;
+  CART.forEach(item => {
+    const qty = Math.max(0, Math.round(Number(item.qty) || 0));
+    const p = byId[item.id];
+    if(!p || !qty) return;
+    subtotal += Number(p.price || 0) * qty;
+    if(moaFlagOn_(p.moa)) hasMoa = true;
+    if(String(p.category || '').toLowerCase().indexOf('watch') !== -1) hasExempt = true;
+  });
+  subtotal = round3Local_(subtotal);
+  const chargeApplies = hasMoa && !hasExempt && subtotal < MOA_MIN_CART;
+  const option = DELIVERY_OPTION === 'same_day' ? 'same_day' : 'standard';
+  const fee = !CART.length ? 0 : (option === 'same_day' ? SHIP_SAME_DAY_FEE : (chargeApplies ? SHIP_STANDARD_FEE : 0));
+  return { subtotal, hasMoa, hasExempt, chargeApplies, option, fee: round3Local_(fee), amountToFree: chargeApplies ? round3Local_(MOA_MIN_CART - subtotal) : 0 };
+}
+function setDeliveryOption(opt){
+  DELIVERY_OPTION = opt === 'same_day' ? 'same_day' : 'standard';
+  renderCart();
+  if(typeof updateCheckoutTotalDisplay === 'function') safeCall(updateCheckoutTotalDisplay);
+}
+function orderFeesTotal(){ return ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge + computeShipping().fee; }
+function renderShipBox(){
+  const box = document.getElementById('cartShipBox');
+  if(!box) return;
+  if(!CART.length){ box.style.display = 'none'; return; }
+  const sh = computeShipping();
+  box.style.display = 'block';
+  const stdEl = document.getElementById('shipPriceStandard');
+  stdEl.textContent = sh.chargeApplies ? SHIP_STANDARD_FEE.toFixed(3) + ' BHD' : T('shipFree');
+  stdEl.classList.toggle('free', !sh.chargeApplies);
+  document.getElementById('shipPriceSameDay').textContent = SHIP_SAME_DAY_FEE.toFixed(3) + ' BHD';
+  document.getElementById('shipOptStandard').classList.toggle('selected', sh.option === 'standard');
+  document.getElementById('shipOptSameDay').classList.toggle('selected', sh.option === 'same_day');
+  box.querySelector('input[value="standard"]').checked = sh.option === 'standard';
+  box.querySelector('input[value="same_day"]').checked = sh.option === 'same_day';
+  const hint = document.getElementById('shipHint');
+  if(sh.chargeApplies){
+    hint.style.display = 'block'; hint.className = 'ship-hint';
+    hint.textContent = T('shipAddMore').replace('{amt}', sh.amountToFree.toFixed(3));
+  } else if(sh.hasMoa && !sh.hasExempt){
+    hint.style.display = 'block'; hint.className = 'ship-hint ok';
+    hint.textContent = T('shipUnlocked');
+  } else { hint.style.display = 'none'; }
+}
+function cartGrandTotal(){ return cartTotal() + ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge + computeShipping().fee; }
 
 /* ---------------- cart offers (automatic bundle deals) ----------------
  * Mirrors computeCartOfferDiscount_() on the backend so the cart can show
@@ -5964,7 +6037,10 @@ function renderCart(){
   `).join('') : `<div class="empty">${T('cartEmpty')}</div>`;
   document.getElementById('cartSubtotal').textContent = cartTotal().toFixed(3) + ' BHD';
   document.getElementById('cartPlatformFee').textContent = ORDER_CHARGES.platformFee.toFixed(3) + ' BHD';
-  document.getElementById('cartDeliveryCharge').textContent = ORDER_CHARGES.deliveryCharge.toFixed(3) + ' BHD';
+  if(!CART.length) DELIVERY_OPTION = 'standard';
+  const deliveryShown = ORDER_CHARGES.deliveryCharge + computeShipping().fee;
+  document.getElementById('cartDeliveryCharge').textContent = (CART.length && deliveryShown <= 0) ? T('shipFree') : deliveryShown.toFixed(3) + ' BHD';
+  renderShipBox();
   const cartOfferDiscount = getCartOfferDiscountAmount();
   const discountRow = document.getElementById('cartOfferDiscountRow');
   if(discountRow){
@@ -6073,7 +6149,7 @@ function updateCheckoutTotalDisplay(){
   const promoDiscount = getPromoDiscountAmount();
   const cartOfferDiscount = getCartOfferDiscountAmount();
   const walletUsed = getWalletAmountToUse();
-  const fees = ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge;
+  const fees = orderFeesTotal();
   const payable = Math.max(0, cartTotal() - promoDiscount - cartOfferDiscount - walletUsed) + fees;
   const modalTotalEl = document.getElementById('modalTotal');
   if(!modalTotalEl) return;
@@ -6477,12 +6553,13 @@ async function placeOrder(){
     const promoDiscountAmount = getPromoDiscountAmount();
     const cartOfferDiscountAmount = getCartOfferDiscountAmount();
     const walletAmountUsed = getWalletAmountToUse();
-    const orderFees = ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge;
+    const orderFees = orderFeesTotal();
     const payableTotal = Math.max(0, cartTotal() - promoDiscountAmount - cartOfferDiscountAmount - walletAmountUsed) + orderFees;
 
     const orderPayload = {
       action:'placeOrder', customerName:name, customerEmail: email, phone, address,
-      items: CART, total: cartGrandTotal(), paymentMethod: method, walletAmountUsed,
+      // total excludes the MOA/same-day delivery fee: the server works that out itself from deliveryOption
+      items: CART, total: cartTotal() + ORDER_CHARGES.platformFee + ORDER_CHARGES.deliveryCharge, deliveryOption: computeShipping().option, paymentMethod: method, walletAmountUsed,
       promoCode: APPLIED_PROMO ? APPLIED_PROMO.code : '',
       referralCode: CUSTOMER ? '' : (localStorage.getItem('gm_pending_referral') || ''),
       sessionId: gmCartSessionId()
@@ -6523,7 +6600,7 @@ async function placeOrder(){
     document.getElementById('checkoutStepQR').style.display='none';
     document.getElementById('checkoutStep2').style.display='block';
     document.getElementById('confirmTitle').textContent = 'Order confirmed';
-    const cashDue = Math.max(0, cartTotal() - actualWalletUsed - actualPromoDiscount) + orderFees;
+    const cashDue = Math.max(0, cartTotal() - actualWalletUsed - actualPromoDiscount - cartOfferDiscountAmount) + orderFees;
     const savingsBits = [];
     if(actualPromoDiscount > 0) savingsBits.push(`${actualPromoDiscount.toFixed(3)} BHD off with your promo code`);
     if(actualWalletUsed > 0) savingsBits.push(`${actualWalletUsed.toFixed(3)} BHD paid from your Souqify-bh wallet`);
