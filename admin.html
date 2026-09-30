@@ -618,6 +618,7 @@
               <option value="amount">Buy X, get a fixed BHD amount off</option>
               <option value="free">Buy X, get Y free</option>
               <option value="percent">Buy X, get a % off</option>
+              <option value="bundle">Buy X for a fixed total price (e.g. Salary deal)</option>
             </select>
           </div>
           <div class="field"><label>Buy quantity (X)</label><input type="number" step="1" min="1" id="newOfferBuyQty" placeholder="e.g. 2"></div>
@@ -2399,7 +2400,7 @@ function updateOfferFormVisibility(){
   const type = document.getElementById('newOfferType').value;
   document.getElementById('newOfferFreeQtyField').style.display = type === 'free' ? 'block' : 'none';
   document.getElementById('newOfferValueField').style.display = type === 'free' ? 'none' : 'block';
-  document.getElementById('newOfferValueLabel').textContent = type === 'percent' ? 'Discount percent (%)' : 'Discount amount (BHD)';
+  document.getElementById('newOfferValueLabel').textContent = type === 'percent' ? 'Discount percent (%)' : (type === 'bundle' ? 'Fixed price for the whole group (BHD)' : 'Discount amount (BHD)');
 
   const scope = document.getElementById('newOfferScope').value;
   document.getElementById('newOfferCategoryField').style.display = scope === 'category' ? 'block' : 'none';
@@ -2426,6 +2427,7 @@ function describeCartOffer(o){
     return `Buy ${buyQty}, get ${freeQty} free`;
   }
   if(o.offerType === 'percent') return `Buy ${buyQty}, get ${Number(o.discountValue) || 0}% off`;
+  if(o.offerType === 'bundle') return `Any ${buyQty} for ${Number(o.discountValue || 0).toFixed(3)} BHD (discount = normal price total minus this)`;
   return `Buy ${buyQty}, get ${Number(o.discountValue || 0).toFixed(3)} BHD off`;
 }
 function describeCartOfferScope(o){
@@ -2445,7 +2447,7 @@ function renderCartOffers(){
       <td>${o.name}</td>
       <td>${describeCartOffer(o)}</td>
       <td style="max-width:220px;">${describeCartOfferScope(o)}</td>
-      <td><span class="badge ${isYes(o.active) ? 'active-yes' : 'active-no'}" onclick="toggleCartOfferActive('${o.id}', ${isYes(o.active)})" style="cursor:pointer;">${isYes(o.active) ? 'Active' : 'Inactive'}</span></td>
+      <td><span class="badge ${isYes(o.active) ? 'active-yes' : 'active-no'}">${isYes(o.active) ? 'Active' : 'Inactive'}</span> <button class="ghost small" onclick="toggleCartOfferActive('${o.id}', ${isYes(o.active)})">${isYes(o.active) ? 'Disable' : 'Enable'}</button></td>
       <td><button class="ghost small" onclick="deleteCartOfferRow('${o.id}','${(o.name||'').replace(/'/g,"\\'")}')">Delete</button></td>
     </tr>
   `).join('') : `<tr><td colspan="5" style="color:var(--muted);">No cart offers yet.</td></tr>`;

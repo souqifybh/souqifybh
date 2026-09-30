@@ -4894,6 +4894,15 @@ function computeCartOfferDiscount(){
         const freeSlice = groupSlice.slice(0, freeQty);
         offerDiscount += freeSlice.reduce((s, x) => s + x.u.price, 0);
       }
+    } else if(offer.offerType === 'bundle'){
+      // Fixed-price deal: every group of buyQty items costs discountValue in total.
+      // Discount = normal selling price of the group (never the crossed-out
+      // compare-at price) minus that fixed price; never negative.
+      for(let g = 0; g < numGroups; g++){
+        const groupSlice = usedEntries.slice(g * groupSize, (g + 1) * groupSize);
+        const groupTotal = groupSlice.reduce((s, x) => s + x.u.price, 0);
+        offerDiscount += Math.max(0, groupTotal - Number(offer.discountValue || 0));
+      }
     }
     offerDiscount = Math.round(offerDiscount * 1000) / 1000;
     if(offerDiscount > 0){
@@ -4913,6 +4922,7 @@ function cartOfferBadgeText(offer){
   if(offer.badgeText) return offer.badgeText;
   if(offer.offerType === 'free') return `🎁 Buy ${offer.buyQty}, get ${offer.freeQty || 1} free!`;
   if(offer.offerType === 'percent') return `🎁 Buy ${offer.buyQty}, get ${offer.discountValue}% off!`;
+  if(offer.offerType === 'bundle') return `💰 Any ${offer.buyQty} for just ${Number(offer.discountValue || 0).toFixed(3)} BHD!`;
   return `🎁 Buy ${offer.buyQty}, get ${Number(offer.discountValue || 0).toFixed(3)} BHD off!`;
 }
 // Shows a banner for the first active offer whose scope matches something
