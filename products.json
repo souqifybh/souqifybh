@@ -24,7 +24,8 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
-    "valueAmount": "",
+    "valueAmount": 0,
+    "moa": true,
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785307430/Screenshot_2026-07-29_093924_mxbhsu.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785316217/5b370144-d531-4934-b9f6-69d6c2a7199e_map6ld.avif",
@@ -64,7 +65,8 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
-    "valueAmount": "",
+    "valueAmount": 0,
+    "moa": true,
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787211747/b18159ce-82cb-4007-be64-3363e6723194.avif",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1787211240/c87bf18c-98d8-4608-85cc-4687ac264029.avif",
@@ -104,7 +106,8 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
-    "valueAmount": "",
+    "valueAmount": 0,
+    "moa": true,
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600047/IMG_8792_k8ezpt.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1785600048/IMG_8790_b2c8ns.jpg",
@@ -144,7 +147,8 @@
     "compareAtPriceINR": "",
     "giftBoxEnabled": "",
     "giftVariantImages": "",
-    "valueAmount": "",
+    "valueAmount": 0,
+    "moa": true,
     "images": [
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8976_zjs3an.jpg",
       "https://res.cloudinary.com/cxcbhpbm/image/upload/v1786362984/IMG_8977_juifih.jpg",
@@ -185,6 +189,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{\"Birthday\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png\",\"Anniversary\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789229338/ChatGPT_Image_Sep_12_2026_07_05_37_PM.png\"}",
     "valueAmount": "",
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209816/ChatGPT_Image_Sep_12_2026_01_37_59_PM.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789209893/choco-truffle-cake0005choc-AA.jpg",
@@ -225,6 +230,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{\"Birthday\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789375534/32C74E07-146A-4E1C-842B-A9607BB313BA.png\",\"Anniversary\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/1797482A-73FE-4062-8F10-D1B0A61F9828.png\"}",
     "valueAmount": "",
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/1797482A-73FE-4062-8F10-D1B0A61F9828.png",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789375535/3F5BD647-B0D4-444B-91AC-328FE04CE06C.png"
@@ -263,6 +269,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.49,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0198.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0199.jpg",
@@ -303,6 +310,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.99,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0194.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455496/IMG_0195.jpg",
@@ -343,6 +351,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.89,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0225.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0226.jpg",
@@ -383,6 +392,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.79,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455497/IMG_0217.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455497/IMG_0218.jpg",
@@ -423,6 +433,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.99,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0221.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455493/IMG_0222.jpg",
@@ -463,6 +474,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.59,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498008/IMG_0266.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498009/IMG_0267.jpg",
@@ -503,6 +515,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.79,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498042/IMG_0270.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498043/IMG_0271.jpg",
@@ -541,6 +554,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.79,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498108/IMG_0291.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498109/IMG_0292.jpg",
@@ -581,6 +595,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.89,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498132/IMG_0295.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498134/IMG_0296.jpg",
@@ -621,6 +636,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.89,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534043/IMG_0310.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534044/IMG_0311.jpg",
@@ -661,6 +677,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.89,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534063/IMG_0314.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534063/IMG_0315.jpg",
@@ -701,6 +718,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.59,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534082/IMG_0319.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534083/IMG_0320.jpg",
@@ -741,6 +759,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.39,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534109/IMG_0325.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534110/IMG_0326.jpg",
@@ -781,6 +800,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.89,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534154/IMG_0329.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534155/IMG_0330.jpg",
@@ -821,6 +841,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.79,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534183/IMG_0333.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534183/IMG_0334.jpg",
@@ -861,6 +882,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.79,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534201/IMG_0337.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789534201/IMG_0338.jpg",
@@ -901,6 +923,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.69,
+    "moa": "",
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0366.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789569648/IMG_0368.jpg",
