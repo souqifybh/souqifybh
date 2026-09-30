@@ -1119,6 +1119,62 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   @keyframes cngShine{0%{left:-70%}55%,100%{left:130%}}
   @keyframes cngCart{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
   @media (prefers-reduced-motion:reduce){.cart-nudge-go,.cart-nudge-go::after,.cart-nudge-go .cng-icon{animation:none}}
+
+  /* ---------- Cart offers list + "add more" offer popup ---------- */
+  .cart-offers{margin:10px 16px 0;display:flex;flex-direction:column;gap:8px;max-height:172px;overflow-y:auto;}
+  .co-card{position:relative;display:flex;align-items:center;gap:10px;padding:9px 12px 11px;background:#F0F7E4;border:1px solid #CFE6AE;border-radius:12px;overflow:hidden;animation:coIn .45s var(--ease) both;}
+  .co-card.ok{background:#E6F5EA;border-color:#A9D8B4;}
+  .co-card.hot{cursor:pointer;}
+  .co-ico{font-size:22px;flex:none;display:inline-block;animation:coWiggle 2.6s ease-in-out infinite;}
+  .co-main{flex:1;min-width:0;}
+  .co-badge{font-size:12.5px;font-weight:800;color:#3F5D1F;line-height:1.3;}
+  .co-scope{font-size:11px;font-weight:600;color:#6B7A4F;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .co-state{flex:none;font-size:11px;font-weight:800;padding:5px 10px;border-radius:999px;background:#fff;color:#3F5D1F;border:1px solid #CFE6AE;white-space:nowrap;}
+  .co-state.go{background:var(--ink);color:#fff;border-color:var(--ink);animation:cngPulse 1.6s ease-in-out infinite;}
+  .co-state.done{background:#2E7D32;color:#fff;border-color:#2E7D32;}
+  .co-bar{position:absolute;left:0;bottom:0;height:3px;background:linear-gradient(90deg,#8BC34A,#BDCE75);transition:width .5s var(--ease);}
+  @keyframes coIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  @keyframes coWiggle{0%,86%,100%{transform:rotate(0)}90%{transform:rotate(-14deg)}94%{transform:rotate(12deg)}97%{transform:rotate(-6deg)}}
+
+  .offer-nudge-overlay{position:fixed;inset:0;background:rgba(28,28,30,0.6);z-index:570;display:none;align-items:center;justify-content:center;padding:16px;}
+  .offer-nudge-overlay.show{display:flex;animation:onFade .25s ease both;}
+  .offer-nudge-box{position:relative;background:#fff;border-radius:24px;max-width:360px;width:100%;padding:34px 22px 20px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.35);overflow:hidden;animation:onPop .55s cubic-bezier(.34,1.56,.64,1) both;}
+  .offer-nudge-box::before{content:'';position:absolute;top:0;left:0;right:0;height:6px;background:linear-gradient(90deg,#BDCE75,#8BC34A,#BDCE75);background-size:200% 100%;animation:onRibbon 2s linear infinite;}
+  .on-sparks{position:absolute;top:66px;left:50%;width:0;height:0;pointer-events:none;}
+  .on-sparks i{position:absolute;left:-7px;top:-7px;font-style:normal;font-size:14px;opacity:0;animation:onSpark 2.4s ease-out infinite;}
+  .on-gift{font-size:58px;line-height:1;display:inline-block;transform-origin:50% 85%;animation:onGift 1.9s ease-in-out infinite;}
+  .on-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;line-height:1.3;color:var(--ink);margin:12px 0 6px;animation:onUp .5s .12s var(--ease) both;}
+  .on-title b{color:#46501B;background:linear-gradient(transparent 62%,#DDE8A8 62%);padding:0 3px;}
+  .on-sub{font-size:14px;line-height:1.5;color:var(--ink-soft);margin-bottom:14px;animation:onUp .5s .22s var(--ease) both;}
+  .on-dots{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .on-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;}
+  .on-dot.full{background:var(--blush);color:var(--blush-ink);animation:onDot .5s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i) * 90ms + 300ms);}
+  .on-dot.empty{border:2px dashed #9DB24B;color:#9DB24B;animation:onEmpty 1.3s ease-in-out infinite;animation-delay:calc(var(--i) * 120ms);}
+  .on-bar{width:100%;height:10px;border-radius:99px;background:#EEF3D8;overflow:hidden;}
+  .on-bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#8BC34A,#BDCE75);animation:onBar .8s .3s var(--ease) both;}
+  .on-chip{display:inline-block;max-width:100%;background:#F0F7E4;border:1px solid #CFE6AE;color:#3F5D1F;font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;margin-bottom:18px;animation:onUp .5s .32s var(--ease) both;}
+  .on-actions{display:flex;gap:10px;}
+  .on-actions button{flex:1;border-radius:12px;padding:13px 10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;}
+  .on-close{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+  .on-add{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:7px;background:var(--ink);color:#fff;border:none;white-space:nowrap;animation:cngPulse 1.6s ease-in-out infinite;}
+  .on-add::after{content:'';position:absolute;top:0;left:-70%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.38),transparent);transform:skewX(-20deg);animation:cngShine 2.2s ease-in-out infinite;}
+  .on-add .on-plus{display:inline-block;font-size:18px;line-height:1;animation:onPlus 1.6s ease-in-out infinite;}
+  .offer-nudge-box.done .on-dots,.offer-nudge-box.done .on-chip,.offer-nudge-box.done .on-actions{display:none;}
+  .offer-nudge-box.done .on-gift{animation:onCelebrate .8s cubic-bezier(.34,1.56,.64,1) both;}
+  .offer-nudge-box.done .on-sub{margin-bottom:6px;color:#2E7D32;font-weight:700;}
+  .offer-nudge-box.done .on-sparks i{animation-duration:1.2s;}
+  @keyframes onFade{from{opacity:0}to{opacity:1}}
+  @keyframes onPop{0%{transform:translateY(40px) scale(.7);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes onRibbon{to{background-position:200% 0}}
+  @keyframes onGift{0%,100%{transform:translateY(0) rotate(0)}20%{transform:translateY(-10px) rotate(-8deg)}40%{transform:translateY(0) rotate(7deg)}55%{transform:translateY(-5px) rotate(-3deg)}70%{transform:translateY(0) rotate(0)}}
+  @keyframes onCelebrate{0%{transform:scale(.4) rotate(-25deg)}100%{transform:scale(1.15) rotate(0)}}
+  @keyframes onUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes onDot{from{transform:scale(0)}to{transform:scale(1)}}
+  @keyframes onEmpty{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.14);opacity:1}}
+  @keyframes onBar{from{width:0}}
+  @keyframes onPlus{0%,100%{transform:rotate(0) scale(1)}50%{transform:rotate(90deg) scale(1.25)}}
+  @keyframes onSpark{0%{transform:translate(0,0) scale(.3);opacity:0}25%{opacity:1}100%{transform:translate(var(--x),var(--y)) scale(1.1) rotate(160deg);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.offer-nudge-box,.offer-nudge-box::before,.on-gift,.on-dot,.on-bar span,.on-add,.on-add::after,.on-add .on-plus,.on-sparks i,.co-ico,.co-state.go,.co-card,.on-title,.on-sub,.on-chip{animation:none!important}}
   .drawer{
     position:fixed; top:0; right:0; height:100%; width:min(420px,92vw);
     background:#fff; z-index:500; transform:translateX(100%); transition:transform .3s var(--ease);
@@ -1729,10 +1785,24 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     </div>
   </div>
 </div>
+<div class="offer-nudge-overlay" id="offerNudge" onclick="if(event.target===this)hideOfferNudge()">
+  <div class="offer-nudge-box" id="offerNudgeBox" role="dialog" aria-modal="true" aria-labelledby="offerNudgeTitle">
+    <div class="on-sparks" aria-hidden="true"><i style="--x:-120px;--y:-30px;animation-delay:0s">✨</i><i style="--x:120px;--y:-40px;animation-delay:0.3s">⭐</i><i style="--x:-90px;--y:40px;animation-delay:0.6s">✨</i><i style="--x:100px;--y:50px;animation-delay:0.9s">🎉</i><i style="--x:-40px;--y:-60px;animation-delay:1.2s">⭐</i><i style="--x:45px;--y:-62px;animation-delay:1.5s">✨</i><i style="--x:-140px;--y:10px;animation-delay:1.8s">🎊</i><i style="--x:140px;--y:5px;animation-delay:2.1s">✨</i></div>
+    <div class="on-gift" id="offerNudgeGift" aria-hidden="true">🎁</div>
+    <div class="on-title" id="offerNudgeTitle"></div>
+    <div class="on-sub" id="offerNudgeSub"></div>
+    <div class="on-dots" id="offerNudgeDots"></div>
+    <div class="on-chip" id="offerNudgeChip"></div>
+    <div class="on-actions">
+      <button class="on-close" onclick="hideOfferNudge()" data-i18n="offerClose">Close</button>
+      <button class="on-add" id="offerNudgeAdd" onclick="offerNudgeAddMore()"><span class="on-plus" aria-hidden="true">＋</span><span id="offerNudgeAddText"></span></button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="overlay" onclick="requestCloseCart()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-head"><h3 data-i18n="cartTitle">Your cart</h3><button onclick="requestCloseCart()">✕</button></div>
-  <div class="cart-offer-banner" id="cartOfferBanner" style="display:none;margin:10px 16px 0;padding:9px 12px;background:#F0F7E4;border:1px solid #CFE6AE;border-radius:10px;font-size:12.5px;font-weight:700;color:#3F5D1F;text-align:center;"></div>
+  <div class="cart-offers" id="cartOfferBanner" style="display:none;"></div>
   <div class="drawer-body" id="cartItems"></div>
   <div class="drawer-foot">
     <div class="ship-box" id="cartShipBox" style="display:none;">
@@ -3609,6 +3679,9 @@ const I18N = {
     promoCodeLabel:'Have a promo code?', phPromoCode:'Enter code', applyBtn:'Apply', removeBtn:'Remove',
     promoDiscountSuffix:'off', promoEnterCode:'Please enter a code.', promoLoginRequired:'Please log in to your account to use a promo code.',
     cartDiscountLabel:'Discount', cartDiscountSuffix:'bundle offer',
+    offerNudgeTitle:'Add {n} more to get {reward}!', offerNudgeSub:'Almost there! {filled} of {size} added.', offerAddMore:'Add {n} more', offerClose:'Close',
+    offerFreeWord:'FREE', offerOffWord:'OFF', offerBundleReward:'any {n} for {p} BHD', offerUnlocked:'✓ Unlocked', offerBuyN:'Buy {n}', offerScopeAll:'All products',
+    offerUnlockedTitle:'🎉 Offer unlocked!', offerUnlockedSub:'You save {amt} BHD', offerUnlockedSubGeneric:'Your discount is applied.',
     promoInvalid:'This code is not valid.', promoNetworkError:'Could not reach the server. Please try again.',
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
     addBtn:'Add', trustBahrain:'Bahrain based website', trustFreeFast:'Free & fast delivery', getItBy:'Get it by', valueTag:'VALUE', valuePicksTitle:'Value Picks', limitedDeals:'Limited Deals', freeDeliveryBadge:'Free Delivery in Bahrain', codBadge:'Cash on Delivery', chipAll:'All', catGeneral:'General',
@@ -3695,6 +3768,9 @@ const I18N = {
     promoCodeLabel:'لديك رمز ترويجي؟', phPromoCode:'أدخل الرمز', applyBtn:'تطبيق', removeBtn:'إزالة',
     promoDiscountSuffix:'خصم', promoEnterCode:'يرجى إدخال رمز.', promoLoginRequired:'يرجى تسجيل الدخول إلى حسابك لاستخدام رمز ترويجي.',
     cartDiscountLabel:'خصم', cartDiscountSuffix:'عرض الحزمة',
+    offerNudgeTitle:'أضف {n} أخرى لتحصل على {reward}!', offerNudgeSub:'اقتربت! تمت إضافة {filled} من {size}.', offerAddMore:'أضف {n} أخرى', offerClose:'إغلاق',
+    offerFreeWord:'مجاناً', offerOffWord:'خصم', offerBundleReward:'أي {n} بسعر {p} د.ب', offerUnlocked:'✓ تم التفعيل', offerBuyN:'اشترِ {n}', offerScopeAll:'جميع المنتجات',
+    offerUnlockedTitle:'🎉 تم تفعيل العرض!', offerUnlockedSub:'وفّرت {amt} د.ب', offerUnlockedSubGeneric:'تم تطبيق خصمك.',
     promoInvalid:'هذا الرمز غير صالح.', promoNetworkError:'تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى.',
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
     addBtn:'أضف', trustBahrain:'موقع بحريني', trustFreeFast:'توصيل مجاني وسريع', getItBy:'احصل عليه بحلول', valueTag:'قيمة', valuePicksTitle:'اختيارات القيمة', limitedDeals:'عروض محدودة', freeDeliveryBadge:'توصيل مجاني في البحرين', codBadge:'الدفع عند الاستلام', chipAll:'الكل', catGeneral:'عام',
@@ -4658,6 +4734,7 @@ function addToCart(id, qty, evt, color){
   metaTrack('AddToCart', { content_ids:[p.id], content_type:'product', content_name:p.name, contents:[{ id:p.id, quantity:qtyToAdd, item_price:Number(p.price) }], value:Number(p.price)*qtyToAdd, currency:'BHD' });
   if(evt && evt.target && p) flyToCart(evt.target, p.images[0]);
   else bumpCartIcon();
+  LAST_ADDED = { id, color: color || null };
   openCart();
 }
 
@@ -4925,23 +5002,180 @@ function cartOfferBadgeText(offer){
   if(offer.offerType === 'bundle') return `💰 Any ${offer.buyQty} for just ${Number(offer.discountValue || 0).toFixed(3)} BHD!`;
   return `🎁 Buy ${offer.buyQty}, get ${Number(offer.discountValue || 0).toFixed(3)} BHD off!`;
 }
-// Shows a banner for the first active offer whose scope matches something
-// currently in the cart (or, if the cart is empty, the first active offer
-// overall — so shoppers know a deal exists before they've added anything).
+/* ---- offer progress helpers (display only) ---- */
+let LAST_ADDED = null;            // { id, color } of the product just added, used to pick the most relevant offer
+let OFFER_NUDGE_SUPPRESS = false; // true while the popup's own "Add more" re-opens the cart
+let OFFER_NUDGE_TIMER = null;
+let OFFER_NUDGE_CURRENT = null;   // { offer, target }
+let OFFER_NUDGE_CLOSE_TIMER = null;
+
+function offEsc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function offerGroupSize(offer){
+  const buyQty = Math.max(1, Math.round(Number(offer.buyQty) || 1));
+  const freeQty = Math.max(0, Math.round(Number(offer.freeQty) || 0));
+  return offer.offerType === 'free' ? (buyQty + freeQty) : buyQty;
+}
+function offerCartCount(offer){
+  const byId = {}; PRODUCTS.forEach(p => { byId[p.id] = p; });
+  return CART.reduce((n, item) => {
+    const p = byId[item.id];
+    const category = p ? (p.category || '') : '';
+    return n + (offerUnitMatchesScope({ id: item.id, category }, offer) ? Math.max(0, Math.round(Number(item.qty) || 0)) : 0);
+  }, 0);
+}
+function offerProgress(offer){
+  const size = offerGroupSize(offer);
+  const count = offerCartCount(offer);
+  const rem = count % size;
+  return { size, count, filled: rem, missing: (count > 0 && count < size) ? (size - count) : 0, unlocked: count >= size, started: count > 0 };
+}
+function offerRewardText(offer){
+  const v = Number(offer.discountValue || 0);
+  if(offer.offerType === 'free') return `${offer.freeQty || 1} ${T('offerFreeWord')}`;
+  if(offer.offerType === 'percent') return `${v}% ${T('offerOffWord')}`;
+  if(offer.offerType === 'bundle') return T('offerBundleReward').replace('{n}', offer.buyQty).replace('{p}', v.toFixed(3));
+  return `${v.toFixed(3)} BHD ${T('offerOffWord')}`;
+}
+function offerScopeLabel(offer){
+  if(offer.scope === 'category') return { icon: '🏷️', text: offer.scopeValue || '' };
+  if(offer.scope === 'product'){
+    const ids = (offer.scopeValue || '').split(',').map(s => s.trim()).filter(Boolean);
+    const names = ids.map(id => { const p = PRODUCTS.find(x => x.id === id); return p ? pName(p) : null; }).filter(Boolean);
+    if(!names.length) return { icon: '📦', text: '' };
+    return { icon: '📦', text: names.slice(0, 2).join(', ') + (names.length > 2 ? ` +${names.length - 2}` : '') };
+  }
+  return { icon: '🛍️', text: T('offerScopeAll') };
+}
+
+// Lists EVERY active offer in the cart. Offers that match items already in the
+// cart come first; category / product-specific offers show what they apply to
+// and how many more items are needed to unlock them.
 function renderCartOfferBanner(){
   const el = document.getElementById('cartOfferBanner');
   if(!el) return;
-  if(!CART_OFFERS.length){ el.style.display = 'none'; return; }
-  const productById = {};
-  PRODUCTS.forEach(p => { productById[p.id] = p; });
-  let best = CART_OFFERS.find(offer => CART.some(item => {
-    const product = productById[item.id];
-    const category = product ? (product.category || '') : '';
-    return offerUnitMatchesScope({ id: item.id, category }, offer);
-  })) || CART_OFFERS[0];
-  if(!best){ el.style.display = 'none'; return; }
-  el.textContent = cartOfferBadgeText(best);
-  el.style.display = 'block';
+  if(!CART_OFFERS.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
+  const list = CART_OFFERS.map(o => ({ o, pr: offerProgress(o) }));
+  list.sort((a, b) => (Number(b.pr.started) - Number(a.pr.started)) || (Number(a.pr.unlocked) - Number(b.pr.unlocked)));
+  el.innerHTML = list.map(({ o, pr }) => {
+    const scope = offerScopeLabel(o);
+    let state;
+    if(pr.unlocked) state = `<span class="co-state done">${T('offerUnlocked')}</span>`;
+    else if(pr.started) state = `<span class="co-state go">${T('offerAddMore').replace('{n}', pr.missing)}</span>`;
+    else state = `<span class="co-state">${T('offerBuyN').replace('{n}', pr.size)}</span>`;
+    const pct = pr.unlocked ? 100 : Math.round((pr.count / pr.size) * 100);
+    const hot = pr.started && !pr.unlocked;
+    return `<div class="co-card${pr.unlocked ? ' ok' : ''}${hot ? ' hot' : ''}"${hot ? ` onclick="offerCardTap('${offEsc(o.id)}')"` : ''}>
+      <span class="co-ico">${pr.unlocked ? '✅' : '🎁'}</span>
+      <div class="co-main"><div class="co-badge">${offEsc(cartOfferBadgeText(o))}</div>${scope.text ? `<div class="co-scope">${scope.icon} ${offEsc(scope.text)}</div>` : ''}</div>
+      ${state}
+      ${pr.started ? `<div class="co-bar" style="width:${pct}%"></div>` : ''}
+    </div>`;
+  }).join('');
+  el.style.display = 'flex';
+}
+function offerCardTap(id){
+  const offer = CART_OFFERS.find(o => String(o.id) === String(id));
+  if(!offer) return;
+  const pr = offerProgress(offer);
+  if(pr.started && !pr.unlocked) renderOfferNudge(offer, null);
+}
+
+/* ---- "add more to get the offer" popup ---- */
+function pickNudgeOffer(){
+  const byId = {}; PRODUCTS.forEach(p => { byId[p.id] = p; });
+  let cands = CART_OFFERS.map(o => ({ o, pr: offerProgress(o) })).filter(x => x.pr.started && !x.pr.unlocked && x.pr.missing > 0);
+  if(!cands.length) return null;
+  if(LAST_ADDED){
+    const p = byId[LAST_ADDED.id];
+    const unit = { id: LAST_ADDED.id, category: p ? (p.category || '') : '' };
+    const rel = cands.filter(x => offerUnitMatchesScope(unit, x.o));
+    if(rel.length) cands = rel;
+  }
+  cands.sort((a, b) => a.pr.missing - b.pr.missing);
+  return cands[0].o;
+}
+// The cart line we will top up: prefer the product just added, otherwise any in-scope line with enough stock.
+function pickNudgeTarget(offer, need){
+  const byId = {}; PRODUCTS.forEach(p => { byId[p.id] = p; });
+  const inScope = CART.filter(item => {
+    const p = byId[item.id];
+    return offerUnitMatchesScope({ id: item.id, category: p ? (p.category || '') : '' }, offer);
+  });
+  const ordered = inScope.slice().sort((a, b) => {
+    const fa = LAST_ADDED && a.id === LAST_ADDED.id ? 1 : 0, fb = LAST_ADDED && b.id === LAST_ADDED.id ? 1 : 0;
+    return fb - fa;
+  });
+  for(const item of ordered){
+    const p = byId[item.id];
+    if(p && (Number(p.stock) - item.qty) >= need) return { id: item.id, color: item.color || null };
+  }
+  return null;
+}
+function maybeShowOfferNudge(){
+  if(OFFER_NUDGE_SUPPRESS) return;
+  clearTimeout(OFFER_NUDGE_TIMER);
+  if(!pickNudgeOffer()) { LAST_ADDED = null; return; }
+  // wait for the drawer to slide in, then pop the offer card
+  OFFER_NUDGE_TIMER = setTimeout(() => {
+    const drawer = document.getElementById('drawer');
+    const offer = pickNudgeOffer();
+    if(offer && drawer && drawer.classList.contains('show')) renderOfferNudge(offer, pickNudgeTarget(offer, offerProgress(offer).missing));
+    LAST_ADDED = null;
+  }, 550);
+}
+function renderOfferNudge(offer, target){
+  const pr = offerProgress(offer);
+  if(!pr.started || pr.unlocked) return;
+  clearTimeout(OFFER_NUDGE_CLOSE_TIMER);
+  if(!target) target = pickNudgeTarget(offer, pr.missing);
+  OFFER_NUDGE_CURRENT = { offer, target };
+  const box = document.getElementById('offerNudgeBox');
+  box.classList.remove('done');
+  document.getElementById('offerNudgeGift').textContent = '🎁';
+  document.getElementById('offerNudgeTitle').innerHTML = T('offerNudgeTitle').replace('{n}', `<b>${pr.missing}</b>`).replace('{reward}', `<b>${offEsc(offerRewardText(offer))}</b>`);
+  document.getElementById('offerNudgeSub').textContent = T('offerNudgeSub').replace('{filled}', pr.count).replace('{size}', pr.size);
+  const dots = document.getElementById('offerNudgeDots');
+  if(pr.size <= 8){
+    let h = '';
+    for(let i = 0; i < pr.size; i++) h += i < pr.count ? `<span class="on-dot full" style="--i:${i}">✓</span>` : `<span class="on-dot empty" style="--i:${i - pr.count}">+</span>`;
+    dots.innerHTML = h;
+  } else {
+    dots.innerHTML = `<div class="on-bar"><span style="width:${Math.round(pr.count / pr.size * 100)}%"></span></div>`;
+  }
+  const scope = offerScopeLabel(offer);
+  const chip = document.getElementById('offerNudgeChip');
+  chip.textContent = (scope.text ? scope.icon + ' ' + scope.text + ' · ' : '') + cartOfferBadgeText(offer);
+  document.getElementById('offerNudgeAddText').textContent = T('offerAddMore').replace('{n}', pr.missing);
+  const ov = document.getElementById('offerNudge');
+  ov.classList.remove('show'); void ov.offsetWidth; ov.classList.add('show');
+}
+function hideOfferNudge(){
+  clearTimeout(OFFER_NUDGE_TIMER); clearTimeout(OFFER_NUDGE_CLOSE_TIMER);
+  const ov = document.getElementById('offerNudge');
+  if(ov) ov.classList.remove('show');
+  OFFER_NUDGE_CURRENT = null;
+}
+function offerNudgeAddMore(){
+  // "Add more" always takes the shopper to browse the offer's category so they
+  // can pick eligible items themselves (nothing is added automatically).
+  const cur = OFFER_NUDGE_CURRENT;
+  hideOfferNudge();
+  LAST_ADDED = null;
+  if(!cur) return;
+  const offer = cur.offer;
+  let category = null;
+  if(offer.scope === 'category' && offer.scopeValue){
+    category = offer.scopeValue;
+  } else if(offer.scope === 'product'){
+    // product-specific offer: browse the category of the offer's product(s)
+    const ids = (offer.scopeValue || '').split(',').map(s => s.trim()).filter(Boolean);
+    const first = ids.map(id => PRODUCTS.find(x => x.id === id)).find(Boolean);
+    if(first && first.category) category = first.category;
+    else if(ids[0]){ closeCart(); openProduct(ids[0]); return; }
+  }
+  closeCart();
+  if(category) goToCategory(category);
+  else { activeCategory = 'All'; openAllProductsPage(); } // offer on all items
 }
 
 /* ================= Product detail page ================= */
@@ -6072,8 +6306,9 @@ function renderCart(){
   if(currentLang === 'ar') translateProductsIfNeeded(CART.map(i => ({name:i.name})));
 }
 
-function openCart(){ document.getElementById('overlay').classList.add('show'); document.getElementById('drawer').classList.add('show'); lockBodyScroll(); }
+function openCart(){ document.getElementById('overlay').classList.add('show'); document.getElementById('drawer').classList.add('show'); lockBodyScroll(); maybeShowOfferNudge(); }
 function closeCart(){
+  hideOfferNudge();
   const drawerEl = document.getElementById('drawer');
   const wasOpen = drawerEl.classList.contains('show');
   document.getElementById('overlay').classList.remove('show');
