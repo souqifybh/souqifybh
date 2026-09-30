@@ -1471,6 +1471,58 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .addr-modal-item .txt span{font-size:12px;color:var(--ink-soft);line-height:1.4;}
   .addr-modal-item.selected{background:var(--paper-soft);border-radius:10px;}
   .addr-modal-item .sel-pill{font-size:10px;font-weight:800;color:#fff;background:var(--blush-deep);border-radius:20px;padding:2px 8px;flex-shrink:0;}
+
+  /* ===== Compact cart drawer (footer ≈ 25% of screen) ===== */
+  .drawer-head{padding:14px 20px;}
+  .drawer-body{padding:6px 18px;}
+  .cart-item{padding:10px 0;}
+  .drawer-foot{padding:10px 16px 12px;}
+  .drawer-foot .total-row{margin-bottom:3px;line-height:1.25;}
+  .ship-box{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 0 8px;padding-bottom:8px;}
+  .ship-box .ship-title{grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin:0;}
+  .ship-opt{position:relative;display:grid;grid-template-columns:1fr auto;column-gap:6px;row-gap:1px;align-items:start;margin:0;padding:7px 9px;border-radius:9px;font-size:12px;line-height:1.25;}
+  .ship-opt input{position:absolute;opacity:0;pointer-events:none;}
+  .ship-opt .ship-name{display:contents;}
+  .ship-opt .ship-name>span:first-child{grid-column:1;grid-row:1;font-weight:700;}
+  .ship-opt .ship-sub{grid-column:1/-1;grid-row:2;font-size:9.5px;line-height:1.25;margin:0;}
+  .ship-opt .ship-price{grid-column:2;grid-row:1;font-size:12px;}
+  .ship-hint{grid-column:1/-1;font-size:11.5px;margin:0;}
+  .checkout-btn{padding:11px;font-size:14px;border-radius:11px;}
+
+  /* ===== Compact offer banner (half height, single line) ===== */
+  .cart-offers{margin:8px 16px 0;gap:6px;max-height:88px;}
+  .co-card{gap:8px;padding:6px 10px 8px;border-radius:10px;}
+  .co-ico{font-size:15px;animation:none;}
+  .co-main{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;}
+  .co-badge{display:inline;font-size:11.5px;}
+  .co-scope{display:inline;margin:0 0 0 6px;font-size:10px;}
+  .co-state{font-size:10px;padding:3px 9px;}
+  .co-state.go{animation:none;}
+  .co-bar{height:2px;}
+
+  /* ===== "Add more" popup — watch-face design ===== */
+  .offer-nudge-overlay{background:rgba(20,20,22,0.5);padding:20px;}
+  .offer-nudge-box{max-width:248px;padding:24px 16px 14px;border-radius:20px;box-shadow:0 18px 44px rgba(0,0,0,0.28);animation:onRise .22s ease both;}
+  .offer-nudge-box::before{display:none;}
+  @keyframes onRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .wf{position:relative;width:96px;height:96px;margin:14px auto 16px;}
+  .wf::before,.wf::after{content:'';position:absolute;left:50%;width:40px;height:20px;transform:translateX(-50%);background:linear-gradient(90deg,#26262a,#3c3c41 50%,#26262a);z-index:0;}
+  .wf::before{top:-13px;border-radius:8px 8px 2px 2px;}
+  .wf::after{bottom:-13px;border-radius:2px 2px 8px 8px;}
+  .wf-ring{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;padding:5px;box-sizing:border-box;background:conic-gradient(from 0deg,#9DB24B calc(var(--p,50) * 1%),#2a2a2e 0);box-shadow:0 2px 6px rgba(0,0,0,0.25);}
+  .wf-ring::after{content:'';position:absolute;right:-4px;top:50%;width:5px;height:14px;margin-top:-7px;background:#3c3c41;border-radius:0 3px 3px 0;}
+  .wf-dial{position:relative;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 50% 30%,#FBFAF5,#EEECDF);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.08),inset 0 2px 5px rgba(0,0,0,0.08);}
+  .wf-dial::before{content:'';position:absolute;inset:4px;border-radius:50%;background:repeating-conic-gradient(from -1deg,#6B6B70 0 2deg,transparent 2deg 30deg);-webkit-mask:radial-gradient(circle closest-side,transparent calc(100% - 6px),#000 calc(100% - 6px));mask:radial-gradient(circle closest-side,transparent calc(100% - 6px),#000 calc(100% - 6px));}
+  .wf-count{position:relative;font-family:'Sora',sans-serif;font-weight:700;color:var(--ink);line-height:1;font-size:26px;}
+  .wf-count small{font-size:13px;color:var(--ink-soft);font-weight:600;}
+  .wf-cap{position:relative;margin-top:4px;font-size:7.5px;letter-spacing:.14em;text-transform:uppercase;color:#6B6B70;font-weight:700;max-width:54px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .offer-nudge-box .on-title{font-size:14.5px;line-height:1.3;margin:0 0 4px;animation:none;}
+  .offer-nudge-box .on-sub{font-size:12px;margin:0 0 12px;animation:none;}
+  .offer-nudge-box .on-actions{gap:8px;}
+  .offer-nudge-box .on-actions button{padding:9px 8px;font-size:13px;border-radius:10px;}
+  .offer-nudge-box .on-add{animation:none;}
+  .offer-nudge-box .on-add::after{display:none;}
+  .offer-nudge-box .on-add .on-plus{animation:none;font-size:15px;}
 </style>
 </head>
 <body class="notranslate">
@@ -1787,12 +1839,9 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 </div>
 <div class="offer-nudge-overlay" id="offerNudge" onclick="if(event.target===this)hideOfferNudge()">
   <div class="offer-nudge-box" id="offerNudgeBox" role="dialog" aria-modal="true" aria-labelledby="offerNudgeTitle">
-    <div class="on-sparks" aria-hidden="true"><i style="--x:-120px;--y:-30px;animation-delay:0s">✨</i><i style="--x:120px;--y:-40px;animation-delay:0.3s">⭐</i><i style="--x:-90px;--y:40px;animation-delay:0.6s">✨</i><i style="--x:100px;--y:50px;animation-delay:0.9s">🎉</i><i style="--x:-40px;--y:-60px;animation-delay:1.2s">⭐</i><i style="--x:45px;--y:-62px;animation-delay:1.5s">✨</i><i style="--x:-140px;--y:10px;animation-delay:1.8s">🎊</i><i style="--x:140px;--y:5px;animation-delay:2.1s">✨</i></div>
-    <div class="on-gift" id="offerNudgeGift" aria-hidden="true">🎁</div>
+    <div class="wf" aria-hidden="true"><div class="wf-ring" id="offerWatchRing" style="--p:50"><div class="wf-dial"><div class="wf-count"><span id="offerWatchCount">1</span><small>/<span id="offerWatchSize">2</span></small></div><div class="wf-cap" id="offerNudgeChip"></div></div></div></div>
     <div class="on-title" id="offerNudgeTitle"></div>
     <div class="on-sub" id="offerNudgeSub"></div>
-    <div class="on-dots" id="offerNudgeDots"></div>
-    <div class="on-chip" id="offerNudgeChip"></div>
     <div class="on-actions">
       <button class="on-close" onclick="hideOfferNudge()" data-i18n="offerClose">Close</button>
       <button class="on-add" id="offerNudgeAdd" onclick="offerNudgeAddMore()"><span class="on-plus" aria-hidden="true">＋</span><span id="offerNudgeAddText"></span></button>
@@ -1811,14 +1860,14 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
       <label class="ship-opt" id="shipOptSameDay"><input type="radio" name="shipOpt" value="same_day" onchange="setDeliveryOption('same_day')"><span class="ship-name"><span data-i18n="shipSameDay">Same day delivery</span><span class="ship-sub" data-i18n="shipSameDaySub">Within 6-12 hours of order confirmation</span></span><span class="ship-price" id="shipPriceSameDay">1.200 BHD</span></label>
       <div class="ship-hint" id="shipHint" style="display:none;"></div>
     </div>
-    <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartSubtotal">Sub total</span><span id="cartSubtotal">0.000 BHD</span></div>
-    <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartPlatformFee">Platform fees</span><span id="cartPlatformFee">0.000 BHD</span></div>
-    <div class="total-row" style="font-weight:600;font-size:14px;"><span data-i18n="cartDeliveryCharge">Delivery charge</span><span id="cartDeliveryCharge">0.000 BHD</span></div>
+    <div class="total-row" style="font-weight:600;font-size:12.5px;"><span data-i18n="cartSubtotal">Sub total</span><span id="cartSubtotal">0.000 BHD</span></div>
+    <div class="total-row" style="font-weight:600;font-size:12.5px;"><span data-i18n="cartPlatformFee">Platform fees</span><span id="cartPlatformFee">0.000 BHD</span></div>
+    <div class="total-row" style="font-weight:600;font-size:12.5px;"><span data-i18n="cartDeliveryCharge">Delivery charge</span><span id="cartDeliveryCharge">0.000 BHD</span></div>
     <div id="cartOfferDiscountRow" style="display:none;">
       <hr style="border:none;border-top:1px solid var(--line,#eee);margin:6px 0;">
       <div class="total-row" style="font-weight:700;font-size:13.5px;color:#2E7D32;"><span data-i18n="cartDiscountLabel">Discount</span><span id="cartOfferDiscountAmt">-0.000 BHD</span></div>
     </div>
-    <div class="total-row"><span data-i18n="cartTotal">Total</span><span id="cartTotal">0.000 BHD</span></div>
+    <div class="total-row" style="font-size:15px;margin:4px 0 8px;"><span data-i18n="cartTotal">Total</span><span id="cartTotal">0.000 BHD</span></div>
     <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled data-i18n="cartCheckout">Proceed to checkout</button>
   </div>
 </div>
@@ -4877,7 +4926,7 @@ function renderShipBox(){
   if(!box) return;
   if(!CART.length){ box.style.display = 'none'; return; }
   const sh = computeShipping();
-  box.style.display = 'block';
+  box.style.display = 'grid';
   const stdEl = document.getElementById('shipPriceStandard');
   stdEl.textContent = sh.chargeApplies ? SHIP_STANDARD_FEE.toFixed(3) + ' BHD' : T('shipFree');
   stdEl.classList.toggle('free', !sh.chargeApplies);
@@ -5077,7 +5126,7 @@ function offerCardTap(id){
   const offer = CART_OFFERS.find(o => String(o.id) === String(id));
   if(!offer) return;
   const pr = offerProgress(offer);
-  if(pr.started && !pr.unlocked) renderOfferNudge(offer, null);
+  if(pr.started && !pr.unlocked){ OFFER_NUDGE_CURRENT = { offer, target: null }; offerNudgeAddMore(); }
 }
 
 /* ---- "add more to get the offer" popup ---- */
@@ -5085,11 +5134,13 @@ function pickNudgeOffer(){
   const byId = {}; PRODUCTS.forEach(p => { byId[p.id] = p; });
   let cands = CART_OFFERS.map(o => ({ o, pr: offerProgress(o) })).filter(x => x.pr.started && !x.pr.unlocked && x.pr.missing > 0);
   if(!cands.length) return null;
-  if(LAST_ADDED){
+  // Only ever nudge for the item that was just added (never on a plain cart open)
+  if(!LAST_ADDED) return null;
+  {
     const p = byId[LAST_ADDED.id];
     const unit = { id: LAST_ADDED.id, category: p ? (p.category || '') : '' };
-    const rel = cands.filter(x => offerUnitMatchesScope(unit, x.o));
-    if(rel.length) cands = rel;
+    cands = cands.filter(x => offerUnitMatchesScope(unit, x.o));
+    if(!cands.length) return null;
   }
   cands.sort((a, b) => a.pr.missing - b.pr.missing);
   return cands[0].o;
@@ -5114,6 +5165,7 @@ function pickNudgeTarget(offer, need){
 function maybeShowOfferNudge(){
   if(OFFER_NUDGE_SUPPRESS) return;
   clearTimeout(OFFER_NUDGE_TIMER);
+  if(!LAST_ADDED) return; // opened via cart icon / floating button: no popup
   if(!pickNudgeOffer()) { LAST_ADDED = null; return; }
   // wait for the drawer to slide in, then pop the offer card
   OFFER_NUDGE_TIMER = setTimeout(() => {
@@ -5129,22 +5181,15 @@ function renderOfferNudge(offer, target){
   clearTimeout(OFFER_NUDGE_CLOSE_TIMER);
   if(!target) target = pickNudgeTarget(offer, pr.missing);
   OFFER_NUDGE_CURRENT = { offer, target };
-  const box = document.getElementById('offerNudgeBox');
-  box.classList.remove('done');
-  document.getElementById('offerNudgeGift').textContent = '🎁';
   document.getElementById('offerNudgeTitle').innerHTML = T('offerNudgeTitle').replace('{n}', `<b>${pr.missing}</b>`).replace('{reward}', `<b>${offEsc(offerRewardText(offer))}</b>`);
   document.getElementById('offerNudgeSub').textContent = T('offerNudgeSub').replace('{filled}', pr.count).replace('{size}', pr.size);
-  const dots = document.getElementById('offerNudgeDots');
-  if(pr.size <= 8){
-    let h = '';
-    for(let i = 0; i < pr.size; i++) h += i < pr.count ? `<span class="on-dot full" style="--i:${i}">✓</span>` : `<span class="on-dot empty" style="--i:${i - pr.count}">+</span>`;
-    dots.innerHTML = h;
-  } else {
-    dots.innerHTML = `<div class="on-bar"><span style="width:${Math.round(pr.count / pr.size * 100)}%"></span></div>`;
-  }
+  document.getElementById('offerWatchCount').textContent = pr.count;
+  document.getElementById('offerWatchSize').textContent = pr.size;
+  document.getElementById('offerWatchRing').style.setProperty('--p', Math.round(pr.count / pr.size * 100));
   const scope = offerScopeLabel(offer);
   const chip = document.getElementById('offerNudgeChip');
-  chip.textContent = (scope.text ? scope.icon + ' ' + scope.text + ' · ' : '') + cartOfferBadgeText(offer);
+  chip.textContent = scope.text || '';
+  chip.style.display = scope.text ? '' : 'none';
   document.getElementById('offerNudgeAddText').textContent = T('offerAddMore').replace('{n}', pr.missing);
   const ov = document.getElementById('offerNudge');
   ov.classList.remove('show'); void ov.offsetWidth; ov.classList.add('show');
