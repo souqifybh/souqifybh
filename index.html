@@ -1136,6 +1136,11 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .cn-fill{position:absolute;inset-block:0;inset-inline-start:0;width:14%;border-radius:99px;background:#E53935;animation:cnDrain 1.7s cubic-bezier(.3,.7,.2,1) both,cnBeat 1s ease-in-out 1.7s infinite;}
   .cn-flame{position:absolute;inset-inline-end:-7px;top:-10px;font-size:13px;line-height:1;transform-origin:50% 90%;animation:cnFlame .5s ease-in-out infinite alternate;}
   .cart-nudge-title{animation:cnShake .5s ease 1.7s both;}
+  .cn-item{display:flex;align-items:center;gap:9px;text-align:start;background:#FFF5F4;border:1px solid #F6D3CF;border-radius:11px;padding:7px 8px;margin:0 0 12px;}
+  .cn-item img{width:40px;height:40px;flex:none;border-radius:8px;object-fit:cover;background:#fff;border:1px solid var(--line);}
+  .cn-item-info{min-width:0;flex:1;}
+  .cn-item-name{font-size:11.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cn-item-left{font-size:11px;line-height:1.35;font-weight:800;color:#C62828;margin-top:2px;}
   @keyframes cnDrain{0%{width:100%;background:#43A047}45%{background:#FFB300}100%{width:14%;background:#E53935}}
   @keyframes cnBeat{0%,100%{box-shadow:0 0 0 0 rgba(229,57,53,.5)}50%{box-shadow:0 0 0 5px rgba(229,57,53,0)}}
   @keyframes cnFlame{from{transform:scale(1) rotate(-6deg)}to{transform:scale(1.25) rotate(6deg)}}
@@ -1853,7 +1858,8 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   <div class="cart-nudge-box" role="dialog" aria-modal="true">
     <div class="cart-nudge-title" data-i18n="nudgeTitle">🔥 Selling fast!</div>
     <div class="cn-meter" aria-hidden="true"><div class="cn-fill"><span class="cn-flame">🔥</span></div></div>
-    <div class="cart-nudge-text" data-i18n="nudgeText">Limited stock left. Complete your order now before it’s gone!</div>
+    <div class="cn-item" id="cartNudgeItem" style="display:none"><img id="cartNudgeImg" alt="" width="40" height="40"><div class="cn-item-info"><div class="cn-item-name" id="cartNudgeName"></div><div class="cn-item-left" id="cartNudgeLeft"></div></div></div>
+    <div class="cart-nudge-text" id="cartNudgeText" data-i18n="nudgeText">Limited stock left. Complete your order now before it’s gone!</div>
     <div class="cart-nudge-actions">
       <button class="cart-nudge-close" onclick="hideCartNudge()" data-i18n="nudgeClose">Close</button>
       <button class="cart-nudge-go" onclick="cartNudgeCheckout()"><span class="cng-icon brand-cart-icon" role="img" aria-label="Souqify-bh"></span><span data-i18n="nudgeGo">Checkout</span></button>
@@ -3764,7 +3770,7 @@ const I18N = {
     activityViewerSingular:'1 person viewing now', activityViewerPlural:'{n} people viewing now',
     activityOrderSingular:'1 ordered in the last hour', activityOrderPlural:'{n} ordered in the last hour',
     outOfStockBtn:'Out of stock', outOfStockAlert:'Sorry, this product is out of stock.', maxStockAlert:'Sorry, only {n} left in stock.',
-    shopCrumb:'Shop', pdpBack:'← Back', zoomClose:'✕ Close', nudgeTitle:'🔥 Selling fast!', nudgeText:'Limited stock left. Complete your order now before it’s gone!', nudgeClose:'Close', nudgeGo:'Checkout', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
+    shopCrumb:'Shop', pdpBack:'← Back', zoomClose:'✕ Close', nudgeTitle:'🔥 Selling fast!', nudgeText:'Limited stock left. Complete your order now before it’s gone!', nudgeHurry:'Hurry! Only {n} left. Buy before it’s out of stock!', nudgeClose:'Close', nudgeGo:'Checkout', pdpColorLabel:'Color', pdpAddToCart:'Add to cart', pdpBuyNow:'Buy now',
     pdpTrustCod:'✅ Cash on delivery available', pdpTrustBenefitpay:'📲 BenefitPay via WhatsApp confirmation', pdpTrustDelivery:'🚚 Delivered across Bahrain',
     pdpRelated:'You might also like', noReviewsYet:'No reviews yet', noReviewsShort:'No reviews yet, be the first',
     sortNewest:'Newest first', sortHighest:'Highest rated', sortLowest:'Lowest rated', writeReview:'Write a review',
@@ -3853,7 +3859,7 @@ const I18N = {
     activityViewerSingular:'يشاهده شخص واحد الآن', activityViewerPlural:'يشاهده {n} أشخاص الآن',
     activityOrderSingular:'تم طلبه مرة واحدة خلال الساعة الأخيرة', activityOrderPlural:'تم طلبه {n} مرات خلال الساعة الأخيرة',
     outOfStockBtn:'غير متوفر', outOfStockAlert:'عذرًا، هذا المنتج غير متوفر حاليًا.', maxStockAlert:'عذرًا، يتبقى {n} فقط في المخزون.',
-    shopCrumb:'المتجر', pdpBack:'← رجوع', zoomClose:'✕ إغلاق', nudgeTitle:'🔥 يُباع بسرعة!', nudgeText:'الكمية محدودة. أكمل طلبك الآن قبل نفاد المخزون!', nudgeClose:'إغلاق', nudgeGo:'إتمام الطلب', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
+    shopCrumb:'المتجر', pdpBack:'← رجوع', zoomClose:'✕ إغلاق', nudgeTitle:'🔥 يُباع بسرعة!', nudgeText:'الكمية محدودة. أكمل طلبك الآن قبل نفاد المخزون!', nudgeHurry:'أسرع! بقي {n} فقط. اشترِ قبل نفاد المخزون!', nudgeClose:'إغلاق', nudgeGo:'إتمام الطلب', pdpColorLabel:'اللون', pdpAddToCart:'أضف إلى السلة', pdpBuyNow:'اشترِ الآن',
     pdpTrustCod:'✅ الدفع عند الاستلام متاح', pdpTrustBenefitpay:'📲 BenefitPay عبر تأكيد واتساب', pdpTrustDelivery:'🚚 التوصيل لجميع مناطق البحرين',
     pdpRelated:'قد يعجبك أيضًا', noReviewsYet:'لا توجد تقييمات بعد', noReviewsShort:'لا توجد تقييمات بعد، كن أول من يقيّم',
     sortNewest:'الأحدث أولاً', sortHighest:'الأعلى تقييمًا', sortLowest:'الأقل تقييمًا', writeReview:'أضف تقييمًا',
@@ -5339,6 +5345,7 @@ function syncAbandonedCart(){
  * buying" moment mobile browsers don't otherwise expose.
  */
 function exitCaptureEligible_(){
+  return false; // disabled: no "save my cart" popup
   if(!CART.length) return false;
   if(currentCheckoutEmail_()) return false; // already have an email, nothing to capture
   if(sessionStorage.getItem('gm_exit_capture_shown')) return false;
@@ -5440,16 +5447,9 @@ function renderGoogleOneTapInPopup_(){
   }
   try{ google.accounts.id.prompt(); }catch(e){} // also offers the floating one-tap card when eligible
 }
-(function setupExitIntentCapture(){
-  document.addEventListener('mouseout', (e) => {
-    if(e.clientY > 0) return; // only the "left through the top of the page" gesture
-    if(e.relatedTarget || e.toElement) return; // moved onto another element, not off the window
-    maybeShowExitCapturePopup();
-  });
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible') maybeShowExitCapturePopup();
-  });
-})();
+// "Save my cart" exit-intent popup DISABLED (too many popups annoy customers).
+// The triggers (mouseout / visibilitychange) were removed on purpose.
+
 function activityBadgeHtml(type, count, labelSingular, labelPlural){
   if(!count || count <= 0) return '';
   const label = count === 1 ? labelSingular : labelPlural.replace('{n}', count);
@@ -6397,13 +6397,41 @@ function closeCart(){
 let CART_NUDGE_LOCKED = false;
 function requestCloseCart(){
   closeCart();
-  if(CART.length > 0) showCartNudge();
+  // "Selling fast!" popup: show only ONCE per browser session, not on every cart close.
+  let seen = false;
+  try{ seen = !!sessionStorage.getItem('gm_cart_nudge_shown'); }catch(e){}
+  if(CART.length > 0 && !seen){
+    try{ sessionStorage.setItem('gm_cart_nudge_shown', '1'); }catch(e){}
+    showCartNudge();
+  }
 }
 function showCartNudge(){
   const el = document.getElementById('cartNudge');
   if(!el || el.classList.contains('show')) return;
+  fillCartNudgeLowest();
   el.classList.add('show');
   if(!CART_NUDGE_LOCKED){ lockBodyScroll(); CART_NUDGE_LOCKED = true; }
+}
+// Shows the cart item with the LOWEST remaining stock (photo, name, "only N left").
+// Falls back to the generic text if no in-stock cart product can be found.
+function fillCartNudgeLowest(){
+  const row = document.getElementById('cartNudgeItem');
+  const generic = document.getElementById('cartNudgeText');
+  if(!row) return;
+  let best = null;
+  CART.forEach(it => {
+    const p = PRODUCTS.find(x => x.id === it.id);
+    const stock = p ? Number(p.stock) : NaN;
+    if(!p || !(stock > 0)) return;
+    if(!best || stock < best.stock) best = { p, it, stock };
+  });
+  if(!best){ row.style.display = 'none'; if(generic) generic.style.display = ''; return; }
+  const img = document.getElementById('cartNudgeImg');
+  img.src = (best.p.images && best.p.images[0]) || best.it.image || '';
+  document.getElementById('cartNudgeName').textContent = pName(best.p);
+  document.getElementById('cartNudgeLeft').textContent = '🔥 ' + T('nudgeHurry').replace('{n}', best.stock);
+  row.style.display = 'flex';
+  if(generic) generic.style.display = 'none';
 }
 function hideCartNudge(){
   const el = document.getElementById('cartNudge');
