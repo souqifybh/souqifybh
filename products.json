@@ -255,7 +255,7 @@
     "image4": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455495/IMG_0201.jpg",
     "image5": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789456011/IMG_0230.jpg",
     "category": "Watches",
-    "stock": 2,
+    "stock": 1,
     "active": true,
     "featured": true,
     "bestseller": true,
@@ -382,7 +382,7 @@
     "active": true,
     "featured": true,
     "bestseller": false,
-    "colors": "Black",
+    "colors": "Black, Brown",
     "features": "⌚ Authentic Imported Design: Features original Binlihui Fantasy craftsmanship.\n⏱️ Reliable Quartz Movement: Delivers consistent, accurate timekeeping for busy daily routines.\n✨ Trendy & Easy Style: Versatile fashion design that effortless pairs with modern outfits.\n👔 Everyday Adaptability: Perfect for both casual outings and daily wear.\n🎁 Ready for Gifting: Packaged neatly with premium display accessories.",
     "moreDetails": "In the Box :\n\n1 x Quartz Men's Watch\n1 x Soft Watch Pillow",
     "shortDescription": "Stylish, modern imported quartz watch featuring a sleek design that offers effortless daily fashion for dynamic men.",
@@ -392,7 +392,7 @@
     "giftBoxEnabled": false,
     "giftVariantImages": "{}",
     "valueAmount": 3.79,
-    "moa": "",
+    "moa": false,
     "images": [
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455497/IMG_0217.jpg",
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455497/IMG_0218.jpg",
@@ -401,7 +401,8 @@
       "https://res.cloudinary.com/bib9sqiz/image/upload/v1789456012/IMG_0231.jpg"
     ],
     "colorsList": [
-      "Black"
+      "Black",
+      "Brown"
     ],
     "variantImages": {},
     "avgRating": 0,
@@ -419,7 +420,7 @@
     "image4": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789455494/IMG_0224.jpg",
     "image5": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789456011/IMG_0232.jpg",
     "category": "Watches",
-    "stock": 2,
+    "stock": 1,
     "active": true,
     "featured": true,
     "bestseller": false,
@@ -501,7 +502,7 @@
     "image4": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498109/IMG_0294.jpg",
     "image5": "https://res.cloudinary.com/bib9sqiz/image/upload/v1789498110/IMG_0275.jpg",
     "category": "Watches",
-    "stock": 1,
+    "stock": 2,
     "active": true,
     "featured": true,
     "bestseller": false,
