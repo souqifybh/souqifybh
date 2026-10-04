@@ -1474,6 +1474,28 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   #apOverlay.ap-bar-hidden .ap-topbar{transform:translateY(-100%);}
   #apOverlay.ap-bar-hidden .ap-toolbar{top:0;}
   @media (prefers-reduced-motion: reduce){ #apOverlay .ap-topbar, #apOverlay .ap-toolbar{transition:none;} }
+  /* Pre-order page must sit ABOVE the All Products page (both were z-index 410, so it opened hidden behind it). */
+  #poOverlay{z-index:412;}
+  /* ---------- round Pre-order item on the home category strip ---------- */
+  .top-cat-item.pre-item .pre-wrap{position:relative;width:56px;height:56px;flex-shrink:0;}
+  .top-cat-item.pre-item .pre-ring{position:absolute;inset:-4px;border-radius:50%;
+    background:conic-gradient(from 0deg,#5B3FA6 0deg,#B9A2EE 120deg,rgba(91,63,166,0) 200deg,#5B3FA6 360deg);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+            mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));
+    animation:preSpin 2.6s linear infinite;}
+  .top-cat-item.pre-item .avatar{border-color:#fff;position:relative;}
+  .top-cat-item.pre-item .avatar img{animation:prePulse 2.6s ease-in-out infinite;}
+  .top-cat-item.pre-item .lbl{color:#4B2E8F;}
+  .pre-clock{position:absolute;right:-5px;bottom:-4px;width:22px;height:22px;border-radius:50%;background:#5B3FA6;border:2px solid #fff;
+    box-shadow:0 2px 6px rgba(75,46,143,.4);z-index:2;}
+  .pre-clock::before,.pre-clock::after{content:'';position:absolute;left:50%;bottom:50%;width:1.6px;border-radius:2px;background:#fff;transform-origin:50% 100%;}
+  .pre-clock::before{height:6px;margin-left:-.8px;animation:preSpin 3s linear infinite;}            /* minute hand */
+  .pre-clock::after{height:4px;margin-left:-.8px;animation:preSpin 36s linear infinite;}           /* hour hand */
+  @keyframes preSpin{to{transform:rotate(360deg);}}
+  @keyframes prePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+  @media (prefers-reduced-motion: reduce){
+    .top-cat-item.pre-item .pre-ring,.top-cat-item.pre-item .avatar img,.pre-clock::before,.pre-clock::after{animation:none;}
+  }
   .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
   .ap-chips::-webkit-scrollbar{display:none;}
   .ap-sort-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;white-space:nowrap;}
@@ -2248,7 +2270,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
 <!-- ================= Pre-order page (products customers can order before they arrive) ================= -->
 <div class="ap-overlay" id="poOverlay">
   <div class="ap-topbar">
-    <button class="ap-back" onclick="closePreorderPage()" aria-label="Back">←</button>
+    <button class="ap-back" onclick="poGoBack()" aria-label="Back">←</button>
     <div class="po-title">⏳ <span data-i18n="preorderTitle">Pre-order</span></div>
     <span style="flex:1;"></span>
     <button class="ap-cart-btn icon-btn" onclick="openCart()" aria-label="Cart"><span class="brand-cart-icon cart-emoji" role="img" aria-label="Cart"></span><span class="badge-corner" id="poCartCount">0</span></button>
@@ -4408,8 +4430,19 @@ function buildTopCategoryStrip(){
   const strip = document.getElementById('topCatStrip');
   if(!strip) return;
   const cats = catalogCategories_();
-  if(!cats.length){ strip.innerHTML = ''; return; }
-  strip.innerHTML = cats.map(c => `
+  const preItems = PRODUCTS.filter(p => p.preorder);
+  const preImg = (preItems.find(p => p.images && p.images[0]) || {images:[]}).images[0];
+  const preHtml = preItems.length ? `
+    <div class="top-cat-item pre-item" onclick="openPreorderPage()">
+      <div class="pre-wrap">
+        <span class="pre-ring"></span>
+        <div class="avatar">${preImg ? `<img src="${preImg}" alt="${T('navPreorder')}" loading="lazy">` : '⏳'}</div>
+        <span class="pre-clock"></span>
+      </div>
+      <div class="lbl">${T('navPreorder')}</div>
+    </div>` : '';
+  if(!cats.length && !preHtml){ strip.innerHTML = ''; return; }
+  strip.innerHTML = preHtml + cats.map(c => `
     <div class="top-cat-item" onclick="goToCategory('${c.replace(/'/g,"\\'")}');">
       <div class="avatar">${categoryIconHtml(c)}</div>
       <div class="lbl">${catLabel(c)}</div>
@@ -4862,13 +4895,24 @@ function renderPreorderGrid(){
 function openPreorderPage(){
   const ov = document.getElementById('poOverlay');
   if(!ov.classList.contains('show')){ ov.classList.add('show'); lockBodyScroll(); }
+  ov.scrollTop = 0;
   renderPreorderGrid();
   if(location.hash !== '#/preorders') history.pushState({po:true}, '', location.pathname + location.search + '#/preorders');
 }
 function closePreorderPage(){
   const ov = document.getElementById('poOverlay');
   if(ov.classList.contains('show')){ ov.classList.remove('show'); unlockBodyScroll(); }
-  if(location.hash === '#/preorders') history.replaceState({}, '', location.pathname + location.search);
+  if(location.hash === '#/preorders'){
+    // If All Products is still open underneath, go back to ITS address instead of the bare home URL.
+    const apOpen = document.getElementById('apOverlay').classList.contains('show');
+    history.replaceState(apOpen ? {ap:true, cat:activeCategory} : {}, '', location.pathname + location.search + (apOpen ? productsHashFor(activeCategory) : ''));
+  }
+}
+// Back arrow on the Pre-order page: step back in history when this page was opened in-app
+// (returns to All Products or Home exactly as it was); otherwise just close it.
+function poGoBack(){
+  if(history.state && history.state.po){ history.back(); return; }
+  closePreorderPage();
 }
 function bottomNavHome(){
   if(document.getElementById('poOverlay').classList.contains('show')) closePreorderPage();
@@ -6640,8 +6684,10 @@ function pdpGoBack(){
 // manages history/overlay-visibility itself based on where navigation
 // actually landed.
 function hidePdpOverlayOnly(){
-  document.getElementById('pdpOverlay').classList.remove('show');
-  unlockBodyScroll();
+  const pdpEl = document.getElementById('pdpOverlay');
+  const wasShown = pdpEl.classList.contains('show');
+  pdpEl.classList.remove('show');
+  if(wasShown) unlockBodyScroll(); // don't release the scroll lock held by All Products / Pre-order pages underneath
   PDP_PRODUCT = null;
   stopPdpActivityTracking();
   updateDealsFabVisibility();
