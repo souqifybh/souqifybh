@@ -30,6 +30,7 @@
     "heroCategory": "Watches",
     "heroCategory2": "",
     "heroCategory3": "Watches",
-    "mediaLayout": "grid"
+    "mediaLayout": "grid",
+    "categoryBanners": "{\"all\":[{\"img\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1790771702/ChatGPT_Image_Sep_30_2026_03_32_06_PM.png\",\"pid\":\"\",\"cat\":\"Watches\"}],\"cats\":{\"Watches\":{\"img\":\"https://res.cloudinary.com/bib9sqiz/image/upload/v1790771702/ChatGPT_Image_Sep_30_2026_03_32_06_PM.png\",\"pid\":\"\"}},\"seconds\":4.5}"
   }
 }
