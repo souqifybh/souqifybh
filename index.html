@@ -1496,6 +1496,16 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   @media (prefers-reduced-motion: reduce){
     .top-cat-item.pre-item .pre-ring,.top-cat-item.pre-item .avatar img,.pre-clock::before,.pre-clock::after{animation:none;}
   }
+  /* ---------- Live watch dials: real-time hands drawn over the watch photo ---------- */
+  .live-dial{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;
+    filter:drop-shadow(0 .35px .45px rgba(0,0,0,.5));transition:transform .5s var(--ease);}
+  .card:hover .imgwrap .live-dial{transform:scale(1.06);}      /* follow the photo's hover zoom */
+  .card.out-of-stock .live-dial{opacity:.55;filter:grayscale(1);}
+  .pdp-gallery-main .live-dial{z-index:1;}
+  #dialSetupBar{position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#1d1d1f;color:#fff;border-radius:14px;padding:10px 12px;
+    font:12px/1.4 ui-monospace,Menlo,monospace;box-shadow:0 8px 30px rgba(0,0,0,.4);}
+  #dialSetupBar button{font:inherit;margin:6px 6px 0 0;padding:6px 10px;border-radius:8px;border:0;background:#C9D88A;color:#222;font-weight:700;}
+  #dialSetupBar code{display:block;word-break:break-all;color:#C9D88A;}
   .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
   .ap-chips::-webkit-scrollbar{display:none;}
   .ap-sort-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;white-space:nowrap;}
@@ -2420,6 +2430,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
       <div>
         <div class="pdp-gallery-main" id="pdpGalleryMain" onclick="openImageZoom()">
           <img id="pdpMainImg" src="" alt="">
+          <div id="pdpLiveDial"></div>
           <div class="pdp-zoom-hint">🔍</div>
           <div class="pdp-gallery-actions" onclick="event.stopPropagation()">
             <button class="pdp-icon-btn" id="pdpWishBtn" onclick="togglePdpWishlist()" aria-label="Add to wishlist" title="Add to wishlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35 10.55 20.03C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54Z"/></svg></button>
@@ -5011,6 +5022,102 @@ function preorderCardBodyHtml_(p){
         ${preorderEtaHtml_(p)}
   `;
 }
+/* ================= Live watch dials =================
+   Draws working hour / minute / second hands over a watch photo so the dial shows the
+   visitor's own current time. Each watch needs its dial position once:
+     x, y = centre of the dial, r = dial radius  (all in % of the square product photo)
+     dark:true  -> dark hands (for light dials)      bg:'#111'  -> optional disc that hides
+     the hands painted in the photo (m = its size as a fraction of r, default .72)
+   Set it either here by product id, or via a `dial` field on the product ("x,y,r" or "x,y,r,dark").
+   Open the site with ?dialsetup=1, open a watch and drag the circle onto the dial to get the line. */
+var LIVE_DIAL_CFG_ = {
+  // 'PRODUCT_ID': { x:50, y:50, r:30 },
+};
+function liveDialCfg_(p){
+  if(!p) return null;
+  let c = (LIVE_DIAL_CFG_ || {})[p.id];
+  if(!c && p.dial){
+    const a = String(p.dial).split(',').map(v => v.trim());
+    const x = parseFloat(a[0]), y = parseFloat(a[1]), r = parseFloat(a[2]);
+    if(isFinite(x) && isFinite(y) && isFinite(r) && r > 0) c = { x, y, r, dark: /dark/i.test(a[3] || '') };
+  }
+  return c || null;
+}
+function liveDialAngles_(){
+  const d = new Date(), s = d.getSeconds(), m = d.getMinutes() + s / 60, h = (d.getHours() % 12) + m / 60;
+  return { h:h * 30, m:m * 6, s:s * 6 };
+}
+function liveDialInner_(c){
+  const r = c.r, a = liveDialAngles_(), col = c.dark ? '#14161a' : '#ffffff';
+  const mask = c.bg ? `<circle r="${(r * (c.m || .72)).toFixed(2)}" fill="${c.bg}"/>` : '';
+  const hand = (cls, ang, back, len, w, stroke) =>
+    `<g class="${cls}" transform="rotate(${ang.toFixed(1)})"><line x1="0" y1="${(r * back).toFixed(2)}" x2="0" y2="${(-r * len).toFixed(2)}" stroke="${stroke}" stroke-width="${(r * w).toFixed(2)}" stroke-linecap="round"/></g>`;
+  return `<g transform="translate(${c.x} ${c.y})">${mask}`
+    + hand('ld-h', a.h, .10, .50, .085, col)
+    + hand('ld-m', a.m, .14, .76, .058, col)
+    + hand('ld-s', a.s, .20, .84, .024, '#E53935')
+    + `<circle r="${(r * .055).toFixed(2)}" fill="#E53935"/></g>`;
+}
+function liveDialHtml_(p){
+  const c = liveDialCfg_(p);
+  return c ? `<svg class="live-dial" viewBox="0 0 100 100" aria-hidden="true">${liveDialInner_(c)}</svg>` : '';
+}
+function tickLiveDials_(){
+  if(document.hidden) return;
+  const els = document.querySelectorAll('.live-dial:not(.dial-edit)');
+  if(!els.length) return;
+  const a = liveDialAngles_();
+  els.forEach(svg => {
+    const h = svg.querySelector('.ld-h'), m = svg.querySelector('.ld-m'), s = svg.querySelector('.ld-s');
+    if(h) h.setAttribute('transform', 'rotate(' + a.h.toFixed(1) + ')');
+    if(m) m.setAttribute('transform', 'rotate(' + a.m.toFixed(1) + ')');
+    if(s) s.setAttribute('transform', 'rotate(' + a.s.toFixed(1) + ')');
+  });
+}
+setInterval(tickLiveDials_, 1000);
+document.addEventListener('visibilitychange', () => safeCall(tickLiveDials_));
+
+// Product page: live dial only on the first photo (the watch face)
+var DIAL_SETUP_ = /[?&]dialsetup=1/.test(location.search);
+function pdpLiveDialRender_(){
+  const box = document.getElementById('pdpLiveDial');
+  if(!box) return;
+  const bar = document.getElementById('dialSetupBar'); if(bar) bar.remove();
+  if(!PDP_PRODUCT || PDP_IMG_INDEX !== 0){ box.innerHTML = ''; return; }
+  if(DIAL_SETUP_){ dialSetupStart_(box); return; }
+  box.innerHTML = liveDialHtml_(PDP_PRODUCT);
+}
+// Setup helper: drag the circle onto the dial, drag the dot to resize, copy the line.
+function dialSetupStart_(box){
+  const base = liveDialCfg_(PDP_PRODUCT) || { x:50, y:50, r:30 };
+  const c = { x:base.x, y:base.y, r:base.r, dark:!!base.dark };
+  const draw = () => {
+    box.innerHTML = `<svg class="live-dial dial-edit" viewBox="0 0 100 100" style="pointer-events:auto;touch-action:none;cursor:crosshair">`
+      + liveDialInner_(c)
+      + `<circle cx="${c.x}" cy="${c.y}" r="${c.r}" fill="rgba(255,0,255,.08)" stroke="#f0f" stroke-width=".5" stroke-dasharray="1.6 1"/>`
+      + `<circle cx="${c.x + c.r}" cy="${c.y}" r="2.4" fill="#f0f" stroke="#fff" stroke-width=".5"/></svg>`;
+    const line = `'${PDP_PRODUCT.id}': { x:${c.x.toFixed(1)}, y:${c.y.toFixed(1)}, r:${c.r.toFixed(1)}${c.dark ? ', dark:true' : ''} },`;
+    const out = document.getElementById('dialSetupLine'); if(out) out.textContent = line;
+    return line;
+  };
+  let bar = document.getElementById('dialSetupBar');
+  if(!bar){
+    bar = document.createElement('div'); bar.id = 'dialSetupBar';
+    bar.innerHTML = `Dial setup: tap/drag = move centre, drag the dot = size<code id="dialSetupLine"></code>`
+      + `<button id="dsCopy">Copy line</button><button id="dsDark">Dark hands</button>`;
+    document.body.appendChild(bar);
+    bar.querySelector('#dsCopy').onclick = () => { const t = document.getElementById('dialSetupLine').textContent; try{ navigator.clipboard.writeText(t); }catch(e){} };
+    bar.querySelector('#dsDark').onclick = () => { c.dark = !c.dark; draw(); };
+  }
+  draw();
+  let mode = null;
+  const pt = e => { const r = box.querySelector('svg').getBoundingClientRect(); return { x:(e.clientX - r.left) / r.width * 100, y:(e.clientY - r.top) / r.height * 100 }; };
+  box.onpointerdown = e => { e.stopPropagation(); const q = pt(e); mode = Math.hypot(q.x - (c.x + c.r), q.y - c.y) < 6 ? 'size' : 'move'; if(mode === 'move'){ c.x = q.x; c.y = q.y; draw(); } };
+  box.onpointermove = e => { if(!mode) return; const q = pt(e); if(mode === 'move'){ c.x = q.x; c.y = q.y; } else { c.r = Math.max(5, Math.hypot(q.x - c.x, q.y - c.y)); } draw(); };
+  box.onpointerup = box.onpointercancel = e => { e.stopPropagation(); mode = null; };
+  box.onclick = e => e.stopPropagation();
+}
+
 function productCardHtml(p, opts){
   const badges = cardBadgesHtml(p, opts);
   const rightBadges = rightBadgesHtml(p, opts);
@@ -5019,7 +5126,7 @@ function productCardHtml(p, opts){
     <div class="card ${outOfStock?'out-of-stock':''}" data-pid="${p.id}" onclick="openProduct('${p.id}')">
       ${badges ? `<div class="card-badges">${badges}</div>` : ''}
       ${rightBadges ? `<div class="card-badges-right">${rightBadges}</div>` : ''}
-      <div class="imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy" decoding="async"><div class="card-activity" id="cardActivity-${p.id}"></div></div>
+      <div class="imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy" decoding="async">${liveDialHtml_(p)}<div class="card-activity" id="cardActivity-${p.id}"></div></div>
       <div class="body">${cardBodyHtml(p)}</div>
     </div>
   `;
@@ -6053,6 +6160,7 @@ function setPdpImage(i){
   if(!PDP_PRODUCT) return;
   PDP_IMG_INDEX = i;
   document.getElementById('pdpMainImg').src = PDP_PRODUCT.images[i] || PDP_PRODUCT.images[0];
+  safeCall(pdpLiveDialRender_);
   document.querySelectorAll('.pdp-thumb').forEach(t => t.classList.toggle('active', Number(t.dataset.i)===i));
 }
 
