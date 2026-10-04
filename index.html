@@ -1002,7 +1002,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .img-zoom-overlay.show{display:flex;}
   .img-zoom-overlay .close-x{position:fixed;top:16px;right:18px;margin:0;float:none;background:rgba(255,255,255,0.12);color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;z-index:2;display:flex;align-items:center;justify-content:center;}
   .img-zoom-hint-bar{position:fixed;top:18px;left:18px;right:70px;color:rgba(255,255,255,0.75);font-size:12px;text-align:left;}
-  .img-zoom-stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none;}
+  .img-zoom-stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;touch-action:none;}
   .img-zoom-stage img{max-width:92vw;max-height:88vh;object-fit:contain;user-select:none;-webkit-user-drag:none;transition:transform .05s linear;will-change:transform;}
   @media (max-width:640px){ .img-zoom-hint-bar{font-size:11px;top:16px;} }
   .img-zoom-nav{position:fixed;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.12);color:#fff;border:none;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;}
@@ -2091,6 +2091,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   <button class="img-zoom-nav prev" id="imgZoomPrev" onclick="event.stopPropagation();zoomPrevImage()" aria-label="Previous image">‹</button>
   <div class="img-zoom-stage" id="imgZoomStage">
     <img id="imgZoomImg" src="" alt="">
+    <svg id="imgZoomDial" class="live-dial" viewBox="0 0 100 100" aria-hidden="true" style="display:none;inset:auto;transition:none;"></svg>
   </div>
   <button class="img-zoom-nav next" id="imgZoomNext" onclick="event.stopPropagation();zoomNextImage()" aria-label="Next image">›</button>
   <div class="img-zoom-counter" id="imgZoomCounter"></div>
@@ -6180,6 +6181,7 @@ function openImageZoom(){
   ZOOM_IMG_INDEX = PDP_IMG_INDEX;
   setZoomImage(ZOOM_IMG_INDEX);
   document.getElementById('imgZoomOverlay').classList.add('show');
+  requestAnimationFrame(() => safeCall(zoomLiveDialSync_));
   lockBodyScroll();
   // history entry so the phone/browser Back button closes the viewer
   try{
@@ -6194,7 +6196,9 @@ function setZoomImage(i){
   const zoomImg = document.getElementById('imgZoomImg');
   zoomImg.src = imgs[ZOOM_IMG_INDEX];
   zoomImg.alt = PDP_PRODUCT ? pName(PDP_PRODUCT) : '';
+  zoomImg.onload = () => safeCall(zoomLiveDialSync_);
   resetZoomTransform();
+  safeCall(zoomLiveDialSync_);
   const multi = imgs.length > 1;
   const prevBtn = document.getElementById('imgZoomPrev');
   const nextBtn = document.getElementById('imgZoomNext');
@@ -6232,7 +6236,22 @@ function applyZoomTransform(){
   if(!img) return;
   img.style.transform = `translate(${ZOOM_PAN_X}px, ${ZOOM_PAN_Y}px) scale(${ZOOM_SCALE})`;
   img.style.cursor = ZOOM_SCALE > 1 ? 'grab' : 'zoom-in';
+  const dial = document.getElementById('imgZoomDial');
+  if(dial) dial.style.transform = img.style.transform;   // hands pan / zoom together with the photo
 }
+// Live dial inside the zoom viewer: sits exactly over the photo and uses the same transform.
+function zoomLiveDialSync_(){
+  const img = document.getElementById('imgZoomImg'), svg = document.getElementById('imgZoomDial');
+  if(!img || !svg) return;
+  const cfg = (PDP_PRODUCT && ZOOM_IMG_INDEX === 0 && !DIAL_SETUP_) ? liveDialCfg_(PDP_PRODUCT) : null;
+  if(!cfg || !img.offsetWidth){ svg.style.display = 'none'; svg.innerHTML = ''; return; }
+  if(!svg.firstChild || svg.dataset.pid !== String(PDP_PRODUCT.id)){ svg.innerHTML = liveDialInner_(cfg); svg.dataset.pid = String(PDP_PRODUCT.id); }
+  svg.style.left = img.offsetLeft + 'px'; svg.style.top = img.offsetTop + 'px';
+  svg.style.width = img.offsetWidth + 'px'; svg.style.height = img.offsetHeight + 'px';
+  svg.style.display = 'block';
+  svg.style.transform = img.style.transform;
+}
+window.addEventListener('resize', () => safeCall(zoomLiveDialSync_));
 function zoomToggleAt(){
   if(ZOOM_SCALE > 1){ resetZoomTransform(); }
   else { ZOOM_SCALE = ZOOM_DOUBLE_TAP; ZOOM_PAN_X = 0; ZOOM_PAN_Y = 0; applyZoomTransform(); }
