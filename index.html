@@ -1467,7 +1467,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .po-title{font-size:16px;font-weight:800;color:var(--ink);}
   .chip.pre-chip{border-color:#CDBCF0;color:#4B2E8F;background:#F3EEFC;white-space:nowrap;}
   .po-link{display:none;}
-  .ap-toolbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
+  .ap-toolbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:var(--ap-top,64px);z-index:4;background:#fff;}
   .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
   .ap-chips::-webkit-scrollbar{display:none;}
   .ap-sort-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;white-space:nowrap;}
@@ -4482,6 +4482,7 @@ function sortProductList(list){
 }
 function openAllProductsPage(){
   document.getElementById('apOverlay').classList.add('show');
+  setApStickyTop_();
   document.getElementById('apSearchInput').value = '';
   buildCategoryChips();
   renderAllProductsGrid();
@@ -4489,6 +4490,12 @@ function openAllProductsPage(){
   lockBodyScroll();
   history.pushState({ap:true, cat:activeCategory}, '', location.pathname + location.search + productsHashFor(activeCategory));
 }
+// Keeps the category chips + sort bar pinned right under the search bar while the products scroll.
+function setApStickyTop_(){
+  const ov = document.getElementById('apOverlay'), tb = ov && ov.querySelector('.ap-topbar');
+  if(tb) ov.style.setProperty('--ap-top', tb.offsetHeight + 'px');
+}
+window.addEventListener('resize', () => safeCall(setApStickyTop_));
 function closeAllProductsPage(){
   apBannerStop_();
   document.getElementById('apOverlay').classList.remove('show');
@@ -4685,11 +4692,12 @@ function vpCardHtml_(p, extraClass){
    - A category selected  -> that category's banner (if any).
    - "All" selected       -> slideshow of the "all" banners, then every category banner.
    - Nothing configured   -> falls back to the homepage hero image, as before. */
-let BANNER_CFG_ = { all: [], cats: {} };
+let BANNER_CFG_ = { all: [], cats: {}, seconds: 4.5 };
 function applyBannerSettings(settings){
   let o = settings && settings.categoryBanners;
   if(typeof o === 'string' && o){ try{ o = JSON.parse(o); }catch(e){ o = null; } }
-  const cfg = { all: [], cats: {} };
+  const cfg = { all: [], cats: {}, seconds: 4.5 };
+  if(o && Number(o.seconds) >= 1) cfg.seconds = Math.min(30, Number(o.seconds));
   if(o && Array.isArray(o.all)) cfg.all = o.all.filter(b => b && b.img).slice(0, 7).map(b => ({ img:String(b.img), pid:String(b.pid || ''), cat:String(b.cat || '') }));
   if(o && o.cats && typeof o.cats === 'object') Object.keys(o.cats).forEach(k => { const b = o.cats[k]; if(b && b.img) cfg.cats[k] = { img:String(b.img), pid:String(b.pid || '') }; });
   BANNER_CFG_ = cfg;
@@ -4721,7 +4729,7 @@ function apBannerRestart_(){
     const ov = document.getElementById('apOverlay');
     if(!ov || !ov.classList.contains('show')){ apBannerStop_(); return; }
     apBannerGo((APBN_INDEX + 1) % APBN_SLIDES.length, null, true);
-  }, 4500);
+  }, Math.round((BANNER_CFG_.seconds || 4.5) * 1000));
 }
 function apBannerGo(i, evt, auto){
   if(evt) evt.stopPropagation();
@@ -4782,8 +4790,8 @@ function apValuePicksScroll(dir){
 function renderApValuePicks(){
   const wrap = document.getElementById('apValuePicksWrap');
   if(!wrap) return;
-  // Value Picks follow the selected category (All = every value pick).
-  const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p) && (activeCategory === 'All' || p.category === activeCategory));
+  // "All" shows the banner slideshow only. A category shows its banner + its own Value Picks.
+  const items = activeCategory === 'All' ? [] : PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p) && p.category === activeCategory);
   const hasBanner = renderApBanner_();
   const head = document.getElementById('apVpHead'), railWrap = document.getElementById('apVpRailWrap');
   if(head) head.style.display = items.length ? 'flex' : 'none';

@@ -762,8 +762,9 @@
 
       <div class="card" id="categoryBannersCard" style="margin-top:20px;">
         <h2>Category banners <span class="muted">(top of the All Products page)</span></h2>
-        <p class="muted" style="margin-bottom:14px;">Paste image links (about 2:1 shape works best). When a customer picks a category, they see <strong>that category's banner</strong> and its <strong>Value Picks</strong> (products of that category with a Value amount). On <strong>All</strong>, they see a slideshow of the "All products" banners below, followed by every category banner you've added. An empty banner is simply skipped.</p>
+        <p class="muted" style="margin-bottom:14px;">Paste image links (about 2:1 shape works best). When a customer picks a category, they see <strong>that category's banner</strong> and its <strong>Value Picks</strong> (products of that category with a Value amount). On <strong>All</strong>, they see only a slideshow (no Value Picks) of the "All products" banners below, followed by every category banner you've added. An empty banner is simply skipped.</p>
         <h3 style="margin:4px 0 10px;font-size:13.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);">All products: slideshow <span class="muted" style="text-transform:none;letter-spacing:0;">(up to 7)</span></h3>
+        <div class="row" style="margin-bottom:14px;"><div class="field"><label>Slideshow speed <span class="opt">(seconds each banner stays before sliding to the next)</span></label><input id="bannerSeconds" type="number" min="1" max="30" step="0.5" value="4.5" style="max-width:140px;"></div></div>
         <div id="allBannerRows"></div>
         <h3 style="margin:22px 0 10px;font-size:13.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);">One banner per category</h3>
         <div id="catBannerRows"><p class="muted">Categories appear here once you've added products.</p></div>
@@ -2027,11 +2028,11 @@ function renderDashboard(){
 // The storefront reads it: a category shows its own banner; "All" shows the
 // slideshow of the "all" banners followed by every category banner.
 const MAX_ALL_BANNERS = 7;
-let BANNER_CFG = { all: [], cats: {} };
+let BANNER_CFG = { all: [], cats: {}, seconds: 4.5 };
 function parseBannerCfg_(raw){
   let o = raw;
   if(typeof raw === 'string'){ try{ o = JSON.parse(raw); }catch(e){ o = null; } }
-  const out = { all: [], cats: {} };
+  const out = { all: [], cats: {}, seconds: (o && Number(o.seconds) >= 1) ? Number(o.seconds) : 4.5 };
   if(o && Array.isArray(o.all)) out.all = o.all.slice(0, MAX_ALL_BANNERS).map(b => ({ img:String((b&&b.img)||''), pid:String((b&&b.pid)||''), cat:String((b&&b.cat)||'') }));
   if(o && o.cats && typeof o.cats === 'object') Object.keys(o.cats).forEach(k => { const b = o.cats[k] || {}; out.cats[k] = { img:String(b.img||''), pid:String(b.pid||'') }; });
   return out;
@@ -2059,7 +2060,7 @@ function bannerRowHtml_(kind, key, title, b, cats, withCat){
   </div>`;
 }
 function readBannerEditor_(){
-  const out = { all: [], cats: {} };
+  const out = { all: [], cats: {}, seconds: Math.min(30, Math.max(1, Number((document.getElementById('bannerSeconds') || {}).value) || 4.5)) };
   document.querySelectorAll('#allBannerRows .bn-row').forEach(row => {
     out.all.push({ img: row.querySelector('.bn-url').value.trim(), pid: row.querySelector('.bn-pid').value, cat: (row.querySelector('.bn-cat') || {}).value || '' });
   });
@@ -2074,6 +2075,7 @@ function renderBannerEditor(cfg){
   if(!allBox || !catBox) return;
   if(cfg) BANNER_CFG = cfg;
   else if(allBox.querySelector('.bn-url')) BANNER_CFG = readBannerEditor_(); // keep anything typed but not saved yet
+  const secEl = document.getElementById('bannerSeconds'); if(secEl) secEl.value = BANNER_CFG.seconds || 4.5;
   const cats = bannerCategories_(Object.keys(BANNER_CFG.cats));
   allBox.innerHTML = Array.from({ length: MAX_ALL_BANNERS }, (_, i) => bannerRowHtml_('all', String(i), 'Slide ' + (i + 1), BANNER_CFG.all[i] || { img:'', pid:'', cat:'' }, cats, true)).join('');
   catBox.innerHTML = cats.length
@@ -2088,7 +2090,7 @@ document.addEventListener('input', (e) => {
 });
 async function saveCategoryBanners(){
   const cfg = readBannerEditor_();
-  const compact = { all: cfg.all.filter(b => b.img), cats: {} };
+  const compact = { all: cfg.all.filter(b => b.img), cats: {}, seconds: cfg.seconds };
   Object.keys(cfg.cats).forEach(k => { if(cfg.cats[k].img) compact.cats[k] = cfg.cats[k]; });
   const msg = document.getElementById('catBannerMsg');
   msg.textContent = 'Saving…';
