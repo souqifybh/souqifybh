@@ -179,7 +179,7 @@ function cardHtml(p){
 }
 
 function renderDeals(products){
-  const deals = products.filter(p => discountPct(p) >= 45 && (p.active !== false) && Number(p.stock) !== 0);
+  const deals = products.filter(p => discountPct(p) >= 45 && (p.active !== false) && Number(p.stock) !== 0 && !(p.preorder === true || p.preorder === 'TRUE'));
   const grid = document.getElementById('dealsGrid');
   const empty = document.getElementById('dealsEmpty');
   const count = document.getElementById('dealsCount');

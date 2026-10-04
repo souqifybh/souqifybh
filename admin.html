@@ -123,6 +123,13 @@
   .toggle-pill input{margin:0;}
   .toggle-pill.on{border-color:var(--blush-deep);background:#FFF3F3;color:var(--blush-ink);}
   .toggle-pill .ic{font-size:14px;}
+  .bn-row{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+  .bn-row:last-child{border-bottom:none;}
+  .bn-row .bn-prev{width:120px;aspect-ratio:2/1;object-fit:cover;border-radius:10px;border:1.5px dashed var(--line);background:#F7F5F5;}
+  .bn-row .bn-title{font-size:12.5px;font-weight:800;margin-bottom:6px;}
+  .bn-row .bn-links{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
+  .bn-row .bn-links select{flex:1;min-width:150px;}
+  @media (max-width:640px){ .bn-row{grid-template-columns:84px 1fr;} .bn-row .bn-prev{width:84px;} }
 
   button.primary{background:var(--ink);color:#fff;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13.5px;}
   button.primary:hover{background:#000;}
@@ -236,6 +243,7 @@
       <div class="sb-link" data-tab="homepage" onclick="switchTab('homepage')"><span class="ic">🏠</span> Homepage</div>
       <div class="sb-link" data-tab="media" onclick="switchTab('media')"><span class="ic">🎬</span> Media Library</div>
       <div class="sb-link" data-tab="orders" onclick="switchTab('orders')"><span class="ic">📦</span> Orders</div>
+      <div class="sb-link" data-tab="preorders" onclick="switchTab('preorders')"><span class="ic">⏳</span> Pre-orders <span id="preorderNavCount" class="badge active-yes" style="display:none;margin:0 0 0 auto;"></span></div>
       <div class="sb-link" data-tab="returns" onclick="switchTab('returns')"><span class="ic">↩️</span> Returns</div>
       <div class="sb-link" data-tab="customers" onclick="switchTab('customers')"><span class="ic">👤</span> Customers</div>
       <div class="sb-link" data-tab="marketing" onclick="switchTab('marketing')"><span class="ic">📣</span> Marketing</div>
@@ -330,6 +338,24 @@
           <label class="toggle-pill" id="pMoaPill" title="Cart must reach BHD 5.000 for free standard shipping, otherwise a delivery charge applies. Carts with a watch are exempt."><input type="checkbox" id="pMoa" onchange="syncPill('pMoa','pMoaPill')"><span class="ic">📦</span> MOA: min. cart BHD 5.000</label>
         </div>
 
+        <div class="field full" style="border:1.5px dashed var(--line);border-radius:14px;padding:14px 14px 4px;margin-bottom:16px;">
+          <div class="toggle-row" style="margin-bottom:10px;">
+            <label class="toggle-pill" id="pPreorderPill"><input type="checkbox" id="pPreorder" onchange="syncPill('pPreorder','pPreorderPill');togglePreorderFields()"><span class="ic">⏳</span> Pre-order product (not in stock yet)</label>
+          </div>
+          <p class="muted" style="margin:-2px 0 12px;">A pre-order product is kept out of the normal shop and sold on its own <strong>Pre-order</strong> page. Customers can order it now, and you collect their details in the <strong>Pre-orders</strong> tab. Stock is ignored while this is on. When the product arrives, use "Make available" in the Pre-orders tab.</p>
+          <div id="preorderFields" style="display:none;">
+            <label style="display:block;font-size:12.5px;font-weight:700;margin-bottom:8px;">Estimated delivery shown to customers</label>
+            <div class="toggle-row" style="margin-bottom:10px;">
+              <label class="toggle-pill" id="pPreModeDaysPill"><input type="radio" name="pPreMode" id="pPreModeDays" value="days" onchange="syncPreorderMode()"><span class="ic">📆</span> Days from the order time</label>
+              <label class="toggle-pill" id="pPreModeDatePill"><input type="radio" name="pPreMode" id="pPreModeDate" value="date" onchange="syncPreorderMode()"><span class="ic">🗓️</span> A fixed date</label>
+            </div>
+            <div class="row">
+              <div class="field" id="pPreDaysWrap"><label>Days after the customer orders <span class="opt">(e.g. 7 = "arrives in about 7 days")</span></label><input id="pPreorderDays" type="number" min="1" step="1" placeholder="e.g. 7"></div>
+              <div class="field" id="pPreDateWrap" style="display:none;"><label>Delivery date <span class="opt">(same date for every customer)</span></label><input id="pPreorderDate" type="date"></div>
+            </div>
+          </div>
+        </div>
+
         <input type="hidden" id="pId">
         <button class="primary" onclick="saveProduct()">Save product</button>
         <button class="ghost" id="cancelEditBtn" onclick="resetForm()" style="display:none;">Cancel edit</button>
@@ -346,6 +372,7 @@
             <option value="featured">Featured only</option>
             <option value="bestseller">Best sellers only</option>
             <option value="valueAmount">Value picks only</option>
+            <option value="preorder">Pre-order only</option>
             <option value="low">Low stock</option>
             <option value="inactive">Inactive</option>
           </select>
@@ -733,6 +760,17 @@
         </div>
       </div>
 
+      <div class="card" id="categoryBannersCard" style="margin-top:20px;">
+        <h2>Category banners <span class="muted">(top of the All Products page)</span></h2>
+        <p class="muted" style="margin-bottom:14px;">Paste image links (about 2:1 shape works best). When a customer picks a category, they see <strong>that category's banner</strong> and its <strong>Value Picks</strong> (products of that category with a Value amount). On <strong>All</strong>, they see a slideshow of the "All products" banners below, followed by every category banner you've added. An empty banner is simply skipped.</p>
+        <h3 style="margin:4px 0 10px;font-size:13.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);">All products: slideshow <span class="muted" style="text-transform:none;letter-spacing:0;">(up to 7)</span></h3>
+        <div id="allBannerRows"></div>
+        <h3 style="margin:22px 0 10px;font-size:13.5px;text-transform:uppercase;letter-spacing:0.04em;color:var(--ink-soft);">One banner per category</h3>
+        <div id="catBannerRows"><p class="muted">Categories appear here once you've added products.</p></div>
+        <button class="primary" onclick="saveCategoryBanners()" style="margin-top:6px;">Save category banners</button>
+        <span class="muted" id="catBannerMsg" style="margin-left:12px;"></span>
+      </div>
+
       <div class="grid2" style="margin-top:20px;">
         <div class="card">
           <h2>Announcement bar</h2>
@@ -890,6 +928,38 @@
       </div>
     </div>
 
+    <!-- ================= PRE-ORDERS ================= -->
+    <div class="panel" id="panel-preorders">
+      <div class="topbar">
+        <div><h1>Pre-orders</h1><p>Products customers can order before they arrive. Their details are collected here; when the product is available, turn them into normal orders.</p></div>
+        <button class="primary" onclick="startNewPreorderProduct()">+ Add a pre-order product</button>
+      </div>
+
+      <div class="card">
+        <h2>Pre-order products <span class="muted" id="preProductCount"></span></h2>
+        <table>
+          <thead><tr><th>Product</th><th>Estimated delivery</th><th>Waiting orders</th><th></th></tr></thead>
+          <tbody id="preProductRows"></tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Pre-order customers <span class="muted" id="preOrderCount"></span></h2>
+        <div class="toolbar">
+          <input type="text" id="preOrderSearch" placeholder="Search by name, phone, email or order ID…" oninput="renderPreorderOrders()">
+          <select id="preOrderFilter" onchange="renderPreorderOrders()">
+            <option value="waiting">Waiting for stock</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="all">All</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Estimated delivery</th><th>Amount</th><th></th></tr></thead>
+          <tbody id="preOrderRows"></tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- ================= RETURNS & REPLACEMENTS ================= -->
     <div class="panel" id="panel-returns">
       <div class="topbar">
@@ -1007,6 +1077,7 @@ const CONFIG = { API_URL: 'https://script.google.com/macros/s/AKfycbw3Qt1WWluoc0
 let ADMIN_PASSWORD = '';
 let PRODUCTS = [];
 let ORDERS = [];
+let PREORDERS = [];
 
 /* ---------------- auth ---------------- */
 // Login is now TWO requests instead of one big one, fired so the panel
@@ -1119,6 +1190,7 @@ function applyProducts(data){
   renderProductRows();
   buildHeroProductOptions();
   renderInventory();
+  try{ renderBannerEditor(); renderPreorderProducts(); renderPreorderOrders(); }catch(e){ /* pre-order / banner UI not ready yet */ }
 }
 function buildHeroProductOptions(){
   ['heroProductId','heroProductId2','heroProductId3'].forEach(id => {
@@ -1250,6 +1322,7 @@ function renderProductRows(){
   if(flag === 'featured') list = list.filter(p => isYes(p.featured));
   if(flag === 'bestseller') list = list.filter(p => isYes(p.bestseller));
   if(flag === 'valueAmount') list = list.filter(p => Number(p.valueAmount) > 0);
+  if(flag === 'preorder') list = list.filter(p => isYes(p.preorder));
   if(flag === 'low') list = list.filter(p => Number(p.stock) <= 5);
   if(flag === 'inactive') list = list.filter(p => !isYes(p.active));
 
@@ -1262,6 +1335,7 @@ function renderProductRows(){
       isYes(p.featured) ? '<span class="badge featured">⭐ Featured</span>' : '',
       isYes(p.bestseller) ? '<span class="badge bestseller">🔥 Best seller</span>' : '',
       isYes(p.moa) ? '<span class="badge featured">📦 MOA 5.000</span>' : '',
+      isYes(p.preorder) ? `<span class="badge sale">⏳ Pre-order · ${escapeHtmlAdmin(preorderEstimateText(p))}</span>` : '',
       Number(p.valueAmount) > 0 ? `<span class="badge bestseller">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
       pct > 0 ? `<span class="badge sale">🏷️ ${pct}% off</span>` : '',
       `<span class="badge ${isYes(p.active)?'active-yes':'active-no'}">${isYes(p.active)?'Active':'Hidden'}</span>`
@@ -1308,6 +1382,7 @@ function editProduct(id){
   document.getElementById('pBestseller').checked = isYes(p.bestseller);
   document.getElementById('pMoa').checked = isYes(p.moa);
   ['pActive','pFeatured','pBestseller','pMoa'].forEach(id => syncPill(id, id+'Pill'));
+  fillPreorderForm(p);
   updateDiscountPreview();
   document.getElementById('cancelEditBtn').style.display='inline-block';
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1322,6 +1397,7 @@ function resetForm(){
   document.getElementById('pBestseller').checked = false;
   document.getElementById('pMoa').checked = false;
   ['pActive','pFeatured','pBestseller','pMoa'].forEach(id => syncPill(id, id+'Pill'));
+  fillPreorderForm(null);
   document.getElementById('discountPreview').style.display='none';
   document.getElementById('cancelEditBtn').style.display='none';
 }
@@ -1353,6 +1429,14 @@ async function saveProduct(){
     moa: document.getElementById('pMoa').checked,
     valueAmount: parseFloat(document.getElementById('pValueAmount').value) || 0
   };
+  const pre = readPreorderForm();
+  if(pre.preorder){
+    if(pre.mode === 'days' && !(pre.days >= 1)){ alert('Please enter how many days after ordering the pre-order is expected to arrive (1 or more).'); return; }
+    if(pre.mode === 'date' && !pre.date){ alert('Please choose the estimated delivery date for this pre-order.'); return; }
+  }
+  payload.preorder = pre.preorder;
+  payload.preorderDays = pre.preorder && pre.mode === 'days' ? pre.days : 0;
+  payload.preorderDate = pre.preorder && pre.mode === 'date' ? pre.date : '';
   const msg = document.getElementById('productSaveMsg');
   msg.textContent = 'Saving…';
   const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(payload) });
@@ -1477,8 +1561,12 @@ function applyOrders(data){
   // them out of this regular Orders tab and out of the dashboard revenue
   // math (which assumes BHD), so an INR total never gets mislabeled "BHD"
   // or silently added into the BHD revenue stat.
-  ORDERS = (data.orders || []).filter(o => o.orderType !== 'gift').slice().reverse();
+  // Pre-orders (orderType === 'preorder') also stay out of this tab until the
+  // admin converts them to normal orders, from the Pre-orders tab.
+  PREORDERS = (data.orders || []).filter(o => o.orderType === 'preorder').slice().reverse();
+  ORDERS = (data.orders || []).filter(o => o.orderType !== 'gift' && o.orderType !== 'preorder').slice().reverse();
   renderOrderRows();
+  try{ renderPreorderProducts(); renderPreorderOrders(); }catch(e){ /* panel not ready yet */ }
 }
 function parseItems(o){ try{ return JSON.parse(o.items); }catch(e){ return []; } }
 
@@ -1933,6 +2021,257 @@ function renderDashboard(){
   `).join('') : `<p class="muted">No featured products yet. Star one in the Products tab.</p>`;
 }
 
+/* ---------------- category banners (All Products page) ---------------- */
+// Stored as ONE setting, "categoryBanners", holding JSON:
+//   { all:[{img,pid,cat}, ... up to 7], cats:{ "Watches":{img,pid}, ... } }
+// The storefront reads it: a category shows its own banner; "All" shows the
+// slideshow of the "all" banners followed by every category banner.
+const MAX_ALL_BANNERS = 7;
+let BANNER_CFG = { all: [], cats: {} };
+function parseBannerCfg_(raw){
+  let o = raw;
+  if(typeof raw === 'string'){ try{ o = JSON.parse(raw); }catch(e){ o = null; } }
+  const out = { all: [], cats: {} };
+  if(o && Array.isArray(o.all)) out.all = o.all.slice(0, MAX_ALL_BANNERS).map(b => ({ img:String((b&&b.img)||''), pid:String((b&&b.pid)||''), cat:String((b&&b.cat)||'') }));
+  if(o && o.cats && typeof o.cats === 'object') Object.keys(o.cats).forEach(k => { const b = o.cats[k] || {}; out.cats[k] = { img:String(b.img||''), pid:String(b.pid||'') }; });
+  return out;
+}
+function bannerCategories_(extra){
+  const list = [];
+  PRODUCTS.filter(p => !isYes(p.preorder)).forEach(p => { if(p.category && list.indexOf(p.category) === -1) list.push(p.category); });
+  (extra || []).forEach(k => { if(k && list.indexOf(k) === -1) list.push(k); });
+  return list;
+}
+function bannerRowHtml_(kind, key, title, b, cats, withCat){
+  const prodOpts = '<option value="">(no product link)</option>' + PRODUCTS.map(p => `<option value="${escapeHtmlAdmin(p.id)}" ${p.id === b.pid ? 'selected' : ''}>${escapeHtmlAdmin(p.name)}</option>`).join('');
+  const catOpts = '<option value="">(no category link)</option>' + cats.map(c => `<option value="${escapeHtmlAdmin(c)}" ${c === b.cat ? 'selected' : ''}>${escapeHtmlAdmin(c)}</option>`).join('');
+  const ph = 'https://placehold.co/240x120/F7F5F5/8A3B3B?text=%20';
+  return `<div class="bn-row" data-kind="${kind}" data-key="${escapeHtmlAdmin(key)}">
+    <img class="bn-prev" src="${escapeHtmlAdmin(b.img) || ph}" onerror="this.src='${ph}'">
+    <div>
+      <div class="bn-title">${escapeHtmlAdmin(title)}</div>
+      <input type="text" class="bn-url" placeholder="Banner image link https://…" value="${escapeHtmlAdmin(b.img)}">
+      <div class="bn-links">
+        <select class="bn-pid" title="Open this product when the banner is tapped">${prodOpts}</select>
+        ${withCat ? `<select class="bn-cat" title="Or open this category when the banner is tapped">${catOpts}</select>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+function readBannerEditor_(){
+  const out = { all: [], cats: {} };
+  document.querySelectorAll('#allBannerRows .bn-row').forEach(row => {
+    out.all.push({ img: row.querySelector('.bn-url').value.trim(), pid: row.querySelector('.bn-pid').value, cat: (row.querySelector('.bn-cat') || {}).value || '' });
+  });
+  document.querySelectorAll('#catBannerRows .bn-row').forEach(row => {
+    out.cats[row.dataset.key] = { img: row.querySelector('.bn-url').value.trim(), pid: row.querySelector('.bn-pid').value };
+  });
+  return out;
+}
+function renderBannerEditor(cfg){
+  const allBox = document.getElementById('allBannerRows');
+  const catBox = document.getElementById('catBannerRows');
+  if(!allBox || !catBox) return;
+  if(cfg) BANNER_CFG = cfg;
+  else if(allBox.querySelector('.bn-url')) BANNER_CFG = readBannerEditor_(); // keep anything typed but not saved yet
+  const cats = bannerCategories_(Object.keys(BANNER_CFG.cats));
+  allBox.innerHTML = Array.from({ length: MAX_ALL_BANNERS }, (_, i) => bannerRowHtml_('all', String(i), 'Slide ' + (i + 1), BANNER_CFG.all[i] || { img:'', pid:'', cat:'' }, cats, true)).join('');
+  catBox.innerHTML = cats.length
+    ? cats.map(c => bannerRowHtml_('cat', c, c, BANNER_CFG.cats[c] || { img:'', pid:'' }, cats, false)).join('')
+    : '<p class="muted">Categories appear here once you have added products.</p>';
+}
+document.addEventListener('input', (e) => {
+  if(e.target && e.target.classList && e.target.classList.contains('bn-url')){
+    const img = e.target.closest('.bn-row').querySelector('.bn-prev');
+    if(img) img.src = e.target.value.trim() || 'https://placehold.co/240x120/F7F5F5/8A3B3B?text=%20';
+  }
+});
+async function saveCategoryBanners(){
+  const cfg = readBannerEditor_();
+  const compact = { all: cfg.all.filter(b => b.img), cats: {} };
+  Object.keys(cfg.cats).forEach(k => { if(cfg.cats[k].img) compact.cats[k] = cfg.cats[k]; });
+  const msg = document.getElementById('catBannerMsg');
+  msg.textContent = 'Saving…';
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'updateSettings', password: ADMIN_PASSWORD, settings: { categoryBanners: JSON.stringify(compact) } }) });
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'failed');
+    BANNER_CFG = cfg;
+    msg.textContent = '✓ Saved. Live on the All Products page now.';
+  }catch(err){ msg.textContent = '⚠ Could not save. Please try again.'; }
+  setTimeout(() => msg.textContent = '', 4000);
+}
+
+/* ---------------- pre-orders ---------------- */
+function fmtYmd_(v){
+  const m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return '';
+  return Number(m[3]) + ' ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][Number(m[2]) - 1] + ' ' + m[1];
+}
+function preorderEstimateText(p){
+  const d = fmtYmd_(p.preorderDate);
+  if(d) return d;
+  const n = Math.round(Number(p.preorderDays) || 0);
+  return n > 0 ? `${n} day${n === 1 ? '' : 's'} after ordering` : 'not set';
+}
+function togglePreorderFields(){
+  const on = document.getElementById('pPreorder').checked;
+  document.getElementById('preorderFields').style.display = on ? 'block' : 'none';
+  if(on && !document.querySelector('input[name=pPreMode]:checked')) document.getElementById('pPreModeDays').checked = true;
+  syncPreorderMode();
+}
+function syncPreorderMode(){
+  const mode = (document.querySelector('input[name=pPreMode]:checked') || {}).value || 'days';
+  document.getElementById('pPreDaysWrap').style.display = mode === 'days' ? 'block' : 'none';
+  document.getElementById('pPreDateWrap').style.display = mode === 'date' ? 'block' : 'none';
+  syncPill('pPreModeDays', 'pPreModeDaysPill');
+  syncPill('pPreModeDate', 'pPreModeDatePill');
+}
+function fillPreorderForm(p){
+  const on = !!(p && isYes(p.preorder));
+  document.getElementById('pPreorder').checked = on;
+  syncPill('pPreorder', 'pPreorderPill');
+  const hasDate = !!(p && fmtYmd_(p.preorderDate));
+  document.getElementById('pPreModeDays').checked = !hasDate;
+  document.getElementById('pPreModeDate').checked = hasDate;
+  document.getElementById('pPreorderDays').value = (p && Number(p.preorderDays) > 0) ? Number(p.preorderDays) : '';
+  document.getElementById('pPreorderDate').value = hasDate ? String(p.preorderDate).slice(0, 10) : '';
+  togglePreorderFields();
+}
+function readPreorderForm(){
+  const mode = (document.querySelector('input[name=pPreMode]:checked') || {}).value || 'days';
+  return { preorder: document.getElementById('pPreorder').checked, mode, days: Math.round(Number(document.getElementById('pPreorderDays').value) || 0), date: document.getElementById('pPreorderDate').value };
+}
+function startNewPreorderProduct(){
+  switchTab('products');
+  resetForm();
+  document.getElementById('pPreorder').checked = true;
+  syncPill('pPreorder', 'pPreorderPill');
+  togglePreorderFields();
+  window.scrollTo({ top:0, behavior:'smooth' });
+  document.getElementById('pName').focus();
+}
+function waitingPreordersFor_(productId){
+  let orders = 0, qty = 0;
+  PREORDERS.forEach(o => {
+    if(String(o.orderStatus || '').toLowerCase() === 'cancelled') return;
+    const mine = parseItems(o).filter(it => it && it.id === productId);
+    if(mine.length){ orders++; qty += mine.reduce((n, it) => n + (Number(it.qty) || 0), 0); }
+  });
+  return { orders, qty };
+}
+function renderPreorderProducts(){
+  const body = document.getElementById('preProductRows');
+  if(!body) return;
+  const list = PRODUCTS.filter(p => isYes(p.preorder));
+  document.getElementById('preProductCount').textContent = list.length ? `${list.length} product${list.length === 1 ? '' : 's'}` : '';
+  body.innerHTML = list.length ? list.map(p => {
+    const img = (p.images && p.images[0]) || 'https://placehold.co/100x100/FDF7F7/8A3B3B?text=GM';
+    const w = waitingPreordersFor_(p.id);
+    return `<tr>
+      <td><div class="p-name-cell"><img class="p-thumb" src="${escapeHtmlAdmin(img)}"><div><div class="nm">${escapeHtmlAdmin(p.name)}</div><div class="cat">${Number(p.price).toFixed(3)} BHD${isYes(p.active) ? '' : ' · Hidden'}</div></div></div></td>
+      <td>${escapeHtmlAdmin(preorderEstimateText(p))}</td>
+      <td>${w.orders ? `<b>${w.orders}</b> order${w.orders === 1 ? '' : 's'} · ${w.qty} unit${w.qty === 1 ? '' : 's'}` : '<span class="muted">none yet</span>'}</td>
+      <td style="white-space:nowrap;">
+        <button class="primary small" onclick="makeProductAvailable('${p.id}')">✓ Make available</button>
+        <button class="ghost small" onclick="switchTab('products');editProduct('${p.id}')">Edit</button>
+      </td>
+    </tr>`;
+  }).join('') : `<tr class="empty-row"><td colspan="4">No pre-order products yet. Use "Add a pre-order product" above, or tick "Pre-order product" on any product.</td></tr>`;
+}
+function renderPreorderOrders(){
+  const body = document.getElementById('preOrderRows');
+  if(!body) return;
+  const q = (document.getElementById('preOrderSearch').value || '').toLowerCase();
+  const filter = document.getElementById('preOrderFilter').value;
+  const isCancelled = o => String(o.orderStatus || '').toLowerCase() === 'cancelled';
+  const waitingCount = PREORDERS.filter(o => !isCancelled(o)).length;
+  const navBadge = document.getElementById('preorderNavCount');
+  if(navBadge){ navBadge.textContent = waitingCount; navBadge.style.display = waitingCount ? 'inline-block' : 'none'; }
+  let list = PREORDERS.filter(o => filter === 'all' || (filter === 'cancelled' ? isCancelled(o) : !isCancelled(o)));
+  if(q) list = list.filter(o => [o.id, o.customerName, o.phone, o.customerEmail, o.address].join(' ').toLowerCase().includes(q));
+  document.getElementById('preOrderCount').textContent = list.length ? `${list.length} order${list.length === 1 ? '' : 's'}` : '';
+  body.innerHTML = list.length ? list.map(o => {
+    const items = parseItems(o);
+    const cancelled = isCancelled(o);
+    const itemsHtml = items.map(it => `<div>${escapeHtmlAdmin(it.name || it.id)} × ${Number(it.qty) || 1}${it.color ? ` <span class="muted">(${escapeHtmlAdmin(it.color)})</span>` : ''}</div>`).join('');
+    const amount = Number(o.amountCollected != null && o.amountCollected !== '' ? o.amountCollected : o.total) || 0;
+    return `<tr class="${cancelled ? 'order-cancelled' : ''}">
+      <td><b>${escapeHtmlAdmin(o.id)}</b><div class="muted">${escapeHtmlAdmin(new Date(o.timestamp).toLocaleString())}</div>${cancelled ? '<span class="badge active-no">Cancelled</span>' : '<span class="badge featured">⏳ Waiting</span>'}</td>
+      <td><b>${escapeHtmlAdmin(o.customerName)}</b><div>${escapeHtmlAdmin(o.phone)}</div><div class="muted">${escapeHtmlAdmin(o.customerEmail)}</div><div class="muted" style="max-width:240px;">${escapeHtmlAdmin(o.address)}</div></td>
+      <td>${itemsHtml}</td>
+      <td>${escapeHtmlAdmin(fmtYmd_(o.preorderEta) || '-')}${cancelled ? '' : `<div><button class="ghost small" style="margin-top:4px;" onclick="changePreorderEta('${o.id}')">Change date</button></div>`}</td>
+      <td>${amount.toFixed(3)} BHD<div class="muted">${escapeHtmlAdmin(o.paymentMethod || '')}</div></td>
+      <td style="white-space:nowrap;">${cancelled ? '' : `<button class="primary small" onclick="convertPreorderOrder('${o.id}')">→ Convert to normal order</button>
+        <button class="ghost small danger" onclick="cancelPreorderOrder('${o.id}')">Cancel</button>`}</td>
+    </tr>`;
+  }).join('') : `<tr class="empty-row"><td colspan="6">${filter === 'cancelled' ? 'No cancelled pre-orders.' : 'No pre-orders waiting right now.'}</td></tr>`;
+}
+async function reloadAfterPreorderChange_(){
+  try{ await Promise.all([loadProducts(), loadOrders()]); renderDashboard(); }catch(e){ /* the next manual refresh will catch up */ }
+}
+async function makeProductAvailable(id){
+  const p = PRODUCTS.find(x => x.id === id);
+  if(!p) return;
+  const w = waitingPreordersFor_(id);
+  const answer = prompt(`Make "${p.name}" a normal product on the shop.\n\nHow many units do you have now (in total)?${w.orders ? `\n\n${w.orders} waiting pre-order(s) for ${w.qty} unit(s) will be taken out of this number if you convert them.` : ''}`, String(w.qty || 10));
+  if(answer === null) return;
+  const stock = Number(answer);
+  if(!(stock >= 0)){ alert('Please enter a number (0 or more).'); return; }
+  let convert = true;
+  if(w.orders){
+    convert = confirm(`Turn the ${w.orders} waiting pre-order(s) for this product into normal orders now?\n\nOK = convert them now (customers are emailed that their order is available).\nCancel = just make the product available and leave the pre-orders waiting. You can convert each one yourself later.`);
+  }
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'makeProductAvailable', password: ADMIN_PASSWORD, id, stock, convertOrders: convert }) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.error || 'Could not update this product.'); return; }
+    let msg = `✓ "${p.name}" is now a normal product with ${stock} in stock.`;
+    if(convert) msg += `\n${data.converted || 0} pre-order(s) converted to normal orders (see the Orders tab).`;
+    if(data.waiting) msg += `\n${data.waiting} order(s) also contain another pre-order product, so they stay waiting until every product in them is available.`;
+    if(data.failed && data.failed.length) msg += `\n\nCould not convert:\n${data.failed.join('\n')}`;
+    alert(msg);
+  }catch(err){ alert('Could not reach the server. Please try again.'); return; }
+  reloadAfterPreorderChange_();
+}
+async function convertPreorderOrder(id){
+  const o = PREORDERS.find(x => x.id === id);
+  if(!o) return;
+  const stillPre = parseItems(o).some(it => { const p = PRODUCTS.find(x => x.id === it.id); return p && isYes(p.preorder); });
+  if(!confirm(`Convert ${id} (${o.customerName}) into a normal order?\n\nIt moves to the Orders tab, the items are taken out of stock, and the customer is emailed that it's available.` + (stillPre ? `\n\nNote: this product is still marked as a pre-order on the shop. Use "Make available" if it has arrived.` : ''))) return;
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'convertPreorder', password: ADMIN_PASSWORD, id }) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.error || 'Could not convert this order.'); return; }
+  }catch(err){ alert('Could not reach the server. Please try again.'); return; }
+  reloadAfterPreorderChange_();
+}
+async function changePreorderEta(id){
+  const o = PREORDERS.find(x => x.id === id);
+  if(!o) return;
+  const answer = prompt('New estimated delivery date for this customer (format YYYY-MM-DD):', String(o.preorderEta || '').slice(0, 10));
+  if(answer === null) return;
+  const eta = answer.trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(eta)){ alert('Please type the date like 2026-10-25.'); return; }
+  const notify = confirm('Email the customer about the new date?\n\nOK = send an email. Cancel = just update it.');
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'setPreorderEta', password: ADMIN_PASSWORD, id, eta, notify }) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.error || 'Could not change the date.'); return; }
+    o.preorderEta = eta;
+    renderPreorderOrders();
+  }catch(err){ alert('Could not reach the server. Please try again.'); }
+}
+async function cancelPreorderOrder(id){
+  if(!confirm(`Cancel pre-order ${id}? The customer will be emailed. No stock is changed (none was taken).`)) return;
+  try{
+    const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'cancelOrderAdmin', password: ADMIN_PASSWORD, id, restock:false }) });
+    const data = await res.json();
+    if(!data.ok){ alert(data.error || 'Could not cancel this order.'); return; }
+  }catch(err){ alert('Could not reach the server. Please try again.'); return; }
+  reloadAfterPreorderChange_();
+}
+
 /* ---------------- homepage hero banner ---------------- */
 async function loadHeroSettings(){
   try{
@@ -1959,6 +2298,7 @@ function applySettings(s){
     document.getElementById('heroCategory2').value = s.heroCategory2 || '';
     document.getElementById('heroCategory3').value = s.heroCategory3 || '';
     updateHeroPreview();
+    renderBannerEditor(parseBannerCfg_(s.categoryBanners));
     document.getElementById('announcementActive').checked = s.announcementActive === true || s.announcementActive === 'TRUE';
     syncPill('announcementActive','announcementActivePill');
     document.getElementById('announcementText').value = s.announcementText || '';

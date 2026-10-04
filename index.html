@@ -1443,6 +1443,30 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   html[dir="rtl"] .ap-vp-next{right:auto;left:2px;transform:translateY(-50%) scaleX(-1);}
   @media (min-width:640px){ .ap-vp-wrap{margin:16px auto 22px;max-width:1180px;padding:10px 10px 14px;} .ap-vp-card{max-width:300px;} .ap-vp-card .vp-name{max-width:206px;} }
 
+  /* ---------- banner slideshow (All Products page: category banners) ---------- */
+  .vp-banner.vp-slides{cursor:default;}
+  .vp-banner .vp-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .6s ease;cursor:pointer;}
+  .vp-banner .vp-slide.active{opacity:1;z-index:1;}
+  .vp-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:6px;z-index:3;pointer-events:none;}
+  .vp-dots span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.7);box-shadow:0 0 0 1px rgba(0,0,0,.12);pointer-events:auto;cursor:pointer;transition:all .2s ease;}
+  .vp-dots span.active{width:18px;border-radius:6px;background:#fff;}
+  @media (prefers-reduced-motion: reduce){ .vp-banner .vp-slide{transition:none;} }
+
+  /* ---------- pre-order ---------- */
+  .card-badge.pre{background:#EDE6FA;color:#4B2E8F;}
+  .add-btn.pre{background:#5B3FA6;border-color:#5B3FA6;color:#fff;}
+  .add-btn.pre:hover{background:#4B2E8F;}
+  .pre-eta{font-size:11.5px;margin-top:5px;line-height:1.3;color:#4B2E8F;font-weight:700;}
+  .pre-eta b{font-weight:800;}
+  .pdp-stock.pre{color:#4B2E8F;}
+  .pdp-pre-note{display:none;margin:-10px 0 18px;padding:10px 12px;border-radius:12px;background:#F3EEFC;color:#4B2E8F;font-size:12.5px;font-weight:600;line-height:1.5;}
+  .ci-pre{font-size:11.5px;font-weight:700;color:#4B2E8F;margin:2px 0;}
+  .checkout-pre-note{display:none;margin:0 0 14px;padding:10px 12px;border-radius:12px;background:#F3EEFC;color:#4B2E8F;font-size:12.5px;font-weight:700;line-height:1.5;}
+  .po-intro{margin:14px 14px 4px;padding:14px 16px;border-radius:18px;background:#F3EEFC;border:1px solid #E1D6F6;color:#4B2E8F;font-size:13.5px;font-weight:600;line-height:1.55;}
+  @media (min-width:640px){ .po-intro{margin:16px auto 4px;max-width:1180px;} }
+  .po-title{font-size:16px;font-weight:800;color:var(--ink);}
+  .chip.pre-chip{border-color:#CDBCF0;color:#4B2E8F;background:#F3EEFC;white-space:nowrap;}
+  .po-link{display:none;}
   .ap-toolbar{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}
   .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
   .ap-chips::-webkit-scrollbar{display:none;}
@@ -1603,6 +1627,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     </div>
     <div class="nav-links">
       <a href="javascript:void(0)" onclick="openAllProductsPage()" data-i18n="navShop">Shop</a>
+      <a href="javascript:void(0)" class="po-link" onclick="openPreorderPage()" data-i18n="navPreorder">Pre-order</a>
       <a href="#categories" data-i18n="navCategories">Categories</a>
       <a href="#reviews" data-i18n="navReviews">Reviews</a>
       <a href="#about" data-i18n="navAbout">About</a>
@@ -1648,6 +1673,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   </div>
   <div class="mobile-menu" id="mobileMenu">
     <a href="javascript:void(0)" onclick="closeMobileMenu();openAllProductsPage();" data-i18n="navShop">Shop</a>
+    <a href="javascript:void(0)" class="po-link" onclick="closeMobileMenu();openPreorderPage();" data-i18n="navPreorder">Pre-order</a>
     <a href="#categories" onclick="closeMobileMenu()" data-i18n="navCategories">Categories</a>
     <a href="#reviews" onclick="closeMobileMenu()" data-i18n="navReviews">Reviews</a>
     <a href="#about" onclick="closeMobileMenu()" data-i18n="navAbout">About</a>
@@ -1915,6 +1941,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <button class="close-x" onclick="closeCheckout()">✕</button>
     <div id="checkoutStep1">
       <h3 data-i18n="checkoutTitle">Checkout</h3>
+      <div class="checkout-pre-note" id="checkoutPreNote"></div>
       <div class="guest-banner" id="guestBanner" style="display:none;">
         <span data-i18n="guestBannerText">New here? fill these details.</span> <a href="javascript:void(0)" onclick="switchToLogin()" data-i18n="guestBannerLogin">Log in</a> <span data-i18n="guestBannerSuffix">if you already have one.</span>
       </div>
@@ -2212,6 +2239,19 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   </div>
 </div>
 
+<!-- ================= Pre-order page (products customers can order before they arrive) ================= -->
+<div class="ap-overlay" id="poOverlay">
+  <div class="ap-topbar">
+    <button class="ap-back" onclick="closePreorderPage()" aria-label="Back">←</button>
+    <div class="po-title">⏳ <span data-i18n="preorderTitle">Pre-order</span></div>
+    <span style="flex:1;"></span>
+    <button class="ap-cart-btn icon-btn" onclick="openCart()" aria-label="Cart"><span class="brand-cart-icon cart-emoji" role="img" aria-label="Cart"></span><span class="badge-corner" id="poCartCount">0</span></button>
+  </div>
+  <div class="po-intro" data-i18n="preorderIntro">Order these items before they arrive. We'll deliver as soon as they're in stock. Pay cash on delivery.</div>
+  <div class="ap-count" id="poResultCount"></div>
+  <div class="ap-grid" id="poGrid"></div>
+</div>
+
 <!-- ================= All products page (sort/filter/browse) ================= -->
 <div class="ap-overlay" id="apOverlay">
   <div class="ap-topbar">
@@ -2223,9 +2263,9 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     <button class="ap-cart-btn icon-btn" onclick="openCart()" aria-label="Cart"><span class="brand-cart-icon cart-emoji" role="img" aria-label="Cart"></span><span class="badge-corner" id="apCartCount">0</span></button>
   </div>
   <div class="ap-vp-wrap" id="apValuePicksWrap" style="display:none;">
-    <div class="vp-banner" id="apVpBanner" onclick="hsSlideClick(0)" style="display:none;"><img id="apVpBannerImg" src="" alt="Value Picks"></div>
-    <div class="ap-vp-head"><i></i><b data-i18n="valuePicksTitle">Value Picks</b></div>
-    <div class="ap-vp-rail-wrap">
+    <div class="vp-banner vp-slides" id="apVpBanner" style="display:none;"></div>
+    <div class="ap-vp-head" id="apVpHead"><i></i><b data-i18n="valuePicksTitle">Value Picks</b></div>
+    <div class="ap-vp-rail-wrap" id="apVpRailWrap">
       <div class="ap-vp-rail" id="apValuePicksRail"></div>
       <button class="ap-vp-next" onclick="apValuePicksScroll(1)" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     </div>
@@ -2370,6 +2410,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
         <div class="pdp-getit" id="pdpGetIt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span><span class="getit-lbl"></span> <span class="getit-val"></span></span></div>
         <div class="pdp-free-delivery" id="pdpFreeDelivery"><span class="van">🚚</span> <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span></div>
         <div class="pdp-stock" id="pdpStock"></div>
+        <div class="pdp-pre-note" id="pdpPreNote"></div>
         <div class="pdp-activity" id="pdpActivity"></div>
         <div class="pdp-colors" id="pdpColors" style="display:none;">
           <div class="colors-label" data-i18n="pdpColorLabel">Color</div>
@@ -2890,6 +2931,8 @@ function orderCardHtml(o){
   const track = (status === 'shipped' || status === 'delivered') && o.trackingNumber
     ? `<div class="oc-track">📦 Tracking number: <strong>${o.trackingNumber}</strong>${o.trackingUrl ? `. <a href="${o.trackingUrl}" target="_blank" rel="noopener">Track package →</a>` : ''}</div>`
     : '';
+  const preBlock = (o.orderType === 'preorder' && status !== 'cancelled')
+    ? `<div class="oc-track">⏳ ${T('preorderBadge')} · ${T('preorderEstDelivery')}: <strong>${ymdLabel_(o.preorderEta) || '—'}</strong></div>` : '';
   const returnBlock = status === 'delivered' ? returnSectionHtml(o) : '';
   const cancelBlock = canCancelOrder_(o) ? `
     <div class="oc-cancel-wrap">
@@ -2924,6 +2967,7 @@ function orderCardHtml(o){
       </div>
       <div class="oc-items">${itemsText || '—'}</div>
       <div class="oc-total">${Number(o.total).toFixed(3)} BHD</div>
+      ${preBlock}
       ${track}
       ${cancelBlock}
       ${returnBlock}
@@ -3763,6 +3807,13 @@ const I18N = {
     promoInvalid:'This code is not valid.', promoNetworkError:'Could not reach the server. Please try again.',
     trustCod:'Cash on delivery', trustBenefitpay:'BenefitPay accepted', trustBhd:'Priced in BHD', trustFreeDelivery:'Free delivery all over Bahrain', trustSecure:'Secure checkout',
     addBtn:'Add', trustBahrain:'Bahrain based website', trustFreeFast:'Free & fast delivery', getItBy:'Get it by', valueTag:'VALUE', valuePicksTitle:'Value Picks', limitedDeals:'Limited Deals', freeDeliveryBadge:'Free Delivery in Bahrain', codBadge:'Cash on Delivery', chipAll:'All', catGeneral:'General',
+    navPreorder:'Pre-order', preorderTitle:'Pre-order', preorderBadge:'Pre-order', preorderBtn:'Pre-order', preorderNow:'Pre-order now', preorderEstDelivery:'Est. delivery',
+    preorderIntro:"Order these items before they arrive. We'll deliver as soon as they're in stock. Pay cash on delivery.", preorderEmpty:'No pre-order items right now. Check back soon!',
+    preorderMixPre:'Pre-order items have to be ordered separately from in-stock items. Replace the items in your cart with this pre-order?',
+    preorderMixNormal:'In-stock items have to be ordered separately from pre-order items. Replace the pre-order items in your cart with this one?',
+    preorderNote:"Pay cash on delivery when your pre-order arrives. We'll contact you before it ships.",
+    preorderConfirmText:"Pre-order {id} received. Estimated delivery: {date}. You'll pay {amount} BHD in cash on delivery. We'll email and contact you as soon as it's ready.",
+    preorderCheckoutNote:'This is a pre-order: the items are not in stock yet. Estimated delivery: {date}.', preorderConfirmTitle:'Pre-order confirmed',
     saleOff:'off', featuredBadge:'⭐ Featured', bestsellerBadge:'🔥 Best seller', onlyLeft:'Only {n} left', noProductsMatch:'No products match yet. Try another search.', viewAllResults:'View all matching products',
     goToCartBtn:'Go to cart', searchResultsFor:'Search results for "{q}"', noResultsForQuery:'No results found for "{q}"',
     productsAvailable:'{n} products available now', productAvailable:'1 product available now',
@@ -3852,6 +3903,13 @@ const I18N = {
     promoInvalid:'هذا الرمز غير صالح.', promoNetworkError:'تعذر الوصول إلى الخادم. يرجى المحاولة مرة أخرى.',
     trustCod:'الدفع عند الاستلام', trustBenefitpay:'يقبل BenefitPay', trustBhd:'الأسعار بالدينار البحريني', trustFreeDelivery:'توصيل مجاني لجميع مناطق البحرين', trustSecure:'دفع آمن',
     addBtn:'أضف', trustBahrain:'موقع بحريني', trustFreeFast:'توصيل مجاني وسريع', getItBy:'احصل عليه بحلول', valueTag:'قيمة', valuePicksTitle:'اختيارات القيمة', limitedDeals:'عروض محدودة', freeDeliveryBadge:'توصيل مجاني في البحرين', codBadge:'الدفع عند الاستلام', chipAll:'الكل', catGeneral:'عام',
+    navPreorder:'طلب مسبق', preorderTitle:'طلب مسبق', preorderBadge:'طلب مسبق', preorderBtn:'اطلب مسبقاً', preorderNow:'اطلب مسبقاً الآن', preorderEstDelivery:'التوصيل المتوقع',
+    preorderIntro:'اطلب هذه المنتجات قبل وصولها وسنوصلها لك فور توفرها. الدفع نقداً عند الاستلام.', preorderEmpty:'لا توجد منتجات للطلب المسبق حالياً. تابعنا قريباً!',
+    preorderMixPre:'يجب طلب المنتجات المسبقة بشكل منفصل عن المنتجات المتوفرة. هل تريد استبدال محتويات السلة بهذا المنتج؟',
+    preorderMixNormal:'يجب طلب المنتجات المتوفرة بشكل منفصل عن المنتجات المسبقة. هل تريد استبدال المنتجات المسبقة في السلة بهذا المنتج؟',
+    preorderNote:'ادفع نقداً عند الاستلام عند وصول طلبك المسبق. سنتواصل معك قبل الشحن.',
+    preorderConfirmText:'تم استلام طلبك المسبق {id}. التوصيل المتوقع: {date}. ستدفع {amount} د.ب نقداً عند الاستلام. سنتواصل معك فور جاهزيته.',
+    preorderCheckoutNote:'هذا طلب مسبق: المنتجات غير متوفرة بعد. التوصيل المتوقع: {date}.', preorderConfirmTitle:'تم تأكيد الطلب المسبق',
     saleOff:'خصم', featuredBadge:'⭐ مميز', bestsellerBadge:'🔥 الأكثر مبيعًا', onlyLeft:'{n} فقط متبقي', noProductsMatch:'لا توجد منتجات مطابقة. جرّب بحثًا آخر.', viewAllResults:'عرض جميع المنتجات المطابقة',
     goToCartBtn:'الذهاب إلى السلة', searchResultsFor:'نتائج البحث عن "{q}"', noResultsForQuery:'لا توجد نتائج لـ "{q}"',
     productsAvailable:'{n} منتج متوفر الآن', productAvailable:'منتج واحد متوفر الآن',
@@ -4017,6 +4075,7 @@ function normalizeProduct(p){
   if(!images.length && p.image) images = [p.image];
   if(!images.length) images = ['https://placehold.co/700x700/FDF7F7/8A3B3B?text=Souqify-bh'];
   const compareAtPrice = p.compareAtPrice !== undefined && p.compareAtPrice !== '' ? Number(p.compareAtPrice) : null;
+  const isPre = p.preorder === true || p.preorder === 'TRUE' || p.preorder === 'true' || p.preorder === 1 || p.preorder === '1';
   return Object.assign({}, p, {
     images,
     price: Number(p.price),
@@ -4024,7 +4083,12 @@ function normalizeProduct(p){
     featured: p.featured === true || p.featured === 'TRUE' || p.featured === 1 || p.featured === '1',
     bestseller: p.bestseller === true || p.bestseller === 'TRUE' || p.bestseller === 1 || p.bestseller === '1',
     valueAmount: Number(p.valueAmount) || 0,
-    stock: p.stock === undefined || p.stock === '' ? 10 : Number(p.stock)
+    // Pre-order products have no real stock yet, so they're shown as always
+    // orderable (99). The server never checks or takes stock for them.
+    preorder: isPre,
+    preorderDays: Math.max(0, Math.round(Number(p.preorderDays) || 0)),
+    preorderDate: /^\d{4}-\d{2}-\d{2}/.test(String(p.preorderDate || '')) ? String(p.preorderDate).slice(0, 10) : '',
+    stock: isPre ? 99 : (p.stock === undefined || p.stock === '' ? 10 : Number(p.stock))
   });
 }
 
@@ -4055,6 +4119,43 @@ function getItByDateStr_(){
 }
 function getItByHtml_(){
   return `<div class="getit"><span class="getit-lbl">${T('getItBy')}</span> <span class="getit-val">${getItByDateStr_()}</span></div>`;
+}
+/* ================= Pre-order helpers ================= */
+// A pre-order product's estimated delivery is EITHER a fixed date set by the
+// admin OR "N days after the customer orders" (counted from today, Bahrain time).
+function preorderEtaYmd_(p){
+  if(p && p.preorderDate) return p.preorderDate;
+  const n = bahrainNow_();
+  const d = new Date(Date.UTC(n.y, n.m - 1, n.d + Math.max(0, Number(p && p.preorderDays) || 0)));
+  return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+}
+function ymdLabel_(ymd){
+  const m = String(ymd || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(!m) return '';
+  const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+  if(currentLang === 'ar'){
+    try{ return new Intl.DateTimeFormat('ar-BH-u-nu-latn', { day:'numeric', month:'short', timeZone:'UTC' }).format(d); }catch(e){}
+  }
+  return d.getUTCDate() + ' ' + GETIT_MONTHS_EN[d.getUTCMonth()];
+}
+function preorderEtaLabel_(p){ return ymdLabel_(preorderEtaYmd_(p)); }
+function preorderEtaHtml_(p){
+  return `<div class="pre-eta">⏳ ${T('preorderEstDelivery')}: <b>${preorderEtaLabel_(p)}</b></div>`;
+}
+function cartHasPreorder(){ return CART.some(i => i.preorder); }
+// Latest estimated date among the pre-order items in the cart (YYYY-MM-DD).
+function cartPreorderEtaYmd_(){
+  let best = '';
+  CART.forEach(i => {
+    if(!i.preorder) return;
+    const p = PRODUCTS.find(x => x.id === i.id);
+    const eta = p && p.preorder ? preorderEtaYmd_(p) : (i.eta || '');
+    if(eta && eta > best) best = eta;
+  });
+  return best;
+}
+function catalogCategories_(){
+  return [...new Set(PRODUCTS.filter(p => !p.preorder).map(p => p.category).filter(Boolean))];
 }
 function refreshGetItBy(){
   const lbl = T('getItBy'), val = getItByDateStr_();
@@ -4094,7 +4195,24 @@ function writeProductsCache(products){
 }
 
 let productsRouteHandled = false;
+function updatePreorderLinks_(){
+  const has = PRODUCTS.some(p => p.preorder);
+  document.querySelectorAll('.po-link').forEach(el => { el.style.display = has ? '' : 'none'; });
+}
+// Keeps pre-order flags in saved carts in line with the live catalogue
+// (e.g. a product was moved from pre-order to normal after it was added).
+function syncCartPreorderFlags_(){
+  let changed = false;
+  CART.forEach(i => {
+    const pp = PRODUCTS.find(x => x.id === i.id);
+    if(pp && !!pp.preorder !== !!i.preorder){ i.preorder = !!pp.preorder; changed = true; }
+  });
+  if(changed) saveCart();
+}
 function renderAllProductSections(){
+  syncCartPreorderFlags_();
+  updatePreorderLinks_();
+  if(document.getElementById('poOverlay').classList.contains('show')) renderPreorderGrid();
   buildCategoryChips();
   buildCategoryCards();
   buildTopCategoryStrip();
@@ -4114,7 +4232,7 @@ function renderAllProductSections(){
     const apMatch = location.hash.match(/^#\/products(?:\/(.+))?$/);
     if(apMatch){
       const requestedCat = apMatch[1] ? decodeURIComponent(apMatch[1]) : 'All';
-      const validCats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+      const validCats = ['All', ...catalogCategories_()];
       activeCategory = validCats.includes(requestedCat) ? requestedCat : 'All';
       openAllProductsPage();
     }
@@ -4199,10 +4317,27 @@ async function refreshLiveStock(){
 
 // Re-applies the latest stock number to an already-open product page,
 // without rebuilding the whole PDP (keeps gallery/scroll position intact).
+// Shows/hides the bits of the product page that don't apply to a pre-order
+// ("Get it by" date, Buy now, BenefitPay line) and the pre-order note.
+function applyPdpPreorderLayout_(p){
+  const pre = !!(p && p.preorder);
+  const getIt = document.getElementById('pdpGetIt'); if(getIt) getIt.style.display = pre ? 'none' : '';
+  const buy = document.getElementById('pdpBuyBtn'); if(buy) buy.style.display = pre ? 'none' : '';
+  const trust = document.querySelector('.pdp-trust'); if(trust) trust.style.display = pre ? 'none' : '';
+  const note = document.getElementById('pdpPreNote');
+  if(note){ note.style.display = pre ? 'block' : 'none'; note.textContent = pre ? ('💵 ' + T('preorderNote')) : ''; }
+}
 function refreshPdpStockDisplay(p){
   PDP_PRODUCT = p;
   const stockEl = document.getElementById('pdpStock');
   if(!stockEl) return;
+  if(p.preorder){
+    applyPdpPreorderLayout_(p);
+    stockEl.textContent = '⏳ ' + T('preorderEstDelivery') + ': ' + preorderEtaLabel_(p);
+    stockEl.className = 'pdp-stock pre';
+    updatePdpAddBtnState();
+    return;
+  }
   if(p.stock > 5){ stockEl.textContent = T('inStock'); stockEl.className = 'pdp-stock in'; }
   else if(p.stock > 0){ stockEl.textContent = T('onlyLeftStock').replace('{n}', p.stock); stockEl.className = 'pdp-stock low blink-stock'; }
   else{ stockEl.textContent = T('outOfStock'); stockEl.className = 'pdp-stock low'; }
@@ -4247,13 +4382,14 @@ function handleReviewLinkFromQuery(){
 }
 
 function buildCategoryChips(){
-  const cats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+  const cats = ['All', ...catalogCategories_()];
   const wrap = document.getElementById('apCategoryChips');
   if(!wrap) return;
-  wrap.innerHTML = cats.map(c => `<button class="chip ${c===activeCategory?'active':''}" onclick="setCategory('${c.replace(/'/g,"\\'")}')">${c==='All' ? T('chipAll') : catLabel(c)}</button>`).join('');
+  wrap.innerHTML = cats.map(c => `<button class="chip ${c===activeCategory?'active':''}" onclick="setCategory('${c.replace(/'/g,"\\'")}')">${c==='All' ? T('chipAll') : catLabel(c)}</button>`).join('')
+    + (PRODUCTS.some(p => p.preorder) ? `<button class="chip pre-chip" onclick="openPreorderPage()">⏳ ${T('navPreorder')}</button>` : '');
 }
 function buildCategoryCards(){
-  const cats = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+  const cats = catalogCategories_();
   document.getElementById('categoryCardGrid').innerHTML = cats.map(c => `
     <div class="cat-card" onclick="goToCategory('${c.replace(/'/g,"\\'")}');">
       <div class="ic">${categoryIconHtml(c)}</div>
@@ -4265,7 +4401,7 @@ function buildCategoryCards(){
 function buildTopCategoryStrip(){
   const strip = document.getElementById('topCatStrip');
   if(!strip) return;
-  const cats = [...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+  const cats = catalogCategories_();
   if(!cats.length){ strip.innerHTML = ''; return; }
   strip.innerHTML = cats.map(c => `
     <div class="top-cat-item" onclick="goToCategory('${c.replace(/'/g,"\\'")}');">
@@ -4279,7 +4415,7 @@ function buildTopCategoryStrip(){
 // image hosting or licensing to worry about. Falls back to an emoji only
 // if a category genuinely has no product photo available yet.
 function categoryIconHtml(cat){
-  const withImage = PRODUCTS.find(p => p.category === cat && p.images && p.images[0]);
+  const withImage = PRODUCTS.find(p => !p.preorder && p.category === cat && p.images && p.images[0]);
   if(withImage) return `<img src="${withImage.images[0]}" alt="${catLabel(cat)}" loading="lazy">`;
   return CATEGORY_ICONS[cat] || '✨';
 }
@@ -4295,6 +4431,7 @@ function setCategory(c){
   activeCategory = c;
   buildCategoryChips();
   renderAllProductsGrid();
+  renderApValuePicks(); // banner + Value Picks follow the selected category
   // Keep the URL in sync while the All Products page is open, without adding
   // a new history entry per click — so copying the link at any point shares
   // exactly the category currently selected.
@@ -4318,6 +4455,9 @@ function goToCategory(c){
 // Gift-to-Bahrain hamper / gift-box items are managed on a separate page
 // and shouldn't clutter the regular storefront catalogue.
 function isGiftOnlyProduct(p){
+  // Pre-order products are also kept out of the normal catalogue (All Products,
+  // Value Picks, suggestions): they have their own Pre-order page.
+  if(p.preorder === true) return true;
   return p.giftEnabled === true || p.giftEnabled === 'TRUE' || p.giftEnabled === 'true' ||
     p.giftBoxEnabled === true || p.giftBoxEnabled === 'TRUE' || p.giftBoxEnabled === 'true';
 }
@@ -4350,6 +4490,7 @@ function openAllProductsPage(){
   history.pushState({ap:true, cat:activeCategory}, '', location.pathname + location.search + productsHashFor(activeCategory));
 }
 function closeAllProductsPage(){
+  apBannerStop_();
   document.getElementById('apOverlay').classList.remove('show');
   unlockBodyScroll();
   if(location.hash === '#/products' || /^#\/products\//.test(location.hash)) history.replaceState({}, '', location.pathname + location.search);
@@ -4539,16 +4680,96 @@ function vpCardHtml_(p, extraClass){
     </div>
   </div>`;
 }
-function syncApValueBanner_(){
-  const hero = document.getElementById('heroImage'), img = document.getElementById('apVpBannerImg'), wrap = document.getElementById('apVpBanner');
-  if(!hero || !img || !wrap) return;
-  const src = hero.getAttribute('src') || '';
-  if(src && img.getAttribute('src') !== src) img.setAttribute('src', src);
-  wrap.style.display = src ? 'block' : 'none';
+/* ---------- Category banners (set in Admin > Homepage > Category banners) ----------
+   Setting "categoryBanners" = JSON { all:[{img,pid,cat}...up to 7], cats:{Category:{img,pid}} }.
+   - A category selected  -> that category's banner (if any).
+   - "All" selected       -> slideshow of the "all" banners, then every category banner.
+   - Nothing configured   -> falls back to the homepage hero image, as before. */
+let BANNER_CFG_ = { all: [], cats: {} };
+function applyBannerSettings(settings){
+  let o = settings && settings.categoryBanners;
+  if(typeof o === 'string' && o){ try{ o = JSON.parse(o); }catch(e){ o = null; } }
+  const cfg = { all: [], cats: {} };
+  if(o && Array.isArray(o.all)) cfg.all = o.all.filter(b => b && b.img).slice(0, 7).map(b => ({ img:String(b.img), pid:String(b.pid || ''), cat:String(b.cat || '') }));
+  if(o && o.cats && typeof o.cats === 'object') Object.keys(o.cats).forEach(k => { const b = o.cats[k]; if(b && b.img) cfg.cats[k] = { img:String(b.img), pid:String(b.pid || '') }; });
+  BANNER_CFG_ = cfg;
+  safeCall(renderApValuePicks);
+}
+let APBN_SIG = '', APBN_TIMER = null, APBN_INDEX = 0, APBN_SLIDES = [];
+function apBannerSlides_(){
+  const cfg = BANNER_CFG_;
+  if(activeCategory !== 'All'){
+    const b = cfg.cats[activeCategory];
+    return b ? [{ img:b.img, pid:b.pid, cat:'' }] : [];
+  }
+  const out = [], seen = new Set();
+  const push = x => { if(x.img && !seen.has(x.img)){ seen.add(x.img); out.push(x); } };
+  cfg.all.forEach(b => push({ img:b.img, pid:b.pid, cat:b.cat }));
+  catalogCategories_().forEach(c => { const b = cfg.cats[c]; if(b) push({ img:b.img, pid:b.pid, cat:b.pid ? '' : c }); });
+  if(!out.length){
+    const hero = document.getElementById('heroImage');
+    const src = hero ? (hero.getAttribute('src') || '') : '';
+    if(src) out.push({ img:src, pid:'', cat:'', legacy:true });
+  }
+  return out;
+}
+function apBannerStop_(){ if(APBN_TIMER){ clearInterval(APBN_TIMER); APBN_TIMER = null; } }
+function apBannerRestart_(){
+  apBannerStop_();
+  if(APBN_SLIDES.length < 2) return;
+  APBN_TIMER = setInterval(() => {
+    const ov = document.getElementById('apOverlay');
+    if(!ov || !ov.classList.contains('show')){ apBannerStop_(); return; }
+    apBannerGo((APBN_INDEX + 1) % APBN_SLIDES.length, null, true);
+  }, 4500);
+}
+function apBannerGo(i, evt, auto){
+  if(evt) evt.stopPropagation();
+  APBN_INDEX = i;
+  const wrap = document.getElementById('apVpBanner');
+  if(!wrap) return;
+  wrap.querySelectorAll('.vp-slide').forEach((el, k) => el.classList.toggle('active', k === i));
+  wrap.querySelectorAll('.vp-dots span').forEach((el, k) => el.classList.toggle('active', k === i));
+  if(!auto) apBannerRestart_();
+}
+function apBannerClick(i){
+  const sl = APBN_SLIDES[i];
+  if(!sl) return;
+  if(sl.legacy){ hsSlideClick(0); return; }
+  if(sl.pid){ openProduct(sl.pid); return; }
+  if(sl.cat){ setCategory(sl.cat); }
+}
+// Returns true when a banner is showing.
+function renderApBanner_(){
+  const wrap = document.getElementById('apVpBanner');
+  if(!wrap) return false;
+  const slides = apBannerSlides_();
+  APBN_SLIDES = slides;
+  if(!slides.length){ wrap.style.display = 'none'; wrap.innerHTML = ''; APBN_SIG = ''; apBannerStop_(); return false; }
+  wrap.style.display = 'block';
+  const sig = slides.map(x => x.img + '|' + x.pid + '|' + x.cat).join('~');
+  if(sig !== APBN_SIG){
+    APBN_SIG = sig;
+    APBN_INDEX = 0;
+    wrap.innerHTML = slides.map((x, i) => `<img class="vp-slide${i === 0 ? ' active' : ''}" src="${escapeHtmlClient(x.img)}" alt="" decoding="async"${i > 0 ? ' loading="lazy"' : ''} onclick="apBannerClick(${i})">`).join('')
+      + (slides.length > 1 ? `<div class="vp-dots">${slides.map((_, i) => `<span class="${i === 0 ? 'active' : ''}" onclick="apBannerGo(${i}, event)"></span>`).join('')}</div>` : '');
+  }
+  apBannerRestart_();
+  return true;
 }
 (function(){
   const hero = document.getElementById('heroImage');
-  if(hero && window.MutationObserver) new MutationObserver(syncApValueBanner_).observe(hero, { attributes:true, attributeFilter:['src'] });
+  if(hero && window.MutationObserver) new MutationObserver(() => safeCall(renderApValuePicks)).observe(hero, { attributes:true, attributeFilter:['src'] });
+  const wrap = document.getElementById('apVpBanner');
+  if(wrap){
+    let x0 = null;
+    wrap.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; }, { passive:true });
+    wrap.addEventListener('touchend', e => {
+      if(x0 === null) return;
+      const dx = e.changedTouches[0].clientX - x0; x0 = null;
+      if(Math.abs(dx) > 40 && APBN_SLIDES.length > 1) apBannerGo((APBN_INDEX + (dx < 0 ? 1 : -1) + APBN_SLIDES.length) % APBN_SLIDES.length);
+    }, { passive:true });
+  }
 })();
 function apValuePicksScroll(dir){
   const rail = document.getElementById('apValuePicksRail');
@@ -4561,15 +4782,21 @@ function apValuePicksScroll(dir){
 function renderApValuePicks(){
   const wrap = document.getElementById('apValuePicksWrap');
   if(!wrap) return;
-  const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p));
-  if(!items.length){ wrap.style.display = 'none'; return; }
+  // Value Picks follow the selected category (All = every value pick).
+  const items = PRODUCTS.filter(p => Number(p.valueAmount) > 0 && !isGiftOnlyProduct(p) && (activeCategory === 'All' || p.category === activeCategory));
+  const hasBanner = renderApBanner_();
+  const head = document.getElementById('apVpHead'), railWrap = document.getElementById('apVpRailWrap');
+  if(head) head.style.display = items.length ? 'flex' : 'none';
+  if(railWrap) railWrap.style.display = items.length ? 'block' : 'none';
+  if(!items.length && !hasBanner){ wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
-  syncApValueBanner_();
   const html = items.map(p => vpCardHtml_(p, 'ap-vp-card')).join('');
-  const sig = currentLang + '|' + html;
+  const sig = currentLang + '|' + activeCategory + '|' + html;
   if(sig === APVP_LAST_SIG) return;
   APVP_LAST_SIG = sig;
-  document.getElementById('apValuePicksRail').innerHTML = html;
+  const rail = document.getElementById('apValuePicksRail');
+  rail.innerHTML = html;
+  rail.scrollLeft = 0;
 }
 function renderProducts(){ renderAllProductsGrid(); }
 function clearDealsFilter(){
@@ -4577,7 +4804,31 @@ function clearDealsFilter(){
   minDiscountFilter = null;
   renderAllProductsGrid();
 }
+/* ================= Pre-order page ================= */
+function renderPreorderGrid(){
+  const grid = document.getElementById('poGrid');
+  if(!grid) return;
+  const items = PRODUCTS.filter(p => p.preorder);
+  const countEl = document.getElementById('poResultCount');
+  if(countEl) countEl.textContent = items.length ? `${items.length} product${items.length === 1 ? '' : 's'}` : '';
+  if(!items.length){ grid.innerHTML = `<div class="empty">${T('preorderEmpty')}</div>`; return; }
+  const needsReveal = renderCardSection(grid, items, { hideValueAmount:true });
+  if(needsReveal) requestAnimationFrame(() => observeReveal());
+  translateProductsIfNeeded(items);
+}
+function openPreorderPage(){
+  const ov = document.getElementById('poOverlay');
+  if(!ov.classList.contains('show')){ ov.classList.add('show'); lockBodyScroll(); }
+  renderPreorderGrid();
+  if(location.hash !== '#/preorders') history.pushState({po:true}, '', location.pathname + location.search + '#/preorders');
+}
+function closePreorderPage(){
+  const ov = document.getElementById('poOverlay');
+  if(ov.classList.contains('show')){ ov.classList.remove('show'); unlockBodyScroll(); }
+  if(location.hash === '#/preorders') history.replaceState({}, '', location.pathname + location.search);
+}
 function bottomNavHome(){
+  if(document.getElementById('poOverlay').classList.contains('show')) closePreorderPage();
   maxPriceFilter = null;
   minDiscountFilter = null;
   if(document.getElementById('pdpOverlay').classList.contains('show')) closeProduct();
@@ -4616,8 +4867,9 @@ function updateDealsFabVisibility(){
 function cardBadgesHtml(p, opts){
   opts = opts || {};
   const pct = discountPct(p);
-  const outOfStock = Number(p.stock) <= 0;
+  const outOfStock = !p.preorder && Number(p.stock) <= 0;
   return [
+    p.preorder ? `<span class="card-badge pre">⏳ ${T('preorderBadge')}</span>` : '',
     pct > 0 && !outOfStock ? `<span class="card-badge sale">🏷️ ${pct}% ${T('saleOff')}</span>` : '',
     (!opts.hideValueAmount && Number(p.valueAmount) > 0 && !outOfStock) ? `<span class="card-badge value">💰 ${Number(p.valueAmount).toFixed(3)} BD</span>` : '',
     outOfStock ? `<span class="card-badge out">${T('outOfStock')}</span>` : ''
@@ -4636,6 +4888,7 @@ function isProductInCart(id){
   return CART.some(i => i.id === id);
 }
 function cardBodyHtml(p){
+  if(p.preorder) return preorderCardBodyHtml_(p);
   const stock = Number(p.stock);
   const outOfStock = stock <= 0;
   const lowStock = !outOfStock && stock <= 5;
@@ -4658,10 +4911,23 @@ function cardBodyHtml(p){
         ${outOfStock ? '' : getItByHtml_()}
   `;
 }
+function preorderCardBodyHtml_(p){
+  return `
+        <div class="cat">${catLabel(p.category)}</div>
+        <div class="name">${pName(p)}</div>
+        ${pShortDesc(p) ? `<div class="card-short-desc">${escapeHtmlClient(pShortDesc(p))}</div>` : ''}
+        <div class="price-row">
+          ${priceHtml(p)}
+          <button class="add-btn pre" onclick="event.stopPropagation();openProduct('${p.id}')">${T('preorderBtn')}</button>
+        </div>
+        <div class="free-delivery"><span class="van">🚚</span> ${T('freeDeliveryBadge')}</div>
+        ${preorderEtaHtml_(p)}
+  `;
+}
 function productCardHtml(p, opts){
   const badges = cardBadgesHtml(p, opts);
   const rightBadges = rightBadgesHtml(p, opts);
-  const outOfStock = Number(p.stock) <= 0;
+  const outOfStock = !p.preorder && Number(p.stock) <= 0;
   return `
     <div class="card ${outOfStock?'out-of-stock':''}" data-pid="${p.id}" onclick="openProduct('${p.id}')">
       ${badges ? `<div class="card-badges">${badges}</div>` : ''}
@@ -4678,7 +4944,8 @@ function cardSignature(p, opts){
   opts = opts || {};
   return [p.id, currentLang, (p.images && p.images[0]) || '', pName(p), p.price, p.compareAtPrice, p.stock,
     p.category, p.featured?1:0, p.bestseller?1:0, p.valueAmount||0, p.reviewCount, p.avgRating, pShortDesc(p),
-    opts.hideFeatured?1:0, opts.hideValueAmount?1:0, opts.featuredStar?1:0, isProductInCart(p.id)?1:0].join('|');
+    opts.hideFeatured?1:0, opts.hideValueAmount?1:0, opts.featuredStar?1:0, isProductInCart(p.id)?1:0,
+    p.preorder?1:0, p.preorderDate || '', p.preorderDays || 0, p.preorder ? preorderEtaYmd_(p) : ''].join('|');
 }
 // Updates an existing card element's content in place. Crucially, the
 // <img> element itself is only touched (its src re-set) when the image
@@ -4778,7 +5045,7 @@ function renderCardSection(container, items, opts){
 }
 
 function renderFeatured(){
-  const items = PRODUCTS.filter(p => p.featured);
+  const items = PRODUCTS.filter(p => p.featured && !p.preorder);
   const section = document.getElementById('featuredSection');
   if(!items.length){ section.style.display='none'; return; }
   section.style.display='block';
@@ -4786,7 +5053,7 @@ function renderFeatured(){
   if(needsReveal) requestAnimationFrame(() => observeReveal());
 }
 function renderBestsellers(){
-  const items = PRODUCTS.filter(p => p.bestseller);
+  const items = PRODUCTS.filter(p => p.bestseller && !p.preorder);
   const section = document.getElementById('bestsellersSection');
   if(!items.length){ section.style.display='none'; return; }
   section.style.display='block';
@@ -4797,23 +5064,31 @@ function renderBestsellers(){
 function addToCart(id, qty, evt, color){
   qty = qty || 1;
   const p = PRODUCTS.find(p => p.id === id);
-  if(!p) return;
+  if(!p) return false;
   const stock = Number(p.stock);
-  if(stock <= 0){ alert(T('outOfStockAlert')); return; }
+  if(stock <= 0){ alert(T('outOfStockAlert')); return false; }
+  // Pre-order items and in-stock items are never ordered together: they ship
+  // at different times, so the cart holds one kind or the other.
+  const isPre = !!p.preorder;
+  if(CART.length && CART.some(i => !!i.preorder !== isPre)){
+    if(!confirm(T(isPre ? 'preorderMixPre' : 'preorderMixNormal'))) return false;
+    CART = [];
+  }
   const existing = CART.find(i => i.id === id && (i.color || null) === (color || null));
   const inCartQty = existing ? existing.qty : 0;
   const allowed = Math.max(0, stock - inCartQty);
-  if(allowed <= 0){ alert(T('maxStockAlert').replace('{n}', stock)); return; }
+  if(allowed <= 0){ alert(T('maxStockAlert').replace('{n}', stock)); return false; }
   const qtyToAdd = Math.min(qty, allowed);
   if(qtyToAdd < qty) alert(T('maxStockAlert').replace('{n}', stock));
   if(existing) existing.qty += qtyToAdd;
-  else CART.push({ id, name:p.name, price:Number(p.price), image:p.images[0], qty: qtyToAdd, color: color || null });
+  else CART.push({ id, name:p.name, price:Number(p.price), image:p.images[0], qty: qtyToAdd, color: color || null, preorder: isPre, eta: isPre ? preorderEtaYmd_(p) : '' });
   saveCart();
   metaTrack('AddToCart', { content_ids:[p.id], content_type:'product', content_name:p.name, contents:[{ id:p.id, quantity:qtyToAdd, item_price:Number(p.price) }], value:Number(p.price)*qtyToAdd, currency:'BHD' });
   if(evt && evt.target && p) flyToCart(evt.target, p.images[0]);
   else bumpCartIcon();
   LAST_ADDED = { id, color: color || null };
   openCart();
+  return true;
 }
 
 /* ---- fly-to-cart animation ---- */
@@ -4940,7 +5215,7 @@ function computeShipping(){
   });
   subtotal = round3Local_(subtotal);
   const chargeApplies = hasMoa && !hasExempt && subtotal < MOA_MIN_CART;
-  const option = DELIVERY_OPTION === 'same_day' ? 'same_day' : 'standard';
+  const option = (DELIVERY_OPTION === 'same_day' && !cartHasPreorder()) ? 'same_day' : 'standard'; // pre-orders can't be same-day
   const fee = !CART.length ? 0 : (option === 'same_day' ? SHIP_SAME_DAY_FEE : (chargeApplies ? SHIP_STANDARD_FEE : 0));
   return { subtotal, hasMoa, hasExempt, chargeApplies, option, fee: round3Local_(fee), amountToFree: chargeApplies ? round3Local_(MOA_MIN_CART - subtotal) : 0 };
 }
@@ -4956,6 +5231,8 @@ function renderShipBox(){
   if(!CART.length){ box.style.display = 'none'; return; }
   const sh = computeShipping();
   box.style.display = 'grid';
+  const sameDayEl = document.getElementById('shipOptSameDay');
+  if(sameDayEl) sameDayEl.style.display = cartHasPreorder() ? 'none' : '';
   const stdEl = document.getElementById('shipPriceStandard');
   stdEl.textContent = sh.chargeApplies ? SHIP_STANDARD_FEE.toFixed(3) + ' BHD' : T('shipFree');
   stdEl.classList.toggle('free', !sh.chargeApplies);
@@ -5592,8 +5869,11 @@ function openProduct(id){
   const moreDetailsText = pMoreDetails(p);
   const defaultDetailsHtml = `<ul>
       <li><b data-i18n="pdpDetailCategory">Category</b>: ${escapeHtmlClient(catLabel(p.category))}</li>
-      <li><b data-i18n="pdpDetailDelivery">Delivery</b>: <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span>, <span data-i18n="pdpTrustDelivery2">one day delivery</span></li>
-      <li><b data-i18n="pdpDetailPayment">Payment</b>: <span data-i18n="pdpTrustCod">Cash on delivery available</span>, <span data-i18n="pdpTrustBenefitpay">BenefitPay via WhatsApp confirmation</span></li>
+      ${p.preorder
+        ? `<li><b data-i18n="pdpDetailDelivery">Delivery</b>: ${T('freeDeliveryBadge')}, ${T('preorderEstDelivery')} ${preorderEtaLabel_(p)}</li>
+      <li><b data-i18n="pdpDetailPayment">Payment</b>: ${T('payCodLabel')}</li>`
+        : `<li><b data-i18n="pdpDetailDelivery">Delivery</b>: <span data-i18n="freeDeliveryBadge">Free Delivery in Bahrain</span>, <span data-i18n="pdpTrustDelivery2">one day delivery</span></li>
+      <li><b data-i18n="pdpDetailPayment">Payment</b>: <span data-i18n="pdpTrustCod">Cash on delivery available</span>, <span data-i18n="pdpTrustBenefitpay">BenefitPay via WhatsApp confirmation</span></li>`}
       <li><b data-i18n="pdpDetailReturns">Returns</b>: <a href="return-refund-policy.html" style="color:var(--blush-ink);font-weight:700;" data-i18n="footerReturns">Returns &amp; refunds</a></li>
     </ul>`;
   if(moreDetailsText){
@@ -5620,7 +5900,9 @@ function openProduct(id){
   }
 
   const stockEl = document.getElementById('pdpStock');
-  if(p.stock > 5){ stockEl.textContent = T('inStock'); stockEl.className = 'pdp-stock in'; }
+  applyPdpPreorderLayout_(p);
+  if(p.preorder){ stockEl.textContent = '⏳ ' + T('preorderEstDelivery') + ': ' + preorderEtaLabel_(p); stockEl.className = 'pdp-stock pre'; }
+  else if(p.stock > 5){ stockEl.textContent = T('inStock'); stockEl.className = 'pdp-stock in'; }
   else if(p.stock > 0){ stockEl.textContent = T('onlyLeftStock').replace('{n}', p.stock); stockEl.className = 'pdp-stock low blink-stock'; }
   else{ stockEl.textContent = T('outOfStock'); stockEl.className = 'pdp-stock low'; }
   document.getElementById('pdpBuyBtn').disabled = p.stock <= 0;
@@ -5958,6 +6240,14 @@ function updatePdpAddBtnState(){
   const p = PDP_PRODUCT;
   const addBtn = document.getElementById('pdpAddBtn');
   if(!p || !addBtn) return;
+  if(p.preorder){
+    // One clear button: pre-order now (adds it on its own and goes to checkout).
+    addBtn.disabled = false;
+    addBtn.classList.remove('in-cart');
+    addBtn.textContent = T('preorderNow');
+    addBtn.onclick = function(){ popButton(addBtn); pdpPreorderNow(); };
+    return;
+  }
   if(p.stock <= 0){
     addBtn.disabled = true;
     addBtn.classList.remove('in-cart');
@@ -5972,6 +6262,12 @@ function updatePdpAddBtnState(){
   addBtn.onclick = inCart
     ? function(){ openCart(); }
     : function(evt){ popButton(addBtn); pdpAddToCart(evt); };
+}
+function pdpPreorderNow(){
+  if(!PDP_PRODUCT) return;
+  if(!addToCart(PDP_PRODUCT.id, PDP_QTY, null, PDP_SELECTED_COLOR)) return;
+  closeProduct();
+  openCheckout();
 }
 function pdpBuyNow(){
   if(!PDP_PRODUCT) return;
@@ -6001,8 +6297,11 @@ async function pdpShareProduct(){
 }
 
 function renderRelated(p){
-  const related = PRODUCTS.filter(x => x.id !== p.id && x.category === p.category).slice(0,8);
-  const fallback = related.length ? related : PRODUCTS.filter(x => x.id !== p.id).slice(0,8);
+  // Pre-order products are only suggested next to other pre-order products,
+  // and normal products only next to normal products.
+  const pool = PRODUCTS.filter(x => !!x.preorder === !!p.preorder);
+  const related = pool.filter(x => x.id !== p.id && x.category === p.category).slice(0,8);
+  const fallback = related.length ? related : pool.filter(x => x.id !== p.id).slice(0,8);
   document.getElementById('pdpRelated').innerHTML = fallback.map(x => productCardHtml(x)).join('');
 }
 
@@ -6273,6 +6572,11 @@ function closeProduct(){
     apOverlay.classList.remove('show');
     unlockBodyScroll();
   }
+  const poOverlay = document.getElementById('poOverlay');
+  if(poOverlay.classList.contains('show')){
+    poOverlay.classList.remove('show');
+    unlockBodyScroll();
+  }
   // Collapse straight back to the plain homepage URL, no matter how many
   // overlay states (All Products, then this product) were stacked above it.
   if(location.hash) history.replaceState({}, '', location.pathname + location.search);
@@ -6301,6 +6605,7 @@ function hidePdpOverlayOnly(){
 }
 
 function handleRouteFromHash(){
+  if(location.hash === '#/preorders' && PRODUCTS.some(p => p.preorder)){ openPreorderPage(); return; }
   const m = location.hash.match(/^#\/product\/(.+)$/);
   if(m && PRODUCTS.length){
     const p = PRODUCTS.find(p => p.id === m[1]);
@@ -6316,17 +6621,25 @@ window.addEventListener('popstate', () => {
   const m = location.hash.match(/^#\/product\/(.+)$/);
   if(m){ openProduct(m[1]); return; }
   hidePdpOverlayOnly();
+  const poEl = document.getElementById('poOverlay');
+  if(location.hash === '#/preorders'){
+    if(!poEl.classList.contains('show')){ poEl.classList.add('show'); lockBodyScroll(); renderPreorderGrid(); }
+    return;
+  } else if(poEl.classList.contains('show')){
+    poEl.classList.remove('show'); unlockBodyScroll();
+  }
   const apEl = document.getElementById('apOverlay');
   const apMatch = location.hash.match(/^#\/products(?:\/(.+))?$/);
   if(apMatch){
     const requestedCat = apMatch[1] ? decodeURIComponent(apMatch[1]) : 'All';
-    const validCats = ['All', ...new Set(PRODUCTS.map(p => p.category).filter(Boolean))];
+    const validCats = ['All', ...catalogCategories_()];
     const newCat = validCats.includes(requestedCat) ? requestedCat : 'All';
     const wasOpen = apEl.classList.contains('show');
     if(!wasOpen || newCat !== activeCategory){
       activeCategory = newCat;
       buildCategoryChips();
       renderAllProductsGrid();
+      renderApValuePicks();
     }
     if(!wasOpen){ apEl.classList.add('show'); lockBodyScroll(); }
   } else if(apEl.classList.contains('show')){
@@ -6335,8 +6648,14 @@ window.addEventListener('popstate', () => {
   }
 });
 
+function cartItemEta_(i){
+  const pp = PRODUCTS.find(x => x.id === i.id);
+  return (pp && pp.preorder) ? preorderEtaYmd_(pp) : (i.eta || '');
+}
 function renderCart(){
   const count = CART.reduce((s,i)=>s+i.qty,0);
+  const poBadge = document.getElementById('poCartCount');
+  if(poBadge) poBadge.textContent = count;
   document.getElementById('cartCount').textContent = count;
   const mobileBadge = document.getElementById('cartCountMobile');
   if(mobileBadge) mobileBadge.textContent = count;
@@ -6350,6 +6669,7 @@ function renderCart(){
       <div class="ci-info">
         <div class="ci-name">${cartItemName(i)}</div>
         ${i.color ? `<div style="font-size:12px;color:var(--ink-soft);">${T('pdpColorLabel')}: ${i.color}</div>` : ''}
+        ${i.preorder ? `<div class="ci-pre">⏳ ${T('preorderBadge')} · ${T('preorderEstDelivery')} ${ymdLabel_(cartItemEta_(i))}</div>` : ''}
         <div style="font-size:13px;color:var(--ink-soft);">${i.price.toFixed(3)} BHD</div>
         <div class="qty-row">
           <button onclick="changeQty('${i.id}',-1,${i.color ? `'${i.color.replace(/'/g,"\\'")}'` : 'null'})">−</button>
@@ -6463,7 +6783,8 @@ function applyPaymentSettings(settings){
   safeCall(buildPayOptions);
 }
 function buildPayOptions(){
-  const methods = getPaymentMethods();
+  // Pre-orders aren't in stock yet, so they're Cash on Delivery only.
+  const methods = getPaymentMethods().filter(m => !cartHasPreorder() || m.id === 'cod');
   document.getElementById('payOptions').innerHTML = methods.map((m) => `
     <label class="pay-opt ${m.available?'':'unavailable'} ${m.id==='cod'?'selected':''}" onclick="${m.available ? 'selectPay(this)' : `event.preventDefault();openPaymentMaint('${m.id}')`}">
       <input type="radio" name="pay" value="${m.id}" ${m.id==='cod'?'checked':''} ${m.available?'':'disabled'} onchange="updateSubmitBtnLabel()">
@@ -6660,6 +6981,11 @@ function openCheckout(){
   if(!CUSTOMER) GUEST_MODE = true;
   metaTrack('InitiateCheckout', { content_ids: CART.map(function(i){ return i.id; }), contents: metaContents(CART), content_type:'product', num_items: CART.reduce(function(n,i){ return n + i.qty; }, 0), value: cartTotal(), currency:'BHD' });
   buildPayOptions();
+  const preNote = document.getElementById('checkoutPreNote');
+  if(preNote){
+    if(cartHasPreorder()){ preNote.textContent = '⏳ ' + T('preorderCheckoutNote').replace('{date}', ymdLabel_(cartPreorderEtaYmd_())); preNote.style.display = 'block'; }
+    else { preNote.style.display = 'none'; }
+  }
   document.getElementById('checkoutStep1').style.display='block';
   document.getElementById('checkoutStepQR').style.display='none';
   document.getElementById('checkoutStep2').style.display='none';
@@ -6950,15 +7276,19 @@ async function placeOrder(){
       if(data && typeof data.promoDiscount === 'number') actualPromoDiscount = data.promoDiscount;
     }catch(err){ /* backend not connected yet — still show confirmation */ }
 
+    const wasPreorder = cartHasPreorder();
+    const preorderEtaForMsg = (lastOrderResp && lastOrderResp.preorderEta) ? lastOrderResp.preorderEta : cartPreorderEtaYmd_();
     document.getElementById('checkoutStep1').style.display='none';
     document.getElementById('checkoutStepQR').style.display='none';
     document.getElementById('checkoutStep2').style.display='block';
-    document.getElementById('confirmTitle').textContent = 'Order confirmed';
+    document.getElementById('confirmTitle').textContent = wasPreorder ? T('preorderConfirmTitle') : 'Order confirmed';
     const cashDue = Math.max(0, cartTotal() - actualWalletUsed - actualPromoDiscount - cartOfferDiscountAmount) + orderFees;
     const savingsBits = [];
     if(actualPromoDiscount > 0) savingsBits.push(`${actualPromoDiscount.toFixed(3)} BHD off with your promo code`);
     if(actualWalletUsed > 0) savingsBits.push(`${actualWalletUsed.toFixed(3)} BHD paid from your Souqify-bh wallet`);
-    document.getElementById('confirmText').textContent = savingsBits.length
+    document.getElementById('confirmText').textContent = wasPreorder
+      ? T('preorderConfirmText').replace('{id}', orderId).replace('{date}', ymdLabel_(preorderEtaForMsg)).replace('{amount}', cashDue.toFixed(3))
+      : savingsBits.length
       ? `Order ${orderId}: ${savingsBits.join(', ')}, ${cashDue.toFixed(3)} BHD to pay in cash on delivery. We'll contact you to confirm delivery timing.`
       : `Order ${orderId} for ${cartDisplayTotal().toFixed(3)} BHD will be paid in cash on delivery. We'll contact you to confirm delivery timing.`;
     document.getElementById('confirmWaBtn').style.display = 'none';
@@ -7495,6 +7825,7 @@ async function loadSettings(){
     applyMediaLayoutSetting(cached);
     applyPaymentSettings(cached);
     applyOrderChargesSettings(cached);
+    applyBannerSettings(cached);
   }
 
   // Instant path #2 (first-ever visit, nothing cached yet): the static
@@ -7513,6 +7844,7 @@ async function loadSettings(){
           applyMediaLayoutSetting(data2.settings);
           applyPaymentSettings(data2.settings);
           applyOrderChargesSettings(data2.settings);
+          applyBannerSettings(data2.settings);
           writeSettingsCache(data2.settings);
         }
       }
@@ -7532,6 +7864,7 @@ async function loadSettings(){
       applyMediaLayoutSetting(data.settings);
       applyPaymentSettings(data.settings);
       applyOrderChargesSettings(data.settings);
+      applyBannerSettings(data.settings);
       writeSettingsCache(data.settings);
     }
   }catch(err){ /* static file or cache is already showing — fine to skip this round */ }
