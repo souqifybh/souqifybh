@@ -5027,7 +5027,7 @@ function preorderCardBodyHtml_(p){
    Draws working hour / minute / second hands over a watch photo so the dial shows the
    visitor's own current time. Each watch needs its dial position once:
      x, y = centre of the dial, r = dial radius  (all in % of the square product photo)
-     dark:true  -> dark hands (for light dials)   color:'#D4AF37' -> custom hand colour (gold)   bg:'#111'  -> optional disc that hides
+     dark:true  -> dark hands (for light dials)   color:'#D4AF37' -> hand colour (gold)   edge:'#hex' -> outline on hour/minute hands   sec:'#hex' -> second-hand colour   bg:'#111'  -> optional disc that hides
      the hands painted in the photo (m = its size as a fraction of r, default .72)
    Set it either here by product id, or via a `dial` field on the product ("x,y,r" or "x,y,r,dark").
    Open the site with ?dialsetup=1, open a watch and drag the circle onto the dial to get the line. */
@@ -5035,8 +5035,8 @@ var LIVE_DIAL_CFG_ = {
   // 'PRODUCT_ID': { x:50, y:50, r:30 },
   // color:'#D4AF37' makes all three hands that colour (gold)
   'P-1789563422025': { x:49.4, y:43.8, r:15.5, color:'#D4AF37' },
-  // rose-gold hands to match the copper indices on this brown dial
-  'P-1789456073019': { x:50.0, y:45.4, r:13.1, color:'#E3A07A' },
+  // cream hour/minute hands with rose-gold edges + copper second hand, matching the real watch
+  'P-1789456073019': { x:50.0, y:45.4, r:13.1, color:'#F7EDE0', edge:'#D9966F', sec:'#D9966F' },
 };
 function liveDialCfg_(p){
   if(!p) return null;
@@ -5053,13 +5053,16 @@ function liveDialAngles_(){
   return { h:h * 30, m:m * 6, s:s * 6 };
 }
 function liveDialInner_(c){
-  const r = c.r, a = liveDialAngles_(), col = c.color || (c.dark ? '#14161a' : '#ffffff'), secCol = c.color || '#E53935';
+  const r = c.r, a = liveDialAngles_(), col = c.color || (c.dark ? '#14161a' : '#ffffff'), secCol = c.sec || c.color || '#E53935';
   const mask = c.bg ? `<circle r="${(r * (c.m || .72)).toFixed(2)}" fill="${c.bg}"/>` : '';
-  const hand = (cls, ang, back, len, w, stroke) =>
-    `<g class="${cls}" transform="rotate(${ang.toFixed(1)})"><line x1="0" y1="${(r * back).toFixed(2)}" x2="0" y2="${(-r * len).toFixed(2)}" stroke="${stroke}" stroke-width="${(r * w).toFixed(2)}" stroke-linecap="round"/></g>`;
+  // edge:'#hex' draws a thin coloured outline round the hour / minute hands (e.g. cream hands with rose-gold edges)
+  const hand = (cls, ang, back, len, w, stroke, edge) =>
+    `<g class="${cls}" transform="rotate(${ang.toFixed(1)})">`
+    + (edge ? `<line x1="0" y1="${(r * back).toFixed(2)}" x2="0" y2="${(-r * len).toFixed(2)}" stroke="${edge}" stroke-width="${(r * w * 1.7).toFixed(2)}" stroke-linecap="round"/>` : '')
+    + `<line x1="0" y1="${(r * back).toFixed(2)}" x2="0" y2="${(-r * len).toFixed(2)}" stroke="${stroke}" stroke-width="${(r * w).toFixed(2)}" stroke-linecap="round"/></g>`;
   return `<g transform="translate(${c.x} ${c.y})">${mask}`
-    + hand('ld-h', a.h, .10, .50, .085, col)
-    + hand('ld-m', a.m, .14, .76, .058, col)
+    + hand('ld-h', a.h, .10, .50, .085, col, c.edge)
+    + hand('ld-m', a.m, .14, .76, .058, col, c.edge)
     + hand('ld-s', a.s, .20, .84, .024, secCol)
     + `<circle r="${(r * .055).toFixed(2)}" fill="${secCol}"/></g>`;
 }
