@@ -29,7 +29,8 @@ function setRange(){
   else if(r==='year'){A.from=`${y}-01-01`;A.to=`${y}-12-31`;}
   else if(r==='all'){A.from='';A.to='';}
 }
-async function api(action, extra){ const r=await fetch(CONFIG.API_URL,{method:'POST',body:JSON.stringify(Object.assign({action,password:ADMIN_PASSWORD},extra||{}))}); return r.json(); }
+async function api(action, extra){ const r=await fetch(CONFIG.API_URL,{method:'POST',body:JSON.stringify(Object.assign({action,password:ADMIN_PASSWORD},extra||{}))}); const t=await r.text();
+  try{ return JSON.parse(t); }catch(e){ const title=(t.match(/<title>([\s\S]*?)<\/title>/i)||[])[1]||''; const txt=t.replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,400); throw new Error('Google replied with an error page. '+title+' | '+txt); } }
 
 /* ---------- derive ledger ---------- */
 function derive(){
@@ -220,7 +221,7 @@ const Acc={
   async delInv(id,del){ const p=prompt((del?'Delete':'Restore')+' this invoice? Enter passcode:'); if(p===null) return; const r=await api('acctMarkReceived',{ids:[id],deleteInvoice:del,passcode:p}); if(!r.ok) return alert(r.error||'Failed'); Acc.load(true); },
   delCn(id){ if(!confirm('This removes the credit note AND its cancelled invoice from your books (they cancel each other out). Continue?')) return; Acc.delInv(id,true); },
   print:printDoc, edit(id){modal(A.exp.find(x=>x.id===id));},
-  async load(silent){ if(!silent) $('accRoot').innerHTML='<p class="muted">Loading accounts… (v7, can take up to a minute the first time)</p>'; let r; try{ r=await Promise.race([api('acctGetData'), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timed out after 90s')),90000))]); }catch(err){ r={ok:false,error:'Backend did not respond correctly ('+err.message+'). Check the 4 doPost edits and that you deployed a NEW version.'}; }
+  async load(silent){ if(!silent) $('accRoot').innerHTML='<p class="muted">Loading accounts… (v8, can take up to a minute the first time)</p>'; let r; try{ r=await Promise.race([api('acctGetData'), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timed out after 90s')),90000))]); }catch(err){ r={ok:false,error:'Backend problem: '+err.message}; }
     if(!r.ok){$('accRoot').innerHTML='<div class="card">⚠ '+esc(r.error||'Could not load. Did you add accounts-backend.gs and redeploy?')+'</div>';return;}
     A.orders=r.orders; A.docs={}; r.docs.forEach(d=>A.docs[d.orderId]=d); A.exp=r.expenses; A.set=r.settings||{}; render(); },
   async saveExp(id){ const cat=$('xCat').value==='__new'?$('xNew').value.trim():$('xCat').value; if(!cat) return $('xMsg').textContent='Enter a category.';
