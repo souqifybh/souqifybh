@@ -1329,7 +1329,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   .sfy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
   .sfy-card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;transition:transform .2s var(--ease), box-shadow .2s var(--ease);}
   .sfy-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm);}
-  .sfy-imgwrap{aspect-ratio:1/1;background:var(--paper-soft);overflow:hidden;}
+  .sfy-imgwrap{position:relative;aspect-ratio:1/1;background:var(--paper-soft);overflow:hidden;}
   .sfy-imgwrap img{width:100%;height:100%;object-fit:cover;}
   .sfy-body{padding:8px 9px 10px;}
   .sfy-name{font-size:12px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:31px;}
@@ -1506,6 +1506,10 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
     font:12px/1.4 ui-monospace,Menlo,monospace;box-shadow:0 8px 30px rgba(0,0,0,.4);}
   #dialSetupBar button{font:inherit;margin:6px 6px 0 0;padding:6px 10px;border-radius:8px;border:0;background:#C9D88A;color:#222;font-weight:700;}
   #dialSetupBar code{display:block;word-break:break-all;color:#C9D88A;}
+  /* small thumbnails (cart, search, nudge): wrapper shrink-wraps the photo so the hands sit exactly on it */
+  .ld-thumb{position:relative;display:block;flex:none;line-height:0;}
+  .ld-thumb .live-dial{filter:drop-shadow(0 .3px .3px rgba(0,0,0,.45));}
+  .top-cat-item .avatar,.cat-card .ic{position:relative;}
   .ap-chips{flex:1;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
   .ap-chips::-webkit-scrollbar{display:none;}
   .ap-sort-btn{flex-shrink:0;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--line);border-radius:20px;padding:8px 14px;font-size:12.5px;font-weight:700;color:var(--ink);cursor:pointer;white-space:nowrap;}
@@ -1922,7 +1926,7 @@ src="https://www.facebook.com/tr?id=1423474533209803&ev=PageView&noscript=1"
   <div class="cart-nudge-box" role="dialog" aria-modal="true">
     <div class="cart-nudge-title" data-i18n="nudgeTitle">🔥 Selling fast!</div>
     <div class="cn-meter" aria-hidden="true"><div class="cn-fill"><span class="cn-flame">🔥</span></div></div>
-    <div class="cn-item" id="cartNudgeItem" style="display:none"><img id="cartNudgeImg" alt="" width="40" height="40"><div class="cn-item-info"><div class="cn-item-name" id="cartNudgeName"></div><div class="cn-item-left" id="cartNudgeLeft"></div></div></div>
+    <div class="cn-item" id="cartNudgeItem" style="display:none"><span class="ld-thumb" id="cartNudgeThumb"><img id="cartNudgeImg" alt="" width="40" height="40"></span><div class="cn-item-info"><div class="cn-item-name" id="cartNudgeName"></div><div class="cn-item-left" id="cartNudgeLeft"></div></div></div>
     <div class="cart-nudge-text" id="cartNudgeText" data-i18n="nudgeText">Limited stock left. Complete your order now before it’s gone!</div>
     <div class="cart-nudge-actions">
       <button class="cart-nudge-close" onclick="hideCartNudge()" data-i18n="nudgeClose">Close</button>
@@ -4443,12 +4447,13 @@ function buildTopCategoryStrip(){
   if(!strip) return;
   const cats = catalogCategories_();
   const preItems = PRODUCTS.filter(p => p.preorder);
-  const preImg = (preItems.find(p => p.images && p.images[0]) || {images:[]}).images[0];
+  const preFirst = preItems.find(p => p.images && p.images[0]) || {images:[]};
+  const preImg = preFirst.images[0];
   const preHtml = preItems.length ? `
     <div class="top-cat-item pre-item" onclick="openPreorderPage()">
       <div class="pre-wrap">
         <span class="pre-ring"></span>
-        <div class="avatar">${preImg ? `<img src="${preImg}" alt="${T('navPreorder')}" loading="lazy">` : '⏳'}</div>
+        <div class="avatar">${preImg ? `<img src="${preImg}" alt="${T('navPreorder')}" loading="lazy">${liveDialHtml_(preFirst)}` : '⏳'}</div>
         <span class="pre-clock"></span>
       </div>
       <div class="lbl">${T('navPreorder')}</div>
@@ -4467,7 +4472,7 @@ function buildTopCategoryStrip(){
 // if a category genuinely has no product photo available yet.
 function categoryIconHtml(cat){
   const withImage = PRODUCTS.find(p => !p.preorder && p.category === cat && p.images && p.images[0]);
-  if(withImage) return `<img src="${withImage.images[0]}" alt="${catLabel(cat)}" loading="lazy">`;
+  if(withImage) return `<img src="${withImage.images[0]}" alt="${catLabel(cat)}" loading="lazy">${liveDialHtml_(withImage)}`;
   return CATEGORY_ICONS[cat] || '✨';
 }
 // Builds the #/products hash for a given category so the address bar (and
@@ -4723,7 +4728,7 @@ function renderSuggestedForYou(){
   if(!picks.length){ grid.innerHTML = ''; return; }
   grid.innerHTML = picks.map(p => `
     <div class="sfy-card" onclick="openProduct('${p.id}')">
-      <div class="sfy-imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy"></div>
+      <div class="sfy-imgwrap"><img src="${p.images[0]}" alt="${pName(p)}" loading="lazy">${liveDialHtml_(p)}</div>
       <div class="sfy-body">
         <div class="sfy-name">${pName(p)}</div>
         <div class="sfy-price">${p.price.toFixed(3)} BHD</div>
@@ -4757,7 +4762,7 @@ function vpCardHtml_(p, extraClass){
   const pct = discountPct(p);
   const rating = Number(p.reviewCount) > 0 ? `<span class="vp-rate">${Number(p.avgRating).toFixed(1)} <b>★</b></span>` : '';
   return `<div class="vp-card${extraClass ? ' ' + extraClass : ''}${outOfStock ? ' out' : ''}" onclick="openProduct('${p.id}')">
-    <div class="vp-img"><img src="${p.images[0]}" alt="${escapeHtmlClient(pName(p))}" loading="lazy" decoding="async">${rating}</div>
+    <div class="vp-img"><img src="${p.images[0]}" alt="${escapeHtmlClient(pName(p))}" loading="lazy" decoding="async">${liveDialHtml_(p)}${rating}</div>
     <div class="vp-info">
       <div class="vp-name">${escapeHtmlClient(pName(p))}</div>
       ${pct > 0 ? `<div class="vp-was-row"><span class="vp-off">↓${pct}%</span><span class="vp-was">${p.compareAtPrice.toFixed(3)}</span></div>` : ''}
@@ -5034,13 +5039,25 @@ function preorderCardBodyHtml_(p){
 var LIVE_DIAL_CFG_ = {
   // 'PRODUCT_ID': { x:50, y:50, r:30 },
   // style:'bar'|'sword'|'baton'  hl/ml/sl = hour/minute/second length (x r)  sb = second-hand tail  lume = inlay colour
-  // cap = centre-dot colour  sub:{dy,len} = seconds hand lives in a small sub-dial (dy = its centre below the main centre)
+  // cap = centre-dot colour  sub:{dx,dy,len} = seconds hand lives in a small sub-dial (dx/dy = its centre right/below the main centre)
   // 1) Cream dial, Roman numerals, blue steel hands + seconds sub-dial at 6
   'P-1789457104216': { x:49.2, y:41.5, r:12.7, style:'sword', w:.55, color:'#1F46A8', hl:.62, ml:.98, sub:{ dy:.41, len:.27 } },
   // 2) Cream dial, Arabic numerals: black baton hands with pale lume, red second hand
-  'P-1789457808146': { x:50.1, y:46.0, r:14.5, style:'baton', color:'#1C1C1E', lume:'#EDE8D6', sec:'#D32F2F', hl:.46, ml:.72, sl:.95, sb:.3 },
+  'P-1789457808146': { x:50.1, y:46.0, r:14.5, style:'baton', color:'#1C1C1E', lume:'#EDE8D6', sec:'#D32F2F', hl:.46, ml:.72, sl:.80, sb:.26 },
   // 3) Grey dial: white arrow (sword) hands with dark edge, dark second hand
   'P-1789459032084': { x:50.1, y:42.5, r:12.5, style:'sword', color:'#F3F4F6', edge:'#30343B', sec:'#202226', hl:.42, ml:.66, sl:.85, sb:.2 },
+  // 4) White dial, brown strap: black tapered hands, thin dark second hand
+  'P-1789459301646': { x:49.7, y:41.0, r:15.1, style:'sword', w:.8, color:'#16181B', sec:'#1B2230', hl:.47, ml:.78, sl:.85, sb:.22 },
+  // 5) Black dial: thin silver hands
+  'P-1789561781764': { x:48.9, y:47.1, r:15.7, style:'sword', w:.6, color:'#DADDE2', sec:'#C4C8CF', hl:.52, ml:.82, sl:.9, sb:.22 },
+  // 6) Black dial: silver sword hands with a soft edge
+  'P-1789562378263': { x:50.2, y:41.8, r:16.2, style:'sword', w:.75, color:'#E6E8EC', edge:'#8E939B', sec:'#D3D6DB', hl:.5, ml:.72, sl:.86, sb:.22 },
+  // 7) Gold skeleton dial: gold hands, seconds hand turns in the small gear sub-dial at 3
+  'P-1789562589048': { x:50.9, y:43.8, r:20.9, style:'sword', w:.9, color:'#D8B45E', edge:'#7A5A1A', sec:'#D8B45E', hl:.42, ml:.68, sub:{ dx:.44, dy:0, len:.17 } },
+  // 8) Grey dial: white arrow hands with dark edge
+  'P-1789563628343': { x:50.0, y:40.5, r:15.1, style:'sword', color:'#F3F4F6', edge:'#30343B', sec:'#2A2D33', hl:.4, ml:.6, sl:.78, sb:.2 },
+  // 9) Black dial, rose-gold indices: thin rose-gold hands
+  'P-1789564064524': { x:49.8, y:42.9, r:13.5, style:'sword', w:.6, color:'#DBA582', sec:'#DBA582', hl:.55, ml:.73, sl:.85, sb:.2 },
   // color:'#D4AF37' makes all three hands that colour (gold)
   'P-1789563422025': { x:49.4, y:43.8, r:15.5, color:'#D4AF37' },
   // cream hour/minute hands with rose-gold edges + copper second hand, matching the real watch
@@ -5087,7 +5104,7 @@ function liveDialInner_(c){
   const sub = c.sub;
   const secW = r * (sub ? .02 : .016) * k;
   const secLine = (back, len) => `<g class="ld-s" transform="rotate(${a.s.toFixed(1)})"><line x1="0" y1="${f(r * back)}" x2="0" y2="${f(-r * len)}" stroke="${secCol}" stroke-width="${f(secW)}" stroke-linecap="round"/></g>`;
-  const secHtml = sub ? `<g transform="translate(0 ${f(r * sub.dy)})">${secLine(.06, sub.len)}<circle r="${f(r * .022)}" fill="${secCol}"/></g>` : secLine(sb, sl);
+  const secHtml = sub ? `<g transform="translate(${f(r * (sub.dx || 0))} ${f(r * (sub.dy || 0))})">${secLine(.06, sub.len)}<circle r="${f(r * .022)}" fill="${secCol}"/></g>` : secLine(sb, sl);
   const mask = c.bg ? `<circle r="${f(r * (c.m || .72))}" fill="${c.bg}"/>` : '';
   return `<g transform="translate(${c.x} ${c.y})">${mask}`
     + shape('ld-h', 'h', .10, hl, W.h)
@@ -5095,6 +5112,12 @@ function liveDialInner_(c){
     + secHtml
     + `<circle r="${f(r * .042 * Math.max(k, .8))}" fill="${c.cap || secCol}"/></g>`;
 }
+// Wraps a thumbnail <img> so live hands can sit on it. Products without a dial are returned untouched.
+function ldThumb_(imgHtml, p){
+  const d = liveDialHtml_(p);
+  return d ? `<span class="ld-thumb">${imgHtml}${d}</span>` : imgHtml;
+}
+function productByIdLd_(id){ return (typeof PRODUCTS !== 'undefined' && PRODUCTS.find(x => String(x.id) === String(id))) || null; }
 function liveDialHtml_(p){
   const c = liveDialCfg_(p);
   return c ? `<svg class="live-dial" viewBox="0 0 100 100" aria-hidden="true">${liveDialInner_(c)}</svg>` : '';
@@ -6917,7 +6940,7 @@ function renderCart(){
   const cartItemName = (i) => (currentLang === 'ar' && translationCache.ar[i.name]) ? translationCache.ar[i.name] : i.name;
   wrap.innerHTML = CART.length ? CART.map(i => `
     <div class="cart-item">
-      <img src="${i.image || 'https://placehold.co/100x100/FDF7F7/8A3B3B?text=Item'}" loading="lazy" decoding="async">
+      ${ldThumb_(`<img src="${i.image || 'https://placehold.co/100x100/FDF7F7/8A3B3B?text=Item'}" loading="lazy" decoding="async">`, productByIdLd_(i.id))}
       <div class="ci-info">
         <div class="ci-name">${cartItemName(i)}</div>
         ${i.color ? `<div style="font-size:12px;color:var(--ink-soft);">${T('pdpColorLabel')}: ${i.color}</div>` : ''}
@@ -7000,6 +7023,8 @@ function fillCartNudgeLowest(){
   if(!best){ row.style.display = 'none'; if(generic) generic.style.display = ''; return; }
   const img = document.getElementById('cartNudgeImg');
   img.src = (best.p.images && best.p.images[0]) || best.it.image || '';
+  const thumb = document.getElementById('cartNudgeThumb');
+  if(thumb){ thumb.querySelectorAll('.live-dial').forEach(n => n.remove()); thumb.insertAdjacentHTML('beforeend', liveDialHtml_(best.p)); }
   document.getElementById('cartNudgeName').textContent = pName(best.p);
   document.getElementById('cartNudgeLeft').textContent = '🔥 ' + T('nudgeHurry').replace('{n}', best.stock);
   row.style.display = 'flex';
@@ -7699,7 +7724,7 @@ function renderSearchSuggestions(){
   const shown = matches.slice(0, SEARCH_SUGGEST_LIMIT);
   box.innerHTML = shown.map(p => `
     <div class="search-suggest-item" onclick="selectSearchSuggestion('${p.id}')">
-      <img src="${(p.images && p.images[0]) || ''}" alt="${pName(p)}" loading="lazy">
+      ${ldThumb_(`<img src="${(p.images && p.images[0]) || ''}" alt="${pName(p)}" loading="lazy">`, p)}
       <div class="ssi-body">
         <div class="ssi-name">${pName(p)}</div>
         <div class="ssi-cat">${catLabel(p.category)}</div>
