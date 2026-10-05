@@ -5039,7 +5039,7 @@ function preorderCardBodyHtml_(p){
 var LIVE_DIAL_CFG_ = {
   // 'PRODUCT_ID': { x:50, y:50, r:30 },
   // style:'bar'|'sword'|'baton'  hl/ml/sl = hour/minute/second length (x r)  sb = second-hand tail  lume = inlay colour
-  // cap = centre-dot colour  sub:{dx,dy,len} = seconds hand lives in a small sub-dial (dx/dy = its centre right/below the main centre)
+  // cap = centre-dot colour  sub:{x,y,len} = seconds hand lives in a small sub-dial (x,y = its centre in % of the photo; or dx/dy offset in dial radii)
   // 1) Cream dial, Roman numerals, blue steel hands + seconds sub-dial at 6
   'P-1789457104216': { x:49.2, y:41.5, r:12.7, style:'sword', w:.55, color:'#1F46A8', hl:.62, ml:.98, sub:{ dy:.41, len:.27 } },
   // 2) Cream dial, Arabic numerals: black baton hands with pale lume, red second hand
@@ -5053,7 +5053,7 @@ var LIVE_DIAL_CFG_ = {
   // 6) Black dial: silver sword hands with a soft edge
   'P-1789562378263': { x:50.2, y:41.8, r:16.2, style:'sword', w:.75, color:'#E6E8EC', edge:'#8E939B', sec:'#D3D6DB', hl:.5, ml:.72, sl:.86, sb:.22 },
   // 7) Gold skeleton dial: gold hands, seconds hand turns in the small gear sub-dial at 3
-  'P-1789562589048': { x:50.9, y:43.8, r:20.9, style:'sword', w:.9, color:'#D8B45E', edge:'#7A5A1A', sec:'#D8B45E', hl:.42, ml:.68, sub:{ dx:.44, dy:0, len:.17 } },
+  'P-1789562589048': { x:50.9, y:43.8, r:20.9, style:'sword', w:.9, color:'#E6D197', edge:'#A38A48', sec:'#E6D197', hl:.42, ml:.68, sub:{ x:59.9, y:44.7, len:.16 } },
   // 8) Grey dial: white arrow hands with dark edge
   'P-1789563628343': { x:50.0, y:40.5, r:15.1, style:'sword', color:'#F3F4F6', edge:'#30343B', sec:'#2A2D33', hl:.4, ml:.6, sl:.78, sb:.2 },
   // 9) Black dial, rose-gold indices: thin rose-gold hands
@@ -5100,11 +5100,18 @@ function liveDialInner_(c){
     }
     return `<g class="${cls}" transform="rotate(${a[cls === 'ld-h' ? 'h' : 'm'].toFixed(1)})">${body}</g>`;
   };
-  // seconds hand: from the centre, or (sub:{dy,len}) from a small seconds sub-dial below/above the centre
+  // seconds hand: from the centre, or from a small seconds sub-dial.
+  // sub:{x,y,len} = sub-dial centre as % of the photo (exact), or sub:{dx,dy,len} = offset from the main centre in dial radii.
   const sub = c.sub;
   const secW = r * (sub ? .02 : .016) * k;
   const secLine = (back, len) => `<g class="ld-s" transform="rotate(${a.s.toFixed(1)})"><line x1="0" y1="${f(r * back)}" x2="0" y2="${f(-r * len)}" stroke="${secCol}" stroke-width="${f(secW)}" stroke-linecap="round"/></g>`;
-  const secHtml = sub ? `<g transform="translate(${f(r * (sub.dx || 0))} ${f(r * (sub.dy || 0))})">${secLine(.06, sub.len)}<circle r="${f(r * .022)}" fill="${secCol}"/></g>` : secLine(sb, sl);
+  const subHand = len => {
+    if(style !== 'sword') return secLine(.06, len);
+    const L = r * len, B = r * .05, w = r * .05 * k;       // small tapered hand, same look as the hour / minute hands
+    return `<g class="ld-s" transform="rotate(${a.s.toFixed(1)})"><path d="M${f(-w * .4)} ${f(B)}L${f(-w / 2)} ${f(-L * .25)}L0 ${f(-L)}L${f(w / 2)} ${f(-L * .25)}L${f(w * .4)} ${f(B)}Z" fill="${secCol}"${edgeAttr}/></g>`;
+  };
+  const subTx = !sub ? '' : (sub.x != null ? `${f(sub.x - c.x)} ${f(sub.y - c.y)}` : `${f(r * (sub.dx || 0))} ${f(r * (sub.dy || 0))}`);
+  const secHtml = sub ? `<g transform="translate(${subTx})">${subHand(sub.len)}<circle r="${f(r * .026)}" fill="${secCol}"${edgeAttr}/></g>` : secLine(sb, sl);
   const mask = c.bg ? `<circle r="${f(r * (c.m || .72))}" fill="${c.bg}"/>` : '';
   return `<g transform="translate(${c.x} ${c.y})">${mask}`
     + shape('ld-h', 'h', .10, hl, W.h)
