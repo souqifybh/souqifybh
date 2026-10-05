@@ -123,7 +123,7 @@ function vSales(T){
   return tbl(['Invoice','Date','Customer','Payment','Delivery','Amount (BHD)','Status',''],rows,'No confirmed orders in this period.')+dl;
 }
 function vNotes(T){
-  const rows=T.N.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(s=>`<tr><td><b>${esc(s.d.creditNoteNo)}</b></td><td>${esc(s.date)}</td><td>${esc(s.d.invoiceNo)} <span class="muted">${esc(s.o.id)}</span></td><td>${esc(s.o.customerName)}</td><td class="acc-neg">-${f3(s.v)}</td><td><button class="btn-sm" onclick="Acc.print('${esc(s.o.id)}','cn')">🖨 Credit note</button></td></tr>`).join('');
+  const rows=T.N.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(s=>`<tr><td><b>${esc(s.d.creditNoteNo)}</b></td><td>${esc(s.date)}</td><td>${esc(s.d.invoiceNo)} <span class="muted">${esc(s.o.id)}</span></td><td>${esc(s.o.customerName)}</td><td class="acc-neg">-${f3(s.v)}</td><td><button class="btn-sm" onclick="Acc.print('${esc(s.o.id)}','cn')">🖨 Credit note</button> <button class="btn-sm" title="Delete credit note + its invoice (passcode)" onclick="Acc.delCn('${esc(s.o.id)}')">🗑</button></td></tr>`).join('');
   return tbl(['Credit note','Date','Against invoice','Customer','Amount (BHD)',''],rows,'No cancelled orders in this period.');
 }
 function vCod(T){
@@ -217,20 +217,22 @@ function modal(e){
 const Acc={
   go(t){A.tab=t;render();}, range(r){A.range=r;render();}, custom(k,v){A.range='custom';A[k]=v;render();},
   async setDelivery(id,v){ if(A.docs[id]) A.docs[id].deliveredBy=v; await api('acctMarkReceived',{ids:[id],deliveredBy:v}); render(); },
-  async delInv(id,del){ const p=prompt((del?'Delete':'Restore')+' this invoice? Enter passcode:'); if(p===null) return; const r=await api('acctMarkReceived',{ids:[id],deleteInvoice:del,passcode:p}); if(!r.ok) return alert(r.error||'Failed'); Acc.load(); },
+  async delInv(id,del){ const p=prompt((del?'Delete':'Restore')+' this invoice? Enter passcode:'); if(p===null) return; const r=await api('acctMarkReceived',{ids:[id],deleteInvoice:del,passcode:p}); if(!r.ok) return alert(r.error||'Failed'); Acc.load(true); },
+  delCn(id){ if(!confirm('This removes the credit note AND its cancelled invoice from your books (they cancel each other out). Continue?')) return; Acc.delInv(id,true); },
   print:printDoc, edit(id){modal(A.exp.find(x=>x.id===id));},
-  async load(){ $('accRoot').innerHTML='<p class="muted">Loading accounts… (v5, can take up to a minute the first time)</p>'; let r; try{ r=await Promise.race([api('acctGetData'), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timed out after 90s')),90000))]); }catch(err){ r={ok:false,error:'Backend did not respond correctly ('+err.message+'). Check the 4 doPost edits and that you deployed a NEW version.'}; }
+  async load(silent){ if(!silent) $('accRoot').innerHTML='<p class="muted">Loading accounts… (v7, can take up to a minute the first time)</p>'; let r; try{ r=await Promise.race([api('acctGetData'), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timed out after 90s')),90000))]); }catch(err){ r={ok:false,error:'Backend did not respond correctly ('+err.message+'). Check the 4 doPost edits and that you deployed a NEW version.'}; }
     if(!r.ok){$('accRoot').innerHTML='<div class="card">⚠ '+esc(r.error||'Could not load. Did you add accounts-backend.gs and redeploy?')+'</div>';return;}
     A.orders=r.orders; A.docs={}; r.docs.forEach(d=>A.docs[d.orderId]=d); A.exp=r.expenses; A.set=r.settings||{}; render(); },
   async saveExp(id){ const cat=$('xCat').value==='__new'?$('xNew').value.trim():$('xCat').value; if(!cat) return $('xMsg').textContent='Enter a category.';
     if(!cats().includes(cat)){ const c=cats().filter(x=>!DEF_CATS.includes(x)).concat(cat); await api('updateSettings',{settings:{acctCategories:JSON.stringify(c)}}); A.set.acctCategories=JSON.stringify(c); }
     const r=await api('acctSaveExpense',{id,kind:$('xKind').value,date:$('xDate').value,category:cat,amount:$('xAmt').value,description:$('xDesc').value,vendor:$('xVen').value,status:$('xStat').value});
-    if(!r.ok) return $('xMsg').textContent='⚠ '+r.error; $('accModal').remove(); Acc.load(); },
-  async togglePaid(id){ const e=A.exp.find(x=>x.id===id); await api('acctSaveExpense',Object.assign({},e,{status:e.status==='paid'?'unpaid':'paid',paidDate:today()})); Acc.load(); },
-  async del(id){ if(!confirm('Delete this entry?')) return; await api('acctDeleteExpense',{id}); Acc.load(); },
-  async mark(ids,on,date){ const amounts={}; ids.forEach(i=>{const o=A.orders.find(x=>x.id===i); amounts[i]=o?collect(o):0;});
-    await api('acctMarkReceived',{ids,received:on,date:on?today():'',amounts}); Acc.load(); },
-  async saveSettings(){ await api('updateSettings',{settings:{acctCourierFee:$('acFee').value,acctInrRate:$('acRate').value,acctCourierDeduct:$('acDed').value,acctSeller:$('acSeller').value}}); Acc.load(); },
+    if(!r.ok) return $('xMsg').textContent='⚠ '+r.error; $('accModal').remove(); Acc.load(true); },
+  async togglePaid(id){ const e=A.exp.find(x=>x.id===id); if(!e) return; const upd=Object.assign({},e,{status:e.status==='paid'?'unpaid':'paid',paidDate:today()});
+    e.status=upd.status; e.paidDate=upd.status==='paid'?today():''; render(); const r=await api('acctSaveExpense',upd); if(!r.ok){ alert(r.error||'Could not save'); Acc.load(true); } },
+  async del(id){ const p=prompt('Delete this entry? Enter passcode:'); if(p===null) return; const r=await api('acctDeleteExpense',{id,passcode:p}); if(!r.ok) return alert(r.error||'Failed'); Acc.load(true); },
+  async mark(ids,on,date){ const amounts={}; ids.forEach(i=>{ const o=A.orders.find(x=>x.id===i); amounts[i]=o?collect(o):0; const d=A.docs[i]; if(d){ d.received=!!on; d.receivedDate=on?today():''; d.receivedAmount=on?amounts[i]:''; } });
+    render(); const r=await api('acctMarkReceived',{ids,received:on,date:on?today():'',amounts}); if(!r.ok){ alert(r.error||'Could not save'); Acc.load(true); } },
+  async saveSettings(){ await api('updateSettings',{settings:{acctCourierFee:$('acFee').value,acctInrRate:$('acRate').value,acctCourierDeduct:$('acDed').value,acctSeller:$('acSeller').value}}); Acc.load(true); },
   csv(){ const T=A.T, rows=[['Item','BHD'],['Gross sales',T.gross],['Credit notes',-T.cn],['Net sales',T.net],['Purchases',-T.purch],['Gross profit',T.gp],['Expenses',-T.opexMan],['Delybell charges',-T.delivery],['Promotional discounts',-T.promo],['Marketing total (memo)',-T.mkt],['Net profit',T.profit]];
     const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'})); a.download='pnl-'+(A.from||'all')+'.csv'; a.click(); }
 };
