@@ -216,6 +216,11 @@
     .stat-grid{grid-template-columns:1fr 1fr;}
     .img-grid{grid-template-columns:repeat(5,1fr);}
   }
+  .btn{background:var(--ink);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px;font-family:inherit;}
+  .btn-sm{background:#fff;border:1.5px solid var(--line);padding:6px 11px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:700;color:var(--ink);font-family:inherit;}
+  .btn-sm:hover{border-color:var(--blush-deep);}
+  .acc-neg{color:var(--bad);} .btn-sm.acc-on{background:var(--ink);color:#fff;}
+  @media print{.sidebar,.topbar,#accRoot>div:first-child,#accRoot>.card:nth-child(2){display:none !important;}}
 </style>
 </head>
 <body>
@@ -250,12 +255,19 @@
       <div class="sb-link" data-tab="giftbh" onclick="switchTab('giftbh')"><span class="ic">🎁</span> Gift to Bahrain</div>
       <div class="sb-link" data-tab="giftorders" onclick="switchTab('giftorders')"><span class="ic">✈️</span> Gift Orders</div>
       <div class="sb-link" data-tab="giveaway" onclick="switchTab('giveaway')"><span class="ic">🎉</span> Giveaway</div>
+      <div class="sb-link" data-tab="accounts" onclick="switchTab('accounts')"><span class="ic">💼</span> Accounts</div>
     </div>
     <div class="sb-spacer"></div>
     <div class="sb-foot"><div class="logout" onclick="logout()"><span class="ic">↩</span> Log out</div></div>
   </div>
 
   <div class="main">
+
+    <!-- ================= ACCOUNTS ================= -->
+    <div class="panel" id="panel-accounts">
+      <div class="topbar"><div><h1>Accounts</h1><p>Sales, invoices, credit notes, expenses, Delybell COD and profit &amp; loss.</p></div></div>
+      <div id="accRoot"><p class="muted">Open this tab to load your accounts.</p></div>
+    </div>
 
     <!-- ================= DASHBOARD ================= -->
     <div class="panel active" id="panel-dashboard">
@@ -2947,6 +2959,7 @@ function applyCampaigns(data){
 const savedPw = sessionStorage.getItem('gm_admin_pw');
 if(savedPw){ document.getElementById('pwInput').value = savedPw; login(); }
 </script>
+<script src="accounts.js"></script>
 <div class="rev-modal-overlay" id="revOverlay">
   <div class="rev-modal">
     <button class="close-x" onclick="closeProductReviews()">✕</button>
