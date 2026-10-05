@@ -11,6 +11,7 @@ const rate = () => Number(A.set.acctInrRate)||0.0045;
 const fee = () => A.set.acctCourierFee!==undefined && A.set.acctCourierFee!=='' ? Number(A.set.acctCourierFee) : 0.9;
 const deduct = () => String(A.set.acctCourierDeduct)==='true';
 const cats = () => { let c=[]; try{c=JSON.parse(A.set.acctCategories||'[]')}catch(e){} return [...new Set([...DEF_CATS,...c])]; };
+const isDely = e => e.kind!=='purchase' && e.category==='Delivery Charge';
 const isCod = o => /cod|cash on delivery/i.test(o.paymentMethod||'');
 const st = o => String(o.orderStatus||'new').toLowerCase();
 const fx=o=>o.currency==='INR'?rate():1;
@@ -43,7 +44,6 @@ function derive(){
     const v=val(o);
     sales.push({o,d,v,g:gross(o),x:disc(o),date:d.invoiceDate});
     if(st(o)==='cancelled'&&d.creditNoteNo) notes.push({o,d,v,g:gross(o),date:d.creditNoteDate||d.invoiceDate});
-    if(o.orderType!=='gift' && d.shippedDate && d.deliveredBy!=='own' && st(o)!=='cancelled') courier.push({o,d,date:d.shippedDate,v:fee()});
   });
   return {sales,notes,courier,deleted};
 }
@@ -60,13 +60,13 @@ function totals(){
   const gross=S.reduce((a,s)=>a+s.g,0), cn=N.reduce((a,s)=>a+s.g,0), net=gross-cn;
   const promo=S.filter(s=>st(s.o)!=='cancelled').reduce((a,s)=>a+s.x,0);
   const E=A.exp.filter(e=>inRange(e.date)), purch=E.filter(e=>e.kind==='purchase').reduce((a,e)=>a+Number(e.amount),0);
-  const opexMan=E.filter(e=>e.kind!=='purchase').reduce((a,e)=>a+Number(e.amount),0), delivery=C.reduce((a,c)=>a+c.v,0);
-  const opex=opexMan+delivery+promo, gp=net-purch, profit=gp-opex;
+  const opexMan=E.filter(e=>e.kind!=='purchase').reduce((a,e)=>a+Number(e.amount),0), delivery=E.filter(isDely).reduce((a,e)=>a+Number(e.amount),0), dN=E.filter(isDely).length;
+  const opex=opexMan+promo, gp=net-purch, profit=gp-opex;
   const mkt=E.filter(e=>e.kind!=='purchase'&&/meta|ads|market|promo|influenc|campaign/i.test(e.category)).reduce((a,e)=>a+Number(e.amount),0)+promo;
   const live=L.sales.filter(s=>st(s.o)!=='cancelled'&&inRange(s.date));
   const recv=live.filter(isReceived).reduce((a,s)=>a+s.v,0), pending=live.reduce((a,s)=>a+s.v,0)-recv;
   const unpaid=E.filter(e=>e.status!=='paid').reduce((a,e)=>a+Number(e.amount),0);
-  return {L,S,N,C,E,promo,mkt,gross,cn,net,purch,opexMan,delivery,opex,gp,profit,recv,pending,unpaid,count:live.length};
+  return {L,S,N,C,E,promo,mkt,gross,cn,net,purch,opexMan,delivery,dN,opex,gp,profit,recv,pending,unpaid,count:live.length};
 }
 const money = n => `<span class="${n<0?'acc-neg':''}">${n<0?'-':''}${f3(Math.abs(n))}</span>`;
 
@@ -74,7 +74,7 @@ const money = n => `<span class="${n<0?'acc-neg':''}">${n<0?'-':''}${f3(Math.abs
 function monthly(T){
   const m={}; const add=(k,f,v)=>{ if(!k) return; m[k]=m[k]||{s:0,e:0}; m[k][f]+=v; };
   T.S.forEach(s=>{add(s.date.slice(0,7),'s',s.g); if(st(s.o)!=='cancelled') add(s.date.slice(0,7),'e',s.x);}); T.N.forEach(s=>add(s.date.slice(0,7),'s',-s.g));
-  T.E.forEach(e=>add(e.date.slice(0,7),'e',Number(e.amount))); T.C.forEach(c=>add(c.date.slice(0,7),'e',c.v));
+  T.E.forEach(e=>add(e.date.slice(0,7),'e',Number(e.amount)));
   return Object.keys(m).sort().map(k=>({k,s:m[k].s,e:m[k].e,p:m[k].s-m[k].e}));
 }
 function barChart(rows){
@@ -96,7 +96,7 @@ function hbars(items){
 /* ---------- views ---------- */
 const kpi=(l,v,s,c)=>`<div class="stat-card"><div class="lbl">${l}</div><div class="val" style="${c?'color:'+c:''}">${v}</div><div class="delta" style="color:#6B6B70">${s||''}</div></div>`;
 function vOverview(T){
-  const cat={}; T.E.forEach(e=>cat[e.category]=(cat[e.category]||0)+Number(e.amount)); if(T.promo) cat['Promotional discounts']=T.promo; if(T.delivery) cat['Delivery (Delybell)']=(cat['Delivery (Delybell)']||0)+T.delivery;
+  const cat={}; T.E.forEach(e=>cat[e.category]=(cat[e.category]||0)+Number(e.amount)); if(T.promo) cat['Promotional discounts']=T.promo;
   const margin=T.net>0?(T.profit/T.net*100):0, aov=T.count?T.net/T.count:0;
   const cashIn=T.recv, delyPending=cod(T.L).filter(c=>!c.received&&inRange(c.date)).reduce((a,c)=>a+c.net,0);
   return `<div class="stat-grid">
@@ -109,7 +109,7 @@ function vOverview(T){
     ${kpi('With Delybell (COD)',f3(delyPending),'Awaiting Monday release')}
     ${kpi('Unpaid bills',f3(T.unpaid),'Expenses not yet paid')}
     ${kpi('Marketing spend',f3(T.mkt),`Ads + promos ${f3(T.promo)}`)}
-    ${kpi('Delybell charges',f3(T.delivery),`${T.C.length} deliveries · billed separately`)}
+    ${kpi('Delybell charges',f3(T.delivery),`${T.dN} entries · added in Expenses`)}
     ${kpi('Avg order value',f3(aov),'Net of discounts')}
     ${kpi('Credit notes',f3(T.cn),`${T.N.length} cancelled orders`)}
   </div>
@@ -141,8 +141,8 @@ function vCod(T){
 function vExp(T){
   const rows=A.exp.filter(e=>inRange(e.date)).sort((a,b)=>b.date.localeCompare(a.date)).map(e=>`<tr><td>${esc(e.date)}</td><td>${e.kind==='purchase'?'🛒 Purchase':'💸 Expense'}</td><td>${esc(e.category)}</td><td>${esc(e.description)}<div class="muted">${esc(e.vendor||'')}</div></td><td>${f3(e.amount)}</td><td>${e.status==='paid'?`<span class="badge active-yes">Paid ${esc(e.paidDate||'')}</span>`:'<span class="badge">Unpaid</span>'}</td>
     <td style="white-space:nowrap"><button class="btn-sm" onclick="Acc.togglePaid('${e.id}')">${e.status==='paid'?'Unpay':'✓ Paid'}</button> <button class="btn-sm" onclick="Acc.edit('${e.id}')">Edit</button> <button class="btn-sm" onclick="Acc.del('${e.id}')">🗑</button></td></tr>`).join('');
-  const auto=T.C.length?`<div class="card muted">Plus <b>${f3(T.delivery)} BHD</b> Delybell delivery charges auto-counted from ${T.C.length} shipped/delivered orders (${f3(fee())} each).</div>`:'';
-  return `<div style="margin-bottom:12px"><button class="btn" onclick="Acc.edit('')">+ Add expense / purchase</button></div>${auto}`+tbl(['Date','Type','Category','Details','Amount','Status',''],rows,'Nothing recorded in this period. Click “Add expense / purchase”.');
+  const auto=T.dN?`<div class="card muted">Delybell delivery charges in this period: <b>${f3(T.delivery)} BHD</b> (${T.dN} entries, category “Delivery Charge”).</div>`:'';
+  return `<div style="margin-bottom:12px"><button class="btn" onclick="Acc.edit('')">+ Add expense / purchase</button> <button class="btn" onclick="Acc.dely()">🚚 Add Delybell charges</button></div>${auto}`+tbl(['Date','Type','Category','Details','Amount','Status',''],rows,'Nothing recorded in this period. Click “Add expense / purchase”.');
 }
 function vPnl(T){
   const row=(l,v,b)=>`<tr${b?' style="font-weight:800;background:#faf8f8"':''}><td>${l}</td><td style="text-align:right">${money(v)}</td></tr>`;
@@ -151,15 +151,15 @@ function vPnl(T){
   return `<div class="grid2"><div class="card"><h2>Profit &amp; Loss <span class="muted">${A.from||'start'} → ${A.to||'today'}</span></h2><table class="tbl" style="width:100%"><tbody>
     ${row('Gross sales (invoiced)',T.gross)}${row('Less: credit notes (cancelled)',-T.cn)}${row('Net sales',T.net,1)}
     ${row('Less: purchases (cost of goods)',-T.purch)}${row('Gross profit',T.gp,1)}
-    ${Object.keys(cat).map(k=>row('&nbsp;&nbsp;'+esc(k),-cat[k])).join('')}${row('&nbsp;&nbsp;Delybell delivery charges',-T.delivery)}${row('&nbsp;&nbsp;Promotional discounts (promo codes, offers, wallet credit)',-T.promo)}${row('Total operating expenses',-T.opex)}
+    ${Object.keys(cat).map(k=>row('&nbsp;&nbsp;'+esc(k),-cat[k])).join('')}${row('&nbsp;&nbsp;Promotional discounts (promo codes, offers, wallet credit)',-T.promo)}${row('Total operating expenses',-T.opex)}
     ${row(T.profit>=0?'NET PROFIT':'NET LOSS',T.profit,1)}${row('<span class="muted">Memo: total marketing (Meta/ads + promotions)</span>',-T.mkt)}</tbody></table>
     <p style="margin-top:12px"><button class="btn-sm" onclick="Acc.csv()">⬇ Export CSV</button> <button class="btn-sm" onclick="window.print()">🖨 Print</button></p></div>
   <div class="card"><h2>Monthly breakdown</h2><table class="tbl" style="width:100%"><thead><tr><th>Month</th><th>Sales</th><th>Costs</th><th>Profit</th></tr></thead><tbody>${m.map(r=>`<tr><td>${r.k}</td><td>${f3(r.s)}</td><td>${f3(r.e)}</td><td>${money(r.p)}</td></tr>`).join('')||'<tr class="empty-row"><td colspan="4">No data.</td></tr>'}</tbody></table>
-  <p class="muted" style="font-size:11.5px">Costs here = recorded expenses + Delybell charges. Stock purchases are in the P&amp;L above as cost of goods.</p></div></div>`;
+  <p class="muted" style="font-size:11.5px">Costs here = recorded expenses (including Delybell charges) + promotional discounts. Stock purchases are in the P&amp;L above as cost of goods.</p></div></div>`;
 }
 function vSettings(){
   return `<div class="card" style="max-width:640px"><h2>Accounts settings</h2>
-  <div class="row"><div class="field"><label>Delybell fee per delivery (BHD)</label><input id="acFee" type="number" step="0.001" value="${fee()}"></div>
+  <div class="row"><div class="field"><label>Default Delybell charge per delivery (BHD)</label><input id="acFee" type="number" step="0.001" value="${fee()}"></div>
   <div class="field"><label>INR → BHD rate (gift orders)</label><input id="acRate" type="number" step="0.0001" value="${rate()}"></div></div>
   <div class="field"><label>Delybell remittance</label><select id="acDed"><option value="false" ${deduct()?'':'selected'}>Delivery fee billed separately (Delybell invoices me)</option><option value="true" ${deduct()?'selected':''}>Delivery fee is deducted from COD remittance</option></select></div>
   <div class="field"><label>Seller details on invoices</label><textarea id="acSeller" rows="4" placeholder="Business name, address, CR no., phone, email">${esc(A.set.acctSeller||'Souqify-bh\nsouqify-bh.com · WhatsApp +973 3518 4023\ncustomercaresouqifybh@gmail.com\nKingdom of Bahrain')}</textarea></div>
@@ -205,6 +205,26 @@ function printDoc(id,type){
   <script>setTimeout(function(){window.print()},400)<\/script></body></html>`); w.document.close();
 }
 
+
+/* ---------- Delybell charges: pick orders, one charge each (default 0.900) ---------- */
+function delyPending(){
+  const charged=new Set(A.exp.filter(isDely).map(e=>e.ref).filter(Boolean));
+  return derive().sales.filter(s=>s.o.orderType!=='gift'&&s.d.shippedDate&&s.d.deliveredBy!=='own'&&st(s.o)!=='cancelled'&&!charged.has(s.o.id))
+    .sort((a,b)=>String(b.d.shippedDate).localeCompare(String(a.d.shippedDate)));
+}
+function delyModal(){
+  const old=$('accModal'); if(old) old.remove();
+  const L=delyPending(), d=document.createElement('div'); d.id='accModal'; d.className='rev-modal-overlay show';
+  const rows=L.map(s=>`<label class="mini-row" style="display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer"><input type="checkbox" class="dc" data-id="${esc(s.o.id)}" onchange="Acc.delyTotal()"><span style="flex:1" title="${esc(s.o.id)}">${esc(s.o.customerName)}</span><input type="number" step="0.001" id="dq_${esc(s.o.id)}" value="${f3(fee())}" style="width:90px" oninput="Acc.delyTotal()" onclick="event.stopPropagation()"></label>`).join('');
+  d.innerHTML=`<div class="rev-modal"><button class="close-x" onclick="this.closest('.rev-modal-overlay').remove()">✕</button><h2 style="margin-bottom:6px">Add Delybell charges</h2>
+  <p class="muted" style="margin:0 0 12px">Tick the orders delivered by Delybell. Each is saved as a separate expense (Delivery Charge) for that customer.</p>
+  <div class="row"><div class="field"><label>Date</label><input id="dyDate" type="date" value="${today()}"></div><div class="field"><label>Status</label><select id="dyStat"><option value="unpaid">Unpaid</option><option value="paid">Paid</option></select></div></div>
+  ${L.length?`<label style="display:flex;gap:8px;align-items:center;font-weight:700;margin:8px 0"><input type="checkbox" onchange="Acc.delyAll(this.checked)"> Select all (${L.length})</label>
+  <div style="max-height:46vh;overflow:auto;border:1px solid #e5e5e5;border-radius:8px;padding:0 12px">${rows}</div>`:'<p class="muted">No Delybell orders waiting for a charge.</p>'}
+  <div style="margin-top:14px;display:flex;align-items:center;gap:12px"><button class="btn" id="dyBtn" onclick="Acc.saveDely()" ${L.length?'':'disabled'}>Save charges</button><b id="dyTot">0 selected · 0.000 BHD</b> <span id="dyMsg" class="muted"></span></div></div>`;
+  document.body.appendChild(d);
+}
+
 /* ---------- actions ---------- */
 function modal(e){
   e=e||{}; const old=$('accModal'); if(old) old.remove();
@@ -223,6 +243,19 @@ const Acc={
   async delInv(id,del){ const p=prompt((del?'Delete':'Restore')+' this invoice? Enter passcode:'); if(p===null) return; const r=await api('acctMarkReceived',{ids:[id],deleteInvoice:del,passcode:p}); if(!r.ok) return alert(r.error||'Failed'); Acc.load(true); },
   delCn(id){ if(!confirm('This removes the credit note AND its cancelled invoice from your books (they cancel each other out). Continue?')) return; Acc.delInv(id,true); },
   print:printDoc, edit(id){modal(A.exp.find(x=>x.id===id));},
+  dely:delyModal,
+  delyAll(on){ document.querySelectorAll('#accModal input.dc').forEach(c=>c.checked=on); Acc.delyTotal(); },
+  delyTotal(){ let n=0,t=0; document.querySelectorAll('#accModal input.dc:checked').forEach(c=>{ n++; t+=Number($('dq_'+c.dataset.id).value)||0; }); $('dyTot').textContent=n+' selected · '+f3(t)+' BHD'; },
+  async saveDely(){
+    const picks=[...document.querySelectorAll('#accModal input.dc:checked')].map(c=>c.dataset.id); if(!picks.length) return $('dyMsg').textContent='Tick at least one order.';
+    for(const id of picks) if(!(Number($('dq_'+id).value)>0)) return $('dyMsg').textContent='Every ticked order needs a charge above 0.';
+    const date=$('dyDate').value||today(), status=$('dyStat').value, btn=$('dyBtn'); btn.disabled=true; let done=0;
+    for(const id of picks){ const o=A.orders.find(x=>x.id===id)||{};
+      $('dyMsg').textContent='Saving '+(done+1)+' of '+picks.length+'…';
+      let r; try{ r=await api('acctSaveExpense',{kind:'expense',date,category:'Delivery Charge',amount:$('dq_'+id).value,description:o.customerName||id,vendor:'Delybell',status,ref:id}); }catch(err){ r={ok:false,error:err.message}; }
+      if(!r.ok){ $('dyMsg').textContent='⚠ '+(r.error||'Failed')+' — '+done+' saved before the error.'; btn.disabled=false; if(done) Acc.load(true,true); return; }
+      done++; }
+    $('accModal').remove(); Acc.load(true,true); },
   async load(silent,fresh){ if(A.loading) return; A.loading=true; if(!silent) $('accRoot').innerHTML='<p class="muted">Loading accounts…</p>'; let r;
     try{ r=await api('acctGetData',{fresh:fresh===true},{retries:2,timeout:60000}); }catch(err){ r={ok:false,error:err.message}; }
     A.loading=false;
@@ -231,7 +264,7 @@ const Acc={
   preload(fresh){ if(!A.loaded) Acc.load(true,fresh); else if(fresh) Acc.load(true,true); },
   async saveExp(id){ const cat=$('xCat').value==='__new'?$('xNew').value.trim():$('xCat').value; if(!cat) return $('xMsg').textContent='Enter a category.';
     if(!cats().includes(cat)){ const c=cats().filter(x=>!DEF_CATS.includes(x)).concat(cat); await api('updateSettings',{settings:{acctCategories:JSON.stringify(c)}}); A.set.acctCategories=JSON.stringify(c); }
-    const r=await api('acctSaveExpense',{id,kind:$('xKind').value,date:$('xDate').value,category:cat,amount:$('xAmt').value,description:$('xDesc').value,vendor:$('xVen').value,status:$('xStat').value});
+    const old=A.exp.find(x=>x.id===id)||{}; const r=await api('acctSaveExpense',{id,ref:old.ref||'',method:old.method||'',kind:$('xKind').value,date:$('xDate').value,category:cat,amount:$('xAmt').value,description:$('xDesc').value,vendor:$('xVen').value,status:$('xStat').value});
     if(!r.ok) return $('xMsg').textContent='⚠ '+r.error; $('accModal').remove(); Acc.load(true); },
   async togglePaid(id){ const e=A.exp.find(x=>x.id===id); if(!e) return; const upd=Object.assign({},e,{status:e.status==='paid'?'unpaid':'paid',paidDate:today()});
     e.status=upd.status; e.paidDate=upd.status==='paid'?today():''; render(); const r=await api('acctSaveExpense',upd); if(!r.ok){ alert(r.error||'Could not save'); Acc.load(true); } },
@@ -239,7 +272,7 @@ const Acc={
   async mark(ids,on,date){ const amounts={}; ids.forEach(i=>{ const o=A.orders.find(x=>x.id===i); amounts[i]=o?collect(o):0; const d=A.docs[i]; if(d){ d.received=!!on; d.receivedDate=on?today():''; d.receivedAmount=on?amounts[i]:''; } });
     render(); const r=await api('acctMarkReceived',{ids,received:on,date:on?today():'',amounts}); if(!r.ok){ alert(r.error||'Could not save'); Acc.load(true); } },
   async saveSettings(){ await api('updateSettings',{settings:{acctCourierFee:$('acFee').value,acctInrRate:$('acRate').value,acctCourierDeduct:$('acDed').value,acctSeller:$('acSeller').value}}); Acc.load(true); },
-  csv(){ const T=A.T, rows=[['Item','BHD'],['Gross sales',T.gross],['Credit notes',-T.cn],['Net sales',T.net],['Purchases',-T.purch],['Gross profit',T.gp],['Expenses',-T.opexMan],['Delybell charges',-T.delivery],['Promotional discounts',-T.promo],['Marketing total (memo)',-T.mkt],['Net profit',T.profit]];
+  csv(){ const T=A.T, rows=[['Item','BHD'],['Gross sales',T.gross],['Credit notes',-T.cn],['Net sales',T.net],['Purchases',-T.purch],['Gross profit',T.gp],['Expenses',-T.opexMan],['Promotional discounts',-T.promo],['Marketing total (memo)',-T.mkt],['Net profit',T.profit]];
     const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'})); a.download='pnl-'+(A.from||'all')+'.csv'; a.click(); }
 };
 window.Acc=Acc;
