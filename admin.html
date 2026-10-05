@@ -273,7 +273,7 @@
     <div class="panel active" id="panel-dashboard">
       <div class="topbar">
         <div><h1>Dashboard</h1><p>A quick snapshot of your store right now.</p></div>
-        <button class="ghost" onclick="loadAll()">↻ Refresh</button>
+        <button class="ghost" onclick="loadAll(true)">↻ Refresh</button>
       </div>
 
       <div class="stat-grid">
@@ -575,7 +575,7 @@
     <div class="panel" id="panel-inventory">
       <div class="topbar">
         <div><h1>Inventory</h1><p>Track stock levels, adjust quantities, and spot low/out-of-stock products at a glance.</p></div>
-        <button class="ghost" onclick="loadAll()">↻ Refresh</button>
+        <button class="ghost" onclick="loadAll(true)">↻ Refresh</button>
       </div>
 
       <div class="stat-grid">
@@ -1104,23 +1104,65 @@ let PREORDERS = [];
 //      unlocking the UI) and quietly fills in the other tabs once it lands.
 // Net effect: you see the admin panel and can start working before the
 // slower, rarely-opened tabs have even finished loading.
-function login(){
+// Resilient API helper used for logging in and loading data: hard timeout, safe JSON
+// parsing (Google sometimes answers with an HTML error page), automatic retry with backoff.
+// Only used for READ actions with retries; writes must pass { retries:0 } so they never repeat.
+async function apiCall(payload, opts){
+  opts = opts || {};
+  const timeoutMs = opts.timeout || 40000, retries = opts.retries == null ? 2 : opts.retries;
+  let lastErr;
+  for(let attempt = 0; attempt <= retries; attempt++){
+    const ctrl = new AbortController(), tm = setTimeout(() => ctrl.abort(), timeoutMs);
+    try{
+      const r = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify(Object.assign({ password: ADMIN_PASSWORD }, payload)), signal: ctrl.signal });
+      const t = await r.text(); clearTimeout(tm);
+      try{ return JSON.parse(t); }catch(e){ throw new Error('Google returned an error page (server busy)'); }
+    }catch(err){
+      clearTimeout(tm);
+      lastErr = err.name === 'AbortError' ? new Error('timed out after ' + Math.round(timeoutMs/1000) + 's') : err;
+      if(attempt < retries){ if(opts.onRetry) opts.onRetry(attempt + 1, retries, lastErr); await new Promise(res => setTimeout(res, 1500 * (attempt + 1))); }
+    }
+  }
+  throw lastErr;
+}
+window.apiCall = apiCall;
+
+function setLoadStatus(text, isError){
+  let el = document.getElementById('loadStatus');
+  if(!el){
+    el = document.createElement('div'); el.id = 'loadStatus';
+    el.style.cssText = 'position:fixed;right:14px;bottom:14px;z-index:9999;padding:8px 12px;border-radius:8px;font-size:13px;background:#262B1D;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);max-width:320px';
+    document.body.appendChild(el);
+  }
+  if(!text){ el.style.display = 'none'; return; }
+  el.style.display = 'block'; el.style.background = isError ? '#9b2c2c' : '#262B1D';
+  el.innerHTML = text + (isError ? ' <a href="#" style="color:#fff;text-decoration:underline" onclick="loadAll(true);return false">Retry</a>' : '');
+}
+
+// Login is now just a tiny password check (answered instantly by the backend, no sheet
+// reads). The panel unlocks straight away, then the data loads in the background in
+// sequence (Products/Orders first, then the rest, then Accounts) so the three heavy Google
+// Sheet reads no longer fight each other. Any failure shows a Retry button instead of a
+// blank panel.
+async function login(){
   ADMIN_PASSWORD = document.getElementById('pwInput').value;
-  document.getElementById('loginMsg').textContent = 'Checking…';
-  fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapCore', password: ADMIN_PASSWORD }) })
-    .then(r => r.json())
-    .then(data => {
-      if(data.ok){
-        sessionStorage.setItem('gm_admin_pw', ADMIN_PASSWORD);
-        document.getElementById('loginScreen').style.display='none';
-        document.getElementById('shell').classList.add('show');
-        applyCoreBootstrap(data);
-        loadExtra(); // fire-and-forget: fills Customers/Subscribers/etc in the background
-      } else {
-        document.getElementById('loginMsg').textContent = data.error || 'Incorrect password.';
-      }
-    })
-    .catch(() => document.getElementById('loginMsg').textContent = 'Could not reach backend. Check API_URL in admin.html.');
+  const msg = document.getElementById('loginMsg');
+  msg.textContent = 'Checking…';
+  let r;
+  try{
+    r = await apiCall({ action:'adminLogin' }, { timeout: 25000, retries: 2, onRetry:(n, max) => { msg.textContent = 'Server is waking up, retrying (' + n + '/' + max + ')…'; } });
+  }catch(err){
+    msg.textContent = 'Could not reach the backend (' + err.message + '). Check your internet and try again.';
+    return;
+  }
+  if(!r.ok){
+    msg.textContent = r.error === 'Unknown POST action' ? 'Backend is out of date. Redeploy the new Code.gs (Deploy > Manage deployments > New version).' : (r.error || 'Incorrect password.');
+    return;
+  }
+  sessionStorage.setItem('gm_admin_pw', ADMIN_PASSWORD);
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('shell').classList.add('show');
+  loadAll(false);
 }
 function logout(){ sessionStorage.removeItem('gm_admin_pw'); location.reload(); }
 
@@ -1132,15 +1174,22 @@ function switchTab(tab){
 // "↻ Refresh": fires the core and extra requests in parallel (two lighter
 // Apps Script executions running concurrently) rather than one call that
 // reads all ten sheets back-to-back in a single execution.
-async function loadAll(){
-  const [coreRes, extraRes] = await Promise.all([
-    fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapCore', password: ADMIN_PASSWORD }) }),
-    fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapExtra', password: ADMIN_PASSWORD }) })
-  ]);
-  const core = await coreRes.json();
-  const extra = await extraRes.json();
-  if(core.ok) applyCoreBootstrap(core);
-  if(extra.ok) applyExtraBootstrap(extra);
+let LOADING_ALL = false;
+async function loadAll(fresh){
+  if(LOADING_ALL) return; LOADING_ALL = true;
+  try{
+    setLoadStatus('Loading orders and products…');
+    const core = await apiCall({ action:'adminBootstrapCore', fresh: fresh === true }, { timeout: 45000, retries: 2, onRetry:(n, max) => setLoadStatus('Server is slow, retrying (' + n + '/' + max + ')…') });
+    if(!core.ok) throw new Error(core.error || 'Backend refused the request');
+    applyCoreBootstrap(core);
+    setLoadStatus('Loading customers and other tabs…');
+    const extra = await apiCall({ action:'adminBootstrapExtra', fresh: fresh === true }, { timeout: 45000, retries: 2 });
+    if(extra.ok) applyExtraBootstrap(extra);
+    setLoadStatus('');
+    if(window.Acc && Acc.preload) Acc.preload(fresh === true);   // Accounts loads last, never in parallel
+  }catch(err){
+    setLoadStatus('Could not load data: ' + err.message + '.', true);
+  }finally{ LOADING_ALL = false; }
 }
 
 // Products, Orders, Settings + the dashboard/promo numbers that depend on
@@ -1169,12 +1218,6 @@ function applyExtraBootstrap(data){
   renderPromoCodes();
   renderCartOffers();
 }
-async function loadExtra(){
-  const res = await fetch(CONFIG.API_URL, { method:'POST', body: JSON.stringify({ action:'adminBootstrapExtra', password: ADMIN_PASSWORD }) });
-  const data = await res.json();
-  if(data.ok) applyExtraBootstrap(data);
-}
-
 /* ---------------- image slot builder ---------------- */
 function buildImgGrid(){
   const grid = document.getElementById('imgGrid');
@@ -2959,7 +3002,7 @@ function applyCampaigns(data){
 const savedPw = sessionStorage.getItem('gm_admin_pw');
 if(savedPw){ document.getElementById('pwInput').value = savedPw; login(); }
 </script>
-<script src="accounts.js?v=8"></script>
+<script src="accounts.js?v=9"></script>
 <div class="rev-modal-overlay" id="revOverlay">
   <div class="rev-modal">
     <button class="close-x" onclick="closeProductReviews()">✕</button>

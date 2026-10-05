@@ -29,8 +29,10 @@ function setRange(){
   else if(r==='year'){A.from=`${y}-01-01`;A.to=`${y}-12-31`;}
   else if(r==='all'){A.from='';A.to='';}
 }
-async function api(action, extra){ const r=await fetch(CONFIG.API_URL,{method:'POST',body:JSON.stringify(Object.assign({action,password:ADMIN_PASSWORD},extra||{}))}); const t=await r.text();
-  try{ return JSON.parse(t); }catch(e){ const title=(t.match(/<title>([\s\S]*?)<\/title>/i)||[])[1]||''; const txt=t.replace(/<style[\s\S]*?<\/style>|<script[\s\S]*?<\/script>/gi,'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0,400); throw new Error('Google replied with an error page. '+title+' | '+txt); } }
+async function api(action, extra, opts){ // writes: no retry. reads pass {retries:2}
+  const o=Object.assign({retries:0,timeout:45000},opts||{});
+  try{ return await window.apiCall(Object.assign({action},extra||{}),o); }
+  catch(e){ throw new Error('Could not reach the backend: '+e.message); } }
 
 /* ---------- derive ledger ---------- */
 function derive(){
@@ -221,9 +223,12 @@ const Acc={
   async delInv(id,del){ const p=prompt((del?'Delete':'Restore')+' this invoice? Enter passcode:'); if(p===null) return; const r=await api('acctMarkReceived',{ids:[id],deleteInvoice:del,passcode:p}); if(!r.ok) return alert(r.error||'Failed'); Acc.load(true); },
   delCn(id){ if(!confirm('This removes the credit note AND its cancelled invoice from your books (they cancel each other out). Continue?')) return; Acc.delInv(id,true); },
   print:printDoc, edit(id){modal(A.exp.find(x=>x.id===id));},
-  async load(silent){ if(!silent) $('accRoot').innerHTML='<p class="muted">Loading accounts… (v8, can take up to a minute the first time)</p>'; let r; try{ r=await Promise.race([api('acctGetData'), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timed out after 90s')),90000))]); }catch(err){ r={ok:false,error:'Backend problem: '+err.message}; }
-    if(!r.ok){$('accRoot').innerHTML='<div class="card">⚠ '+esc(r.error||'Could not load. Did you add accounts-backend.gs and redeploy?')+'</div>';return;}
-    A.orders=r.orders; A.docs={}; r.docs.forEach(d=>A.docs[d.orderId]=d); A.exp=r.expenses; A.set=r.settings||{}; render(); },
+  async load(silent,fresh){ if(A.loading) return; A.loading=true; if(!silent) $('accRoot').innerHTML='<p class="muted">Loading accounts…</p>'; let r;
+    try{ r=await api('acctGetData',{fresh:fresh===true},{retries:2,timeout:60000}); }catch(err){ r={ok:false,error:err.message}; }
+    A.loading=false;
+    if(!r.ok){ A.loaded=false; $('accRoot').innerHTML='<div class="card">⚠ '+esc(r.error||'Could not load.')+' <button class="ghost" onclick="Acc.load(false,true)">Retry</button></div>'; return; }
+    A.orders=r.orders; A.docs={}; r.docs.forEach(d=>A.docs[d.orderId]=d); A.exp=r.expenses; A.set=r.settings||{}; A.loaded=true; render(); },
+  preload(fresh){ if(!A.loaded) Acc.load(true,fresh); else if(fresh) Acc.load(true,true); },
   async saveExp(id){ const cat=$('xCat').value==='__new'?$('xNew').value.trim():$('xCat').value; if(!cat) return $('xMsg').textContent='Enter a category.';
     if(!cats().includes(cat)){ const c=cats().filter(x=>!DEF_CATS.includes(x)).concat(cat); await api('updateSettings',{settings:{acctCategories:JSON.stringify(c)}}); A.set.acctCategories=JSON.stringify(c); }
     const r=await api('acctSaveExpense',{id,kind:$('xKind').value,date:$('xDate').value,category:cat,amount:$('xAmt').value,description:$('xDesc').value,vendor:$('xVen').value,status:$('xStat').value});
@@ -238,7 +243,6 @@ const Acc={
     const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([rows.map(r=>r.join(',')).join('\n')],{type:'text/csv'})); a.download='pnl-'+(A.from||'all')+'.csv'; a.click(); }
 };
 window.Acc=Acc;
-const _sw=window.switchTab; window.switchTab=function(t){ _sw(t); if(t==='accounts'&&!A.loaded){A.loaded=true;Acc.load();} };
-// Preload accounts data as soon as the admin has logged in (no need to click the tab first)
-const _pre=setInterval(function(){ const sh=document.getElementById('shell'); if(sh&&sh.classList.contains('show')){ clearInterval(_pre); if(!A.loaded){A.loaded=true;Acc.load();} } },800);
+const _sw=window.switchTab; window.switchTab=function(t){ _sw(t); if(t==='accounts'&&!A.loaded&&!A.loading){Acc.load();} };
+// Accounts is preloaded by admin.html's loadAll() AFTER Products/Orders/Customers finish (not in parallel).
 })();
