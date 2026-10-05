@@ -206,7 +206,7 @@ function modal(e){
 const Acc={
   go(t){A.tab=t;render();}, range(r){A.range=r;render();}, custom(k,v){A.range='custom';A[k]=v;render();},
   print:printDoc, edit(id){modal(A.exp.find(x=>x.id===id));},
-  async load(){ $('accRoot').innerHTML='<p class="muted">Loading accounts…</p>'; let r; try{ r=await api('acctGetData'); }catch(err){ r={ok:false,error:'Backend did not respond correctly ('+err.message+'). Check the 4 doPost edits and that you deployed a NEW version.'}; }
+  async load(){ $('accRoot').innerHTML='<p class="muted">Loading accounts… (v3, can take up to a minute the first time)</p>'; let r; try{ r=await Promise.race([api('acctGetData'), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timed out after 90s')),90000))]); }catch(err){ r={ok:false,error:'Backend did not respond correctly ('+err.message+'). Check the 4 doPost edits and that you deployed a NEW version.'}; }
     if(!r.ok){$('accRoot').innerHTML='<div class="card">⚠ '+esc(r.error||'Could not load. Did you add accounts-backend.gs and redeploy?')+'</div>';return;}
     A.orders=r.orders; A.docs={}; r.docs.forEach(d=>A.docs[d.orderId]=d); A.exp=r.expenses; A.set=r.settings||{}; render(); },
   async saveExp(id){ const cat=$('xCat').value==='__new'?$('xNew').value.trim():$('xCat').value; if(!cat) return $('xMsg').textContent='Enter a category.';
